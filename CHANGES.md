@@ -3,11 +3,42 @@ Change Log
 
 ### MobX Development
 
-#### next release (8.0.0-alpha.85)
+#### next release (8.0.0-alpha.87)
 
+* Data from TableMixin always overrides other feature information (e.g. from vector tiles in region mapping) by column name and title for feature info templating (consistent with v7).
+* Fixed point entity creation for TableMixin where different columns are used for point size and colour.
+* Changed MappableMixin's initialMessage to show while map items are loaded. Map items could be displayed behind the disclaimer before a user accepts the disclaimer.
+* Fixed a cyclic dependency between initialMessage and app spinner (globe gif greysreen) that caused the app spinner to be present forever when loading a share link.
+* [The next improvement]
+
+#### 8.0.0-alpha.86
+
+- **Breaking changes**:
+  - `EnumColorMap` will only be used for enum `TableColumns` with number of unique values <= number of bins 
+
+* Add `options` to CSV papaparsing
+* `TableMixin` will now only show points **or** region mapping - not both
+* Add `FeatureInfoMixin` support for 2D vector features (in Cesium only)
+* `TableStyles` are now hidden from the "Display Variable" selector if the number of colors (enumColors or numberOfBins) is less than 2. As a ColorMap with a single color isn't super useful.
+* Improved default `TableColumn.isSampled` - it will be false if a binary column is detected (0 or 1)
+* Improved default Table charting - now a time column will be used for xAxis by default
+* Added `spreadFinishTime` - which works same way as `spreadStartTime` - if `true`, finish time of feature will be "spread" so that all features are displayed at the latest time step.
+* Added support for `OpenDataSoft` - only point or region based features + timeseries
+* `GeoJsonMixin`-based catalog items with polygon features can be extruded if a `heightProperty` is specified.
+* Bugfix to make time-based geojson work when there are multiple features with the same time property value.
+* Add `czmlTemplate` to `GeoJsonTraits` - it can be used to replace GeoJSON Point features with a CZML packet.
+* Made the moment points in the chart optionally clickable.
+
+#### 8.0.0-alpha.85
+
+- **Breaking changes**:
+  - Removed `registerAnalytics.js`
+  - Removed `HelpMenuPanel.jsx`
+
+* Added analytic events related to story, share and help menu items, Also refactored events to use category and action enums.
 * Remove table style `SelectableDimension` from SDMX
 * `GyroscopeGuidance` can now be translated.
-* [The next improvement]
+* Wraps tool title bar text using `...`.
 
 #### 8.0.0-alpha.84
 
