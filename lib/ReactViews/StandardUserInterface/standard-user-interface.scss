@@ -57,6 +57,9 @@
   h1 {
     margin: 0;
   }
+  & > div + div {
+    margin-top: 16px;
+  }
 }
 
 .map {

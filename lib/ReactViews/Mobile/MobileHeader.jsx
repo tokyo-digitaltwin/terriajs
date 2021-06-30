@@ -153,7 +153,7 @@ const MobileHeader = observer(
             fullWidth
             fullHeight
             paddedRatio={1}
-            backgroundColor={this.props.theme.dark}
+            backgroundColor={"#fff"}
           >
             <Choose>
               <When
@@ -179,13 +179,12 @@ const MobileHeader = observer(
                       &:hover,
                       &:focus,
                       & {
-                        border: 1px solid
-                          ${this.props.theme.textLightTranslucent};
+                        border: 1px solid ${this.props.theme.textDark};
                       }
                     `}
                   >
                     <StyledIcon
-                      light
+                      dark
                       glyph={Icon.GLYPHS.menu}
                       styledWidth={"37px"}
                       styledHeight={"37px"}
@@ -197,12 +196,7 @@ const MobileHeader = observer(
                     version={this.props.version}
                   />
                 </Box>
-                <div
-                  className={Styles.groupRight}
-                  css={`
-                    background-color: ${p => p.theme.dark};
-                  `}
-                >
+                <div className={Styles.groupRight}>
                   <button
                     type="button"
                     className={Styles.btnAdd}
