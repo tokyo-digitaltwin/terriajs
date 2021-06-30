@@ -141,7 +141,7 @@ class MobileHeader extends React.Component {
           fullWidth
           fullHeight
           paddedRatio={1}
-          backgroundColor={this.props.theme.dark}
+          backgroundColor={"#fff"}
         >
           <Choose>
             <When
@@ -164,7 +164,7 @@ class MobileHeader extends React.Component {
                   title={t("mobile.toggleNavigation")}
                 >
                   <StyledIcon
-                    light
+                    dark
                     glyph={Icon.GLYPHS.menu}
                     styledWidth="20px"
                     styledHeight="20px"
@@ -176,12 +176,7 @@ class MobileHeader extends React.Component {
                   version={this.props.version}
                 />
               </Box>
-              <div
-                className={Styles.groupRight}
-                css={`
-                  background-color: ${(p) => p.theme.dark};
-                `}
-              >
+              <div className={Styles.groupRight}>
                 <button
                   type="button"
                   className={Styles.btnAdd}
