@@ -125,6 +125,11 @@ class WorkbenchItemRaw extends React.Component<IProps> {
                         medium
                         maxLines={!this.isOpen ? 2 : false}
                         title={getName(item)}
+                        css={`
+                          text-decoration: ${item.show
+                            ? "none"
+                            : "line-through"};
+                        `}
                       >
                         {getName(item)}
                       </TextSpan>
