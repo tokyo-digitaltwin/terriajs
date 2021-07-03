@@ -127,7 +127,15 @@ export const WorkbenchItemRaw = observer(
                       <Icon glyph={Icon.GLYPHS.lineChart} />
                     </span>
                   </If>
-                  {workbenchItem.name}
+                  <span
+                    css={`
+                      text-decoration: ${workbenchItem.show
+                        ? "none"
+                        : "line-through"};
+                    `}
+                  >
+                    {workbenchItem.name}
+                  </span>
                 </div>
               </Box>
             </Box>
