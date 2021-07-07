@@ -198,6 +198,40 @@ export default class Cesium3DTilesCatalogItem extends SearchableItemMixin(
     return disposer;
   }
 
+  private _watchForNewTileFeaturesAndCallbackAfter(
+    tileset: Cesium3DTileset,
+    callback: (feature: Cesium3DTileFeature) => void,
+    afterCallback: () => void
+  ): () => void {
+    const watchedTiles: Set<Cesium3DTile> = new Set();
+    const watch = (tile: Cesium3DTile) => {
+      if (watchedTiles.has(tile)) return;
+      const content = tile.content;
+      for (let i = 0; i < content.featuresLength; i++) {
+        const feature = content.getFeature(i);
+        callback(feature);
+      }
+      afterCallback();
+      watchedTiles.add(tile);
+    };
+    const removeWatchedTile = (tile: Cesium3DTile) => watchedTiles.delete(tile);
+    // Why listen on both tileLoad & tileVisible?
+    // tileLoad is best for applying styles as the style takes effect
+    // from the first render but in our case the tileset is already
+    // loaded so we must also listen to tileVisible to style the existing tiles.
+    // This is alright because we use the `watchedTiles` filter to avoid
+    // processing a tile multiple times.
+    tileset.tileLoad.addEventListener(watch);
+    tileset.tileVisible.addEventListener(watch);
+    tileset.tileUnload.addEventListener(removeWatchedTile);
+    const disposer = () => {
+      tileset.tileLoad.removeEventListener(watch);
+      tileset.tileVisible.removeEventListener(watch);
+      tileset.tileUnload.removeEventListener(removeWatchedTile);
+    };
+    return disposer;
+  }
+
   /**
    * Zoom to an item search result.
    */

@@ -75,6 +75,54 @@ export const WorkbenchItemRaw = observer(
       });
     },
 
+    componentDidMount() {
+      const jsonKeys = [
+        "building_attributes",
+        "disaster_risk_flood",
+        "disaster_risk_sediment"
+      ];
+      setTimeout(() => {
+        const tileset = this.props.item.tileset;
+        const propertiesForTemplates = {};
+        const reducer = (a, c) => a + `<tr><td>${c}</d><td>{{${c}}}</d></tr>`;
+        const disposeWatch = this.props.item._watchForNewTileFeaturesAndCallbackAfter(
+          tileset,
+          feature => {
+            const jsonProperties = [];
+            for (const jk of jsonKeys) {
+              if (feature.getProperty(jk)) {
+                jsonProperties.push(feature.getProperty(jk));
+              }
+              feature.setProperty(jk, null);
+            }
+
+            for (const jp of jsonProperties) {
+              for (const kv of jp) {
+                feature.setProperty(kv.key, kv.value);
+                propertiesForTemplates[kv.key] = kv.key;
+              }
+            }
+          },
+          () => {
+            const keys = Object.keys(propertiesForTemplates);
+
+            if (keys.length) {
+              let template = keys.reduce(reducer, "<table>");
+              template = template + "</table>";
+
+              runInAction(() => {
+                this.props.item.setTrait(
+                  CommonStrata.user,
+                  "featureInfoTemplate",
+                  template
+                );
+              });
+            }
+          }
+        );
+      }, 500);
+    },
+
     render() {
       const workbenchItem = this.props.item;
       const { t } = this.props;
