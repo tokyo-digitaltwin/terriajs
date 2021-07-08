@@ -215,4 +215,10 @@ export default class CatalogMemberTraits extends ModelTraits {
       "This provides ability to set model JSON through SelectableDimensions (a dropdown)."
   })
   modelDimensions?: DimensionTraits[];
+
+  @anyTrait({
+    name: "customProperties",
+    description: "The dictionary of custom item properties."
+  })
+  customProperties?: JsonObject;
 }
