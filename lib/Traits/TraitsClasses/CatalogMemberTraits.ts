@@ -230,4 +230,10 @@ export default class CatalogMemberTraits extends ModelTraits {
     description: "Disables the 'About Data' button in the workbench."
   })
   disableAboutData: boolean = false;
+
+  @anyTrait({
+    name: "customProperties",
+    description: "The dictionary of custom item properties."
+  })
+  customProperties?: JsonObject;
 }
