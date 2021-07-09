@@ -152,7 +152,6 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
         <div
           css={`
             padding: 0 5px;
-            background: ${theme.dark};
           `}
         >
           <SearchBoxAndResults
