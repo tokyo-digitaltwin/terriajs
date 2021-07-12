@@ -179,7 +179,7 @@ const SidePanel = observer(
                 onClick={e => this.onAddDataClicked(e)}
                 title={addData}
                 btnText={addData}
-                styledWidth={"200px"}
+                styledWidth={"100%"}
               >
                 <StyledIcon
                   glyph={Icon.GLYPHS.add}
@@ -187,6 +187,7 @@ const SidePanel = observer(
                   styledWidth={"20px"}
                 />
               </SidePanelButton>
+              {/*
               <SidePanelButton
                 ref={this.props.refForUploadData}
                 onClick={e => this.onAddLocalDataClicked(e)}
@@ -200,6 +201,7 @@ const SidePanel = observer(
                   styledWidth={"20px"}
                 />
               </SidePanelButton>
+              */}
             </Box>
             <Spacing bottom={1} />
           </div>
