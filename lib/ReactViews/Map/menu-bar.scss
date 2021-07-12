@@ -59,6 +59,7 @@
   &:first-child > a {
     border-radius: $map-button-border-radius 0 0 $map-button-border-radius;
   }
+  &:last-child > div > div > button,
   &:last-child > div > button,
   &:last-child > div > a,
   &:last-child > button,
