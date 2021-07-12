@@ -79,7 +79,9 @@ export const WorkbenchItemRaw = observer(
       const jsonKeys = [
         "building_attributes",
         "disaster_risk_flood",
-        "disaster_risk_sediment"
+        "disaster_risk_sediment",
+        "desaster_risk_flood",
+        "desaster_risk_sediment"
       ];
       setTimeout(() => {
         const tileset = this.props.item.tileset;
