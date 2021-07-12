@@ -158,7 +158,6 @@ const SidePanel = observer(
           <div
             css={`
               padding: 0 5px;
-              background: ${this.props.theme.dark};
             `}
           >
             <FullScreenButton

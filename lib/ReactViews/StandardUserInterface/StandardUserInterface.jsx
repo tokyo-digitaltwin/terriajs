@@ -28,7 +28,7 @@ import StoryBuilder from "./../Story/StoryBuilder.jsx";
 import withFallback from "../HOCs/withFallback";
 import TourPortal from "../Tour/TourPortal";
 import SatelliteHelpPrompt from "../HelpScreens/SatelliteHelpPrompt";
-import WelcomeMessage from "../WelcomeMessage/WelcomeMessage";
+import WelcomeMessage from "../WelcomeMessage/WelcomeMessageTokyo";
 
 import { Small, Medium } from "../Generic/Responsive";
 import classNames from "classnames";
