@@ -10,7 +10,6 @@ import Icon, { StyledIcon } from "../../Styled/Icon";
 import Spacing from "../../Styled/Spacing";
 import Text, { TextSpan } from "../../Styled/Text";
 import { useKeyPress } from "../Hooks/useKeyPress.js";
-import VideoGuide from "../Map/Panels/HelpPanel/VideoGuide";
 import { TourPortalDisplayName } from "../Tour/TourPortal";
 import FadeIn from "../Transitions/FadeIn/FadeIn";
 import SlideUpFadeIn from "../Transitions/SlideUpFadeIn/SlideUpFadeIn";
@@ -18,7 +17,6 @@ import { withViewState } from "../StandardUserInterface/ViewStateContext";
 
 export const WELCOME_MESSAGE_NAME = "welcomeMessage";
 export const LOCAL_PROPERTY_KEY = `${WELCOME_MESSAGE_NAME}Prompted`;
-const WELCOME_MESSAGE_VIDEO = "welcomeMessageVideo";
 
 const WelcomeModalWrapper = styled(Box)`
   z-index: 99999;
@@ -159,17 +157,6 @@ export const WelcomeMessagePure = props => {
           fullHeight
           centered
         >
-          <VideoGuide
-            viewState={viewState}
-            videoLink={
-              viewState.terria.configParameters.welcomeMessageVideo.videoUrl
-            }
-            background={
-              viewState.terria.configParameters.welcomeMessageVideo
-                .placeholderImage
-            }
-            videoName={WELCOME_MESSAGE_VIDEO}
-          />
           <SlideUpFadeIn isVisible={welcomeVisible}>
             <Box
               styledWidth={"667px"}
@@ -214,50 +201,12 @@ export const WelcomeMessagePure = props => {
                 </Text>
               </Box>
               <Spacing bottom={6} />
-              <If condition={!viewState.useSmallScreenInterface}>
-                <Text bold textLight extraLarge>
-                  {
-                    viewState.terria.configParameters.welcomeMessageVideo
-                      .videoTitle
-                  }
-                </Text>
-                <Spacing bottom={2} />
-              </If>
-              <Box fullWidth styledMinHeight={"160px"}>
-                <If condition={!viewState.useSmallScreenInterface}>
-                  <Box
-                    col6
-                    centered
-                    backgroundImage={
-                      viewState.terria.configParameters.welcomeMessageVideo
-                        .placeholderImage
-                    }
-                    backgroundBlackOverlay={"50%"}
-                  >
-                    <RawButton
-                      fullWidth
-                      fullHeight
-                      onClick={() =>
-                        viewState.setVideoGuideVisible(WELCOME_MESSAGE_VIDEO)
-                      }
-                    >
-                      <StyledIcon
-                        styledWidth={"48px"}
-                        light
-                        glyph={Icon.GLYPHS.playInverted}
-                        css={`
-                          margin: auto;
-                        `}
-                      />
-                    </RawButton>
-                  </Box>
-                  <Spacing right={5} />
-                </If>
+              <Box fullWidth styledMinHeight={"160px"} centered>
                 <Box
                   styledWidth={
                     viewState.useSmallScreenInterface ? "100%" : "37%"
                   }
-                  displayInlineBlock
+                  column
                 >
                   <If condition={!viewState.useSmallScreenInterface}>
                     <WelcomeMessageButton
