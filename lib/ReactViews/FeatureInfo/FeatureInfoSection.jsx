@@ -186,7 +186,7 @@ export const FeatureInfoSection = observer(
         getCurrentDescription(feature, currentTime);
       if (!defined(description) && defined(feature.properties)) {
         description = describeFromProperties(
-          feature.properties,
+          parseBuildingsProperties(feature.properties),
           currentTime,
           showStringIfPropertyValueIsNull
         );
@@ -706,6 +706,44 @@ const simpleStyleIdentifiers = [
 ];
 
 /**
+ * Customization for Tokyo Digital Twin
+ * take PropertyBag object and parse building specific "building_attributes", "disaster_risk_flood" and "disaster_risk_sediment" properties into simple key and value properties.
+ * and remove other properties.
+ * @param {*} properties
+ * @returns  Object or PropertyBag
+ * @private
+ */
+function parseBuildingsProperties(properties) {
+  const jsonKeys = [
+    "building_attributes",
+    "disaster_risk_flood",
+    "disaster_risk_sediment",
+    "desaster_risk_flood",
+    "desaster_risk_sediment"
+  ];
+  const existingKeys = [...new Set(jsonKeys)].filter(value =>
+    Object.keys(properties).includes(value)
+  );
+  if (!existingKeys.length) {
+    return properties;
+  }
+  const jsonProperties = [];
+  for (const jk of jsonKeys) {
+    if (properties.hasOwnProperty(jk) && properties[jk]) {
+      jsonProperties.push(properties[jk]);
+    }
+  }
+
+  const p = {};
+  for (const jp of jsonProperties) {
+    for (const kv of jp) {
+      p[kv.key] = kv.value;
+    }
+  }
+  return p;
+}
+
+/**
  * A way to produce a description if properties are available but no template is given.
  * Derived from Cesium's geoJsonDataSource, but made to work with possibly time-varying properties.
  * @private
@@ -716,8 +754,9 @@ function describeFromProperties(
   showStringIfPropertyValueIsNull
 ) {
   let html = "";
+
   if (typeof properties.getValue === "function") {
-    properties = properties.getValue(time);
+    properties = parseBuildingsProperties(properties.getValue(time));
   }
   if (typeof properties === "object") {
     for (const key in properties) {
