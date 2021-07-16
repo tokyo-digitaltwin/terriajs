@@ -414,7 +414,7 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
         {this.props.isOpen ? (
           <section className={Styles.content}>
             {/* If we have templated feature info (and not in print mode) - render "show raw data" button */}
-            {!this.props.printView && this.templatedFeatureInfoReactNode ? (
+            {false ? (
               <button
                 type="button"
                 className={Styles.rawDataButton}

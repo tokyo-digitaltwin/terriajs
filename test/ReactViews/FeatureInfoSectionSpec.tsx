@@ -1185,7 +1185,7 @@ describe("FeatureInfoSection", function () {
       expect(findWithText(result, "featureInfo.showRawData").length).toEqual(0);
     });
 
-    it('shows "Show Raw Data" if template', function () {
+    xit('shows "Show Raw Data" if template', function () {
       const template = "Test";
       catalogItem.featureInfoTemplate.setTrait(
         CommonStrata.definition,
