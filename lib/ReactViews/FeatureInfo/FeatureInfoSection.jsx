@@ -318,7 +318,8 @@ export const FeatureInfoSection = observer(
                     <If
                       condition={
                         !this.props.printView &&
-                        defined(reactInfo.downloadableData)
+                        defined(reactInfo.downloadableData) &&
+                        false // Disable download
                       }
                     >
                       <FeatureInfoDownload
