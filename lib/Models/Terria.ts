@@ -979,11 +979,13 @@ export default class Terria {
     );
 
     this.analytics?.start(this.configParameters);
-    this.analytics?.logEvent(
-      Category.launch,
-      LaunchAction.url,
-      launchUrlForAnalytics
-    );
+    if (this.getLocalProperty("useCookie")) {
+      this.analytics?.logEvent(
+        Category.launch,
+        LaunchAction.url,
+        launchUrlForAnalytics
+      );
+    }
     this.serverConfig = new ServerConfig();
     const serverConfig = await this.serverConfig.init(
       this.configParameters.serverConfigUrl

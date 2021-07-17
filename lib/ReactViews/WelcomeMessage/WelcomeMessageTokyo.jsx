@@ -101,7 +101,24 @@ export const WelcomeMessagePure = props => {
     if (persist) {
       viewState.terria.setLocalProperty(LOCAL_PROPERTY_KEY, true);
     }
+    // if cookie has not been accepted, disable analytics.
+    if (!viewState.terria.getLocalProperty("useCookie")) {
+      if (viewState.terria.analytics && viewState.terria.analytics.key) {
+        delete viewState.terria.analytics.key;
+      }
+      window.ga = function() {};
+    }
     setShouldOpenHelp(false);
+  };
+
+  const handleCookieAcceptance = (accept = false) => {
+    if (accept) {
+      if (!viewState.terria.getLocalProperty("useCookie") && window.ga) {
+        delete window.ga;
+      }
+    }
+    viewState.terria.setLocalProperty("useCookie", accept);
+    handleClose(false);
   };
 
   useKeyPress("Escape", () => {
@@ -248,6 +265,47 @@ export const WelcomeMessagePure = props => {
               <If condition={!viewState.useSmallScreenInterface}>
                 <Spacing bottom={13} />
               </If>
+              <Box fullWidth centered>
+                <Text textLight medium>
+                  本ウェブサイトでは、より良いサイト運営のため、Cookie技術を使用します。
+                  <br />
+                  Cookieの使用について同意いただける場合は、「同意します」をクリックしてください。
+                  <br />
+                  <a href="#">
+                    <TextSpan textLight isLink>
+                      サイトポリシーを確認
+                    </TextSpan>
+                  </a>
+                </Text>
+              </Box>
+              <Spacing bottom={2} />
+              <Box fullWidth centered>
+                <Button
+                  primary
+                  rounded
+                  fullWidth
+                  onClick={handleCookieAcceptance.bind(null, true)}
+                >
+                  <Box centered>
+                    <TextSpan textLight extraLarge>
+                      同意する
+                    </TextSpan>
+                  </Box>
+                </Button>
+                <Spacing right={5} />
+                <Button
+                  rounded
+                  fullWidth
+                  onClick={handleCookieAcceptance.bind(null, false)}
+                >
+                  <Box centered>
+                    <TextSpan textDark extraLarge>
+                      同意しない
+                    </TextSpan>
+                  </Box>
+                </Button>
+              </Box>
+              <Spacing bottom={13} />
               <Box fullWidth centered>
                 <RawButton onClick={handleClose.bind(null, true)}>
                   <TextSpan textLight isLink>
