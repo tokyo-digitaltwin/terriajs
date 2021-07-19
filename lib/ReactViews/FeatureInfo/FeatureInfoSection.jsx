@@ -281,7 +281,11 @@ export const FeatureInfoSection = observer(
           </If>
           <If condition={this.props.isOpen}>
             <section className={Styles.content}>
-              <If condition={!this.props.printView && this.hasTemplate()}>
+              <If
+                condition={
+                  !this.props.printView && this.hasTemplate() && false // Disable show raw data
+                }
+              >
                 <button
                   type="button"
                   className={Styles.rawDataButton}
@@ -318,7 +322,8 @@ export const FeatureInfoSection = observer(
                     <If
                       condition={
                         !this.props.printView &&
-                        defined(reactInfo.downloadableData)
+                        defined(reactInfo.downloadableData) &&
+                        false // Disable download
                       }
                     >
                       <FeatureInfoDownload
