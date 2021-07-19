@@ -69,21 +69,6 @@ const EmptyWorkbench: React.FC<EmptyWorkbenchProps> = (props) => {
             </Text>
           </Box>
           <Spacing bottom={3} />
-          <Box>
-            <HelpfulHintsIcon />
-            <Spacing right={1} />
-            <Text medium light>
-              {t("emptyWorkbench.helpfulHintsTwo")}
-            </Text>
-          </Box>
-          <Spacing bottom={3} />
-          <Box>
-            <HelpfulHintsIcon />
-            <Spacing right={1} />
-            <Text medium light>
-              {t("emptyWorkbench.helpfulHintsThree")}
-            </Text>
-          </Box>
           <ResponsiveSpacing />
         </BoxHelpfulHints>
       </Box>
