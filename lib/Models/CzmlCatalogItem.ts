@@ -156,6 +156,15 @@ export default class CzmlCatalogItem
     if (this.isLoadingMapItems || this._dataSource === undefined) {
       return [];
     }
+    this._dataSource.entities.values.forEach(entity => {
+      if (entity.polygon)
+        entity.polygon.classificationType = this.cesiumClassificationType;
+
+      if (entity.polyline)
+        entity.polyline.classificationType = this.cesiumClassificationType;
+      if (entity.rectangle)
+        entity.rectangle.classificationType = this.cesiumClassificationType;
+    });
     this._dataSource.show = this.show;
     return [this._dataSource];
   }
