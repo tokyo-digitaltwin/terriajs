@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useState, ChangeEventHandler, useEffect } from "react";
 import { Complete } from "../../../Core/TypeModifiers";
 import DiscretelyTimeVaryingMixin from "../../../ModelMixins/DiscretelyTimeVaryingMixin";
 import hasTraits from "../../../Models/Definition/hasTraits";
@@ -20,6 +20,11 @@ import DimensionSelectorSection from "./SelectableDimensionSection";
 import ShortReport from "./ShortReport";
 import TimerSection from "./TimerSection";
 import ViewingControls from "./ViewingControls";
+import CatalogMemberTraits from "../../../Traits/TraitsClasses/CatalogMemberTraits";
+import { runInAction } from "mobx";
+import CommonStrata from "../../../Models/Definition/CommonStrata";
+import MappableMixin from "../../../ModelMixins/MappableMixin";
+import UrlMixin from "../../../ModelMixins/UrlMixin";
 
 type WorkbenchControls = {
   viewingControls?: boolean;
@@ -76,10 +81,46 @@ export const hideAllControls: Complete<WorkbenchControls> = {
   legend: false
 };
 
+const getSwitchableUrls = (
+  item: BaseModel | CatalogMemberTraits
+): { url: string; name: string }[] | null => {
+  if (
+    !("customProperties" in item) ||
+    !item.customProperties ||
+    !item.customProperties.switchableUrls
+  ) {
+    return null;
+  }
+  return item.customProperties.switchableUrls as any;
+};
+
 const WorkbenchItemControls: React.FC<WorkbenchItemControlsProps> = observer(
   ({ item, viewState, controls: controlsWithoutDefaults }) => {
     // Apply controls from props on top of defaultControls
     const controls = { ...defaultControls, ...controlsWithoutDefaults };
+    const [{ switchableUrls, urlIndex }, setSwitchableUrlsState] = useState(
+      () => ({
+        urlIndex: 0,
+        switchableUrls: getSwitchableUrls(item)
+      })
+    );
+    const handleSwitchableUrlChange: ChangeEventHandler<HTMLInputElement> = (
+      e
+    ) => {
+      setSwitchableUrlsState((prevState) => ({
+        ...prevState,
+        urlIndex: Number(e.target.value)
+      }));
+    };
+    useEffect(() => {
+      runInAction(() => {
+        if (!switchableUrls) return;
+        if (!MappableMixin.isMixedInto(item)) return;
+        if (!UrlMixin.isMixedInto(item)) return;
+        item.setTrait(CommonStrata.user, "url", switchableUrls[urlIndex].url);
+        item.loadMapItems();
+      });
+    }, [item, switchableUrls, urlIndex]);
 
     return (
       <>
@@ -120,6 +161,28 @@ const WorkbenchItemControls: React.FC<WorkbenchItemControlsProps> = observer(
               maxValue={item.colorScaleMaximum}
             />
           )}
+
+        {switchableUrls && (
+          <div
+            css={`
+              margin: 5px 0;
+            `}
+          >
+            {switchableUrls.map((su, i) => (
+              <div key={i}>
+                <label>
+                  <input
+                    type="radio"
+                    value={i}
+                    onChange={handleSwitchableUrlChange}
+                    checked={urlIndex === i}
+                  />
+                  {su.name}
+                </label>
+              </div>
+            ))}
+          </div>
+        )}
         {controls?.shortReport ? <ShortReport item={item} /> : null}
         {controls?.legend ? <Legend item={item} /> : null}
         {controls?.selectableDimensions ? (
