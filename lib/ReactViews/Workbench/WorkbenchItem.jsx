@@ -32,6 +32,13 @@ import TimerSection from "./Controls/TimerSection";
 import ViewingControls from "./Controls/ViewingControls";
 import Styles from "./workbench-item.scss";
 
+const getSwitchableUrls = item => {
+  if (!item.customProperties || !item.customProperties.switchableUrls) {
+    return null;
+  }
+  return item.customProperties.switchableUrls;
+};
+
 export const WorkbenchItemRaw = observer(
   createReactClass({
     displayName: "WorkbenchItem",
@@ -45,6 +52,13 @@ export const WorkbenchItemRaw = observer(
       viewState: PropTypes.object.isRequired,
       setWrapperState: PropTypes.func,
       t: PropTypes.func.isRequired
+    },
+
+    getInitialState() {
+      return {
+        urlIndex: 0,
+        switchableUrls: getSwitchableUrls(this.props.item)
+      };
     },
 
     toggleDisplay() {
@@ -75,59 +89,32 @@ export const WorkbenchItemRaw = observer(
       });
     },
 
-    // componentDidMount() {
-    //   const jsonKeys = [
-    //     "building_attributes",
-    //     "disaster_risk_flood",
-    //     "disaster_risk_sediment",
-    //     "desaster_risk_flood",
-    //     "desaster_risk_sediment"
-    //   ];
-    //   setTimeout(() => {
-    //     const tileset = this.props.item.tileset;
-    //     const propertiesForTemplates = {};
-    //     const reducer = (a, c) => a + `<tr><td>${c}</d><td>{{${c}}}</d></tr>`;
-    //     const disposeWatch = this.props.item._watchForNewTileFeaturesAndCallbackAfter(
-    //       tileset,
-    //       feature => {
-    //         const jsonProperties = [];
-    //         for (const jk of jsonKeys) {
-    //           if (feature.getProperty(jk)) {
-    //             jsonProperties.push(feature.getProperty(jk));
-    //           }
-    //           feature.setProperty(jk, null);
-    //         }
+    setUrlIndex(e) {
+      this.setState({ urlIndex: e.target.value });
+    },
 
-    //         for (const jp of jsonProperties) {
-    //           for (const kv of jp) {
-    //             feature.setProperty(kv.key, kv.value);
-    //             propertiesForTemplates[kv.key] = kv.key;
-    //           }
-    //         }
-    //       },
-    //       () => {
-    //         const keys = Object.keys(propertiesForTemplates);
-
-    //         if (keys.length) {
-    //           let template = keys.reduce(reducer, "<table>");
-    //           template = template + "</table>";
-
-    //           runInAction(() => {
-    //             this.props.item.setTrait(
-    //               CommonStrata.user,
-    //               "featureInfoTemplate",
-    //               template
-    //             );
-    //           });
-    //         }
-    //       }
-    //     );
-    //   }, 500);
-    // },
+    componentDidUpdate(prevProps, prevState) {
+      if (
+        this.state.switchableUrls &&
+        this.state.urlIndex !== prevState.urlIndex
+      ) {
+        runInAction(() => {
+          this.props.item.setTrait(
+            CommonStrata.user,
+            "url",
+            this.state.switchableUrls[this.state.urlIndex].url
+          );
+          this.props.item.loadMapItems();
+        });
+      }
+    },
 
     render() {
       const workbenchItem = this.props.item;
       const { t } = this.props;
+
+      const switchableUrls = this.state.switchableUrls;
+
       return (
         <li
           style={this.props.style}
@@ -246,6 +233,29 @@ export const WorkbenchItemRaw = observer(
                 minValue={workbenchItem.colorScaleMinimum}
                 maxValue={workbenchItem.colorScaleMaximum}
               />
+
+              <If condition={switchableUrls}>
+                <div
+                  css={`
+                    margin: 5px 0;
+                  `}
+                >
+                  <For each="su" index="i" of={switchableUrls}>
+                    <div key={i}>
+                      <label>
+                        <input
+                          type="radio"
+                          value={i}
+                          onChange={this.setUrlIndex}
+                          checked={this.state.urlIndex == i}
+                        />
+                        {su.name}
+                      </label>
+                    </div>
+                  </For>
+                </div>
+              </If>
+
               <DisplayAsPercentSection item={workbenchItem} />
               <If
                 condition={
