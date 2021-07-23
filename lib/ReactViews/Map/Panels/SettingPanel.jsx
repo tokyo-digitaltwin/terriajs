@@ -201,7 +201,8 @@ class SettingPanel extends React.Component {
 
     viewerModes.push("3dsmooth", "2d");
 
-    const supportsSide = isCesiumWithTerrain;
+    // const supportsSide = isCesiumWithTerrain;
+    const supportsSide = false;
 
     let currentSide = sides.both;
     if (supportsSide) {

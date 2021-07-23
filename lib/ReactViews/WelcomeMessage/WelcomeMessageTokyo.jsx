@@ -293,6 +293,7 @@ export const WelcomeMessagePure = props => {
                 </Button>
                 <Spacing right={5} />
                 <Button
+                  secondary
                   rounded
                   fullWidth
                   onClick={handleCookieAcceptance.bind(null, false)}
