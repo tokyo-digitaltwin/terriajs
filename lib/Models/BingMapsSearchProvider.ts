@@ -20,6 +20,7 @@ interface BingMapsSearchProviderOptions {
   flightDurationSeconds?: number;
   primaryCountry?: string;
   culture?: string;
+  searchTextPrefix?: string;
 }
 
 export default class BingMapsSearchProvider extends SearchProvider {
@@ -29,6 +30,7 @@ export default class BingMapsSearchProvider extends SearchProvider {
   @observable flightDurationSeconds: number;
   @observable primaryCountry: string;
   @observable culture: string;
+  @observable searchTextPrefix: string;
 
   constructor(options: BingMapsSearchProviderOptions) {
     super();
@@ -46,6 +48,7 @@ export default class BingMapsSearchProvider extends SearchProvider {
     );
     this.primaryCountry = defaultValue(options.primaryCountry, "Australia");
     this.culture = defaultValue(options.culture, "en-au");
+    this.searchTextPrefix = defaultValue(options.searchTextPrefix, "");
 
     if (!this.key) {
       console.warn(
@@ -104,7 +107,7 @@ export default class BingMapsSearchProvider extends SearchProvider {
           "," +
           longitudeDegrees,
         queryParameters: {
-          query: searchText,
+          query: `${this.searchTextPrefix}${searchText}`,
           key: this.key
         }
       }),
