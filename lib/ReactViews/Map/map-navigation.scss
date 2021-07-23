@@ -7,6 +7,11 @@
   z-index: 1;
   bottom: 25px;
 
+  @supports (-webkit-touch-callout: none) {
+    // Shift map navigation on iOS browsers so it won't get hidden by the browser UI.
+    bottom: 120px;
+  }
+
   @media (min-width: $sm) {
     top: 80px;
     // bottom: auto;
