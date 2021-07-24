@@ -44,7 +44,9 @@ const ToggleSplitterTool = observer(function(props) {
           />
         )}
       >
-        {t("splitterTool.toggleSplitterToolTitle")}
+        {viewState.useSmallScreenInterface
+          ? null
+          : t("splitterTool.toggleSplitterToolTitle")}
       </MapIconButton>
     </div>
   );

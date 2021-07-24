@@ -29,7 +29,7 @@ function CloseToolButton({ viewState, t, toolIsDifference }: PropsType) {
       iconElement={() => <Icon glyph={Icon.GLYPHS.closeLight} />}
       onClick={() => viewState.closeTool()}
     >
-      {closeText}
+      {viewState.useSmallScreenInterface ? null : closeText}
     </MapIconButton>
   );
 }

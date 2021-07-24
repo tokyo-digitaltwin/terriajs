@@ -35,6 +35,7 @@ class MeasureTool extends React.Component {
 
   static propTypes = {
     terria: PropTypes.object,
+    viewState: PropTypes.object,
     t: PropTypes.func.isRequired
   };
 
@@ -237,7 +238,7 @@ class MeasureTool extends React.Component {
   }
 
   render() {
-    const { t } = this.props;
+    const { t, viewState } = this.props;
     return (
       <div className={Styles.toolButton}>
         <MapIconButton
@@ -246,7 +247,9 @@ class MeasureTool extends React.Component {
           onClick={this.handleClick}
           iconElement={() => <Icon glyph={Icon.GLYPHS.measure} />}
         >
-          {t("measure.measureToolTitle")}
+          {viewState?.useSmallScreenInterface
+            ? null
+            : t("measure.measureToolTitle")}
         </MapIconButton>
       </div>
     );

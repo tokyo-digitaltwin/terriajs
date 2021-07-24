@@ -122,6 +122,7 @@ class MapNavigation extends React.Component {
                 <div className={Styles.control}>
                   <MyLocation
                     terria={this.props.terria}
+                    viewState={this.props.viewState}
                     elementConfig={this.props.terria.elements.get(
                       "my-location"
                     )}
