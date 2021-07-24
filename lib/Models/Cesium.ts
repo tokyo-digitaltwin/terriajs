@@ -239,10 +239,12 @@ export default class Cesium extends GlobeOrMap {
         );
       }
       if (expandLink) {
-        let attributionToAboutPage = document.createElement("div");
-        attributionToAboutPage.innerHTML = `<a href="about.html#data-attribution" target="_blank" rel="noopener noreferrer">Data attribution</a>`;
+        // let attributionToAboutPage = document.createElement("div");
+        // attributionToAboutPage.innerHTML = `<a href="about.html#data-attribution" target="_blank" rel="noopener noreferrer">Data attribution</a>`;
         let disclaimerToAboutPage = document.createElement("div");
-        disclaimerToAboutPage.innerHTML = `<a href="about.html#disclaimer" target="_blank" rel="noopener noreferrer">Disclaimer</a>`;
+        disclaimerToAboutPage.innerHTML = `<a href="https://tokyo-digitaltwin.metro.tokyo.lg.jp/policy/" target="_blank" rel="noopener noreferrer">${i18next.t(
+          "credits.policy"
+        )}</a>`;
 
         if (logoContainer && logoContainer.parentNode) {
           if (disclaimerToAboutPage && disclaimerToAboutPage.firstChild) {
@@ -252,15 +254,15 @@ export default class Cesium extends GlobeOrMap {
             );
           }
 
-          if (attributionToAboutPage && attributionToAboutPage.firstChild) {
-            logoContainer.parentNode.insertBefore(
-              attributionToAboutPage.firstChild,
-              logoContainer.nextSibling
-            );
-          }
+          // if (attributionToAboutPage && attributionToAboutPage.firstChild) {
+          //   logoContainer.parentNode.insertBefore(
+          //     attributionToAboutPage.firstChild,
+          //     logoContainer.nextSibling
+          //   );
+          // }
         }
 
-        expandLink.innerText = "Basemap";
+        expandLink.innerText = i18next.t("credits.basemaps");
       }
     }
 

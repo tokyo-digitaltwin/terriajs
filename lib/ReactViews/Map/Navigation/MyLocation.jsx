@@ -25,6 +25,7 @@ const MyLocation = createReactClass({
 
   propTypes: {
     terria: PropTypes.object.isRequired,
+    viewState: PropTypes.object.isRequired,
     t: PropTypes.func.isRequired
   },
 
@@ -184,7 +185,7 @@ const MyLocation = createReactClass({
   },
 
   render() {
-    const { t } = this.props;
+    const { t, viewState } = this.props;
     return (
       <MapIconButton
         primary={this.followMeEnabled()}
@@ -193,7 +194,7 @@ const MyLocation = createReactClass({
         title={t("location.centreMap")}
         iconElement={() => <Icon glyph={Icon.GLYPHS.geolocationThick} />}
       >
-        {t("location.location")}
+        {viewState.useSmallScreenInterface ? null : t("location.location")}
       </MapIconButton>
     );
   }
