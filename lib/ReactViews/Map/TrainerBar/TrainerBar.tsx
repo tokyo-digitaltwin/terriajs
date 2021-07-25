@@ -220,7 +220,7 @@ class StepAccordionRaw extends React.Component<
                           : t("trainer.showAllSteps")
                       }
                     >
-                      <Text medium primary isLink textAlignLeft>
+                      <Text medium textLight isLink textAlignLeft>
                         {isShowingAllSteps
                           ? t("trainer.hideAllSteps")
                           : t("trainer.showAllSteps")}
