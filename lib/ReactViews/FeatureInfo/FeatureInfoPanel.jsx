@@ -458,9 +458,27 @@ function determineCatalogItem(workbench, feature) {
     return feature._catalogItem;
   }
 
-  return workbench.items.find(item =>
-    featureBelongsToCatalogItem(feature, item)
-  );
+  // Expand child members of composite catalog items.
+  // This ensures features from each child model are treated as belonging to
+  // that child model, not the parent composite model.
+  const items = workbench.items.map(recurseIntoMembers).reduce((acc, cur) => {
+    // flatmap
+    acc.push(...cur);
+    return acc;
+  }, []);
+  return items.find(item => featureBelongsToCatalogItem(feature, item));
+}
+
+function recurseIntoMembers(catalogItem) {
+  const { memberModels } = catalogItem;
+  if (memberModels) {
+    return memberModels.map(recurseIntoMembers).reduce((acc, cur) => {
+      // flatmap
+      acc.push(...cur);
+      return acc;
+    }, []);
+  }
+  return [catalogItem];
 }
 
 /**

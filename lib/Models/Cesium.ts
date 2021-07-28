@@ -241,10 +241,13 @@ export default class Cesium extends GlobeOrMap {
       if (expandLink) {
         // let attributionToAboutPage = document.createElement("div");
         // attributionToAboutPage.innerHTML = `<a href="about.html#data-attribution" target="_blank" rel="noopener noreferrer">Data attribution</a>`;
-        let disclaimerToAboutPage = document.createElement("div");
-        disclaimerToAboutPage.innerHTML = `<a href="https://tokyo-digitaltwin.metro.tokyo.lg.jp/policy/" target="_blank" rel="noopener noreferrer">${i18next.t(
-          "credits.policy"
-        )}</a>`;
+        const disclaimerToAboutPage = document.createElement("div");
+        const { policyUrl } = this.terria.configParameters;
+        if (policyUrl) {
+          disclaimerToAboutPage.innerHTML = `<a href="${policyUrl}" target="_blank" rel="noopener noreferrer">${i18next.t(
+            "credits.policy"
+          )}</a>`;
+        }
 
         if (logoContainer && logoContainer.parentNode) {
           if (disclaimerToAboutPage && disclaimerToAboutPage.firstChild) {
