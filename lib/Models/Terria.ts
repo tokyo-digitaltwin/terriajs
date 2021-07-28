@@ -254,6 +254,11 @@ interface ConfigParameters {
    * Minimum length of feedback comment.
    */
   feedbackMinLength?: number;
+
+  /**
+   * URL that serves the website's policy.
+   */
+  policyUrl?: string;
 }
 
 interface StartOptions {
@@ -416,7 +421,8 @@ export default class Terria {
     persistViewerMode: true,
     openAddData: false,
     feedbackPreamble: "feedback.feedbackPreamble",
-    feedbackMinLength: 0
+    feedbackMinLength: 0,
+    policyUrl: undefined
   };
 
   @observable
