@@ -203,7 +203,7 @@ export const WelcomeMessagePure = props => {
                   bold
                   textLight
                   styledFontSize={"28px"}
-                  styledLineHeight={"49px"}
+                  styledLineHeight={"1.3"}
                 >
                   {t("welcomeMessage.title")}
                 </Text>
@@ -217,8 +217,8 @@ export const WelcomeMessagePure = props => {
                   </Trans>
                 </Text>
               </Box>
-              <Spacing bottom={6} />
-              <Box fullWidth styledMinHeight={"160px"} centered>
+              <Spacing bottom={3} />
+              <Box fullWidth centered>
                 <Box
                   styledWidth={
                     viewState.useSmallScreenInterface ? "100%" : "37%"
@@ -250,8 +250,8 @@ export const WelcomeMessagePure = props => {
                         setShouldOpenHelp(true);
                       }}
                     />
+                    <Spacing bottom={4} />
                   </If>
-                  <Spacing bottom={4} />
                   <WelcomeMessageButton
                     buttonText={t("welcomeMessage.exploreDataBtnText")}
                     buttonIcon={Icon.GLYPHS.add}
@@ -262,8 +262,9 @@ export const WelcomeMessagePure = props => {
                   />
                 </Box>
               </Box>
+              <Spacing bottom={3} />
               <If condition={!viewState.useSmallScreenInterface}>
-                <Spacing bottom={13} />
+                <Spacing bottom={10} />
               </If>
               <Box fullWidth centered>
                 <Text textLight medium>
@@ -271,7 +272,11 @@ export const WelcomeMessagePure = props => {
                   <br />
                   Cookieの使用について同意いただける場合は、「同意します」をクリックしてください。
                   <br />
-                  <a href="#">
+                  <a
+                    href={viewState.terria.configParameters.policyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <TextSpan textLight isLink>
                       サイトポリシーを確認
                     </TextSpan>
@@ -306,7 +311,7 @@ export const WelcomeMessagePure = props => {
                   </Box>
                 </Button>
               </Box>
-              <Spacing bottom={13} />
+              <Spacing bottom={3} />
               <Box fullWidth centered>
                 <RawButton onClick={handleClose.bind(null, true)}>
                   <TextSpan textLight isLink>
