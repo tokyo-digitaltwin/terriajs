@@ -217,55 +217,27 @@ export const WelcomeMessagePure = props => {
                   </Trans>
                 </Text>
               </Box>
-              <Spacing bottom={3} />
+              <Spacing bottom={viewState.useSmallScreenInterface ? 2 : 3} />
               <Box fullWidth centered>
-                <Box
-                  styledWidth={
-                    viewState.useSmallScreenInterface ? "100%" : "37%"
-                  }
-                  column
-                >
-                  <If condition={!viewState.useSmallScreenInterface}>
-                    <WelcomeMessageButton
-                      onClick={() => {
-                        handleClose(false);
-                        // not sure if we should wait for the exit animation,
-                        // if we don't, we have a flicker due to the difference
-                        // in overlay darkness - but if we wait, it goes
-                        // dark -> light -> dark anyway..
-                        setShouldTakeTour(true);
-                        viewState.setTourIndex(0);
-                        viewState.setShowTour(true);
-                        viewState.setTopElement(TourPortalDisplayName);
-                      }}
-                      buttonText={t("welcomeMessage.tourBtnText")}
-                      buttonIcon={Icon.GLYPHS.tour}
-                    />
-                    <Spacing bottom={4} />
-                    <WelcomeMessageButton
-                      buttonText={t("welcomeMessage.helpBtnText")}
-                      buttonIcon={Icon.GLYPHS.newHelp}
-                      onClick={() => {
-                        handleClose(false);
-                        setShouldOpenHelp(true);
-                      }}
-                    />
-                    <Spacing bottom={4} />
-                  </If>
+                <Box fullWidth column>
                   <WelcomeMessageButton
-                    buttonText={t("welcomeMessage.exploreDataBtnText")}
-                    buttonIcon={Icon.GLYPHS.add}
                     onClick={() => {
                       handleClose(false);
-                      setShouldExploreData(true);
+                      // not sure if we should wait for the exit animation,
+                      // if we don't, we have a flicker due to the difference
+                      // in overlay darkness - but if we wait, it goes
+                      // dark -> light -> dark anyway..
+                      setShouldTakeTour(true);
+                      viewState.setTourIndex(0);
+                      viewState.setShowTour(true);
+                      viewState.setTopElement(TourPortalDisplayName);
                     }}
+                    buttonText={t("welcomeMessage.tourBtnText")}
+                    buttonIcon={Icon.GLYPHS.tour}
                   />
                 </Box>
               </Box>
-              <Spacing bottom={3} />
-              <If condition={!viewState.useSmallScreenInterface}>
-                <Spacing bottom={10} />
-              </If>
+              <Spacing bottom={viewState.useSmallScreenInterface ? 2 : 3} />
               <Box fullWidth centered>
                 <Text textLight medium>
                   本ウェブサイトでは、より良いサイト運営のため、Cookie技術を使用します。
