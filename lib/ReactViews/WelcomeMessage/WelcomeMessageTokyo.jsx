@@ -202,7 +202,7 @@ export const WelcomeMessagePure = props => {
                   bold
                   textLight
                   styledFontSize={"28px"}
-                  styledLineHeight={"49px"}
+                  styledLineHeight={"1.3"}
                 >
                   {t("welcomeMessage.title")}
                 </Text>
@@ -216,61 +216,38 @@ export const WelcomeMessagePure = props => {
                   </Trans>
                 </Text>
               </Box>
-              <Spacing bottom={6} />
-              <Box fullWidth styledMinHeight={"160px"} centered>
-                <Box
-                  styledWidth={
-                    viewState.useSmallScreenInterface ? "100%" : "37%"
-                  }
-                  column
-                >
-                  <If condition={!viewState.useSmallScreenInterface}>
-                    <WelcomeMessageButton
-                      onClick={() => {
-                        handleClose(false);
-                        // not sure if we should wait for the exit animation,
-                        // if we don't, we have a flicker due to the difference
-                        // in overlay darkness - but if we wait, it goes
-                        // dark -> light -> dark anyway..
-                        setShouldTakeTour(true);
-                        viewState.setTourIndex(0);
-                        viewState.setShowTour(true);
-                        viewState.setTopElement(TourPortalDisplayName);
-                      }}
-                      buttonText={t("welcomeMessage.tourBtnText")}
-                      buttonIcon={Icon.GLYPHS.tour}
-                    />
-                    <Spacing bottom={4} />
-                    <WelcomeMessageButton
-                      buttonText={t("welcomeMessage.helpBtnText")}
-                      buttonIcon={Icon.GLYPHS.newHelp}
-                      onClick={() => {
-                        handleClose(false);
-                        setShouldOpenHelp(true);
-                      }}
-                    />
-                  </If>
-                  <Spacing bottom={4} />
+              <Spacing bottom={viewState.useSmallScreenInterface ? 2 : 3} />
+              <Box fullWidth centered>
+                <Box fullWidth column>
                   <WelcomeMessageButton
-                    buttonText={t("welcomeMessage.exploreDataBtnText")}
-                    buttonIcon={Icon.GLYPHS.add}
                     onClick={() => {
                       handleClose(false);
-                      setShouldExploreData(true);
+                      // not sure if we should wait for the exit animation,
+                      // if we don't, we have a flicker due to the difference
+                      // in overlay darkness - but if we wait, it goes
+                      // dark -> light -> dark anyway..
+                      setShouldTakeTour(true);
+                      viewState.setTourIndex(0);
+                      viewState.setShowTour(true);
+                      viewState.setTopElement(TourPortalDisplayName);
                     }}
+                    buttonText={t("welcomeMessage.tourBtnText")}
+                    buttonIcon={Icon.GLYPHS.tour}
                   />
                 </Box>
               </Box>
-              <If condition={!viewState.useSmallScreenInterface}>
-                <Spacing bottom={13} />
-              </If>
+              <Spacing bottom={viewState.useSmallScreenInterface ? 2 : 3} />
               <Box fullWidth centered>
                 <Text textLight medium>
                   本ウェブサイトでは、より良いサイト運営のため、Cookie技術を使用します。
                   <br />
                   Cookieの使用について同意いただける場合は、「同意します」をクリックしてください。
                   <br />
-                  <a href="#">
+                  <a
+                    href={viewState.terria.configParameters.policyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <TextSpan textLight isLink>
                       サイトポリシーを確認
                     </TextSpan>
@@ -305,7 +282,7 @@ export const WelcomeMessagePure = props => {
                   </Box>
                 </Button>
               </Box>
-              <Spacing bottom={13} />
+              <Spacing bottom={3} />
               <Box fullWidth centered>
                 <RawButton onClick={handleClose.bind(null, true)}>
                   <TextSpan textLight isLink>
