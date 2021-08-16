@@ -50,6 +50,8 @@ class SettingPanel extends React.Component<PropTypes> {
 
   @observable _hoverBaseMap = null;
 
+  @observable _enableCollisionDetection = true;
+
   @computed
   get activeMapName() {
     return this._hoverBaseMap
@@ -149,6 +151,18 @@ class SettingPanel extends React.Component<PropTypes> {
     );
   }
 
+  @action
+  toggleCollisionDetection() {
+    runInAction(() => {
+      this._enableCollisionDetection = !this._enableCollisionDetection;
+      if (this.props.terria.currentViewer instanceof Cesium) {
+        this.props.terria.currentViewer.scene.screenSpaceCameraController.enableCollisionDetection =
+          this._enableCollisionDetection;
+      }
+    });
+    this.props.terria.currentViewer.notifyRepaintRequired();
+  }
+
   render() {
     if (!this.props.terria.mainViewer) {
       return null;
@@ -197,6 +211,10 @@ class SettingPanel extends React.Component<PropTypes> {
     const depthTestAgainstTerrainLabel = depthTestAgainstTerrainEnabled
       ? t("settingPanel.terrain.showUndergroundFeatures")
       : t("settingPanel.terrain.hideUndergroundFeatures");
+
+    const collisionDetectionLabel = this._enableCollisionDetection
+      ? t("settingPanel.terrain.disableCollisionDetection")
+      : t("settingPanel.terrain.enableCollisionDetection");
 
     if (
       this.props.terria.configParameters.useCesiumIonTerrain ||
@@ -291,6 +309,20 @@ class SettingPanel extends React.Component<PropTypes> {
               )}
             </>
           )}
+          <Spacing bottom={2} />
+          <Box column>
+            <Checkbox
+              textProps={{ small: true }}
+              id="collisionDetection"
+              isChecked={this._enableCollisionDetection}
+              title={collisionDetectionLabel}
+              onChange={() => this.toggleCollisionDetection()}
+            >
+              <TextSpan>
+                {t("settingPanel.terrain.enableToGoUnderground")}
+              </TextSpan>
+            </Checkbox>
+          </Box>
           <>
             <Spacing bottom={2} />
             <Box column>
