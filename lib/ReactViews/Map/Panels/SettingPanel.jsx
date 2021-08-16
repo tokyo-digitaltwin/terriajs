@@ -54,6 +54,8 @@ class SettingPanel extends React.Component {
 
   @observable _hoverBaseMap = null;
 
+  @observable _enableCollisionDetection = true;
+
   @computed
   get activeMapName() {
     return this._hoverBaseMap
@@ -136,6 +138,18 @@ class SettingPanel extends React.Component {
     this.props.terria.currentViewer.notifyRepaintRequired();
   }
 
+  @action
+  toggleCollisionDetection(event) {
+    event.stopPropagation();
+    runInAction(() => {
+      this._enableCollisionDetection = !this._enableCollisionDetection;
+      if (this.props.terria.currentViewer.type === "Cesium") {
+        this.props.terria.currentViewer.scene.screenSpaceCameraController.enableCollisionDetection = this._enableCollisionDetection;
+      }
+    });
+    this.props.terria.currentViewer.notifyRepaintRequired();
+  }
+
   render() {
     if (!this.props.terria.mainViewer) {
       return null;
@@ -189,6 +203,10 @@ class SettingPanel extends React.Component {
     const depthTestAgainstTerrainLabel = depthTestAgainstTerrainEnabled
       ? t("settingPanel.terrain.showUndergroundFeatures")
       : t("settingPanel.terrain.hideUndergroundFeatures");
+
+    const collisionDetectionLabel = this._enableCollisionDetection
+      ? t("settingPanel.terrain.disableCollisionDetection")
+      : t("settingPanel.terrain.enableCollisionDetection");
 
     const viewerModes = [];
 
@@ -309,6 +327,38 @@ class SettingPanel extends React.Component {
             </section>
           </div>
         </If>
+
+        <div className={classNames(Styles.viewer, DropdownStyles.section)}>
+          <section
+            className={Styles.nativeResolutionWrapper}
+            title={qualityLabels[this.props.terria.quality]}
+          >
+            <button
+              id="collisionDetection"
+              type="button"
+              onClick={this.toggleCollisionDetection.bind(this)}
+              title={collisionDetectionLabel}
+              className={Styles.btnNativeResolution}
+            >
+              {!this._enableCollisionDetection ? (
+                <Icon glyph={Icon.GLYPHS.checkboxOn} />
+              ) : (
+                <Icon glyph={Icon.GLYPHS.checkboxOff} />
+              )}
+            </button>
+            <label
+              title={collisionDetectionLabel}
+              htmlFor="collisionDetection"
+              className={classNames(
+                DropdownStyles.subHeading,
+                Styles.nativeResolutionHeader
+              )}
+            >
+              {t("settingPanel.terrain.enableToGoUnderground")}
+            </label>
+          </section>
+        </div>
+
         <div className={classNames(Styles.baseMap, DropdownStyles.section)}>
           <label className={DropdownStyles.heading}>
             {" "}
