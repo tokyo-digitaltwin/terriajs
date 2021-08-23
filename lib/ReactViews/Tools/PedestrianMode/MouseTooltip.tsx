@@ -21,7 +21,7 @@ const MouseTooltip: React.FC<MouseTooltipProps> = props => {
         (tooltipText.current.style as any).left = `${position.x - width / 2}px`;
         (tooltipText.current.style as any).top = `${position.y -
           height -
-          10}px`;
+          25}px`;
       }
     };
     setTooltipPosition({
