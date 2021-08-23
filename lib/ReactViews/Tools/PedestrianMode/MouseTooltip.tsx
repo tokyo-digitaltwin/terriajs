@@ -20,7 +20,7 @@ const MouseTooltip: React.FC<MouseTooltipProps> = (props) => {
         const height = tooltipText.current.clientHeight;
         (tooltipText.current.style as any).left = `${position.x - width / 2}px`;
         (tooltipText.current.style as any).top = `${
-          position.y - height - 10
+          position.y - height - 25
         }px`;
       }
     };
