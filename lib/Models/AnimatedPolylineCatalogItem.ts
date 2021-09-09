@@ -6,17 +6,15 @@ import {
   onBecomeObserved,
   onBecomeUnobserved
 } from "mobx";
-import {
-  Primitive,
-  GeometryInstance,
-  PolylineGeometry,
-  Cartesian3,
-  PolylineMaterialAppearance,
-  Cesium3DTileset,
-  GeometryAttribute,
-  ComponentDatatype,
-  GeometryInstanceAttribute
-} from "terriajs-cesium";
+import Primitive from "terriajs-cesium/Source/Scene/Primitive";
+import GeometryInstance from "terriajs-cesium/Source/Core/GeometryInstance";
+import PolylineGeometry from "terriajs-cesium/Source/Core/PolylineGeometry";
+import Cartesian3 from "terriajs-cesium/Source/Core/Cartesian3";
+import PolylineMaterialAppearance from "terriajs-cesium/Source/Scene/PolylineMaterialAppearance";
+import Cesium3DTileset from "terriajs-cesium/Source/Scene/Cesium3DTileset";
+import GeometryAttribute from "terriajs-cesium/Source/Core/GeometryAttribute";
+import ComponentDatatype from "terriajs-cesium/Source/Core/ComponentDatatype";
+import GeometryInstanceAttribute from "terriajs-cesium/Source/Core/GeometryInstanceAttribute";
 // PolylineCommon.js does exist.
 // @ts-ignore
 import PolylineCommon from "terriajs-cesium/Source/Shaders/PolylineCommon";
