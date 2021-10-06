@@ -399,6 +399,7 @@ class AnimatedPolylineCatalogItem extends MappableMixin(
       // Primitive and Cesium3DTileset are both implementations of cesium's
       // Primitive interface and can be used almost interchangeably.
     });
+    cesium3dtilesLikePrimitive.show = this.show;
     return [(cesium3dtilesLikePrimitive as unknown) as Cesium3DTileset];
   }
 
