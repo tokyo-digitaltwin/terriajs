@@ -353,7 +353,7 @@ export default class ViewState {
     );
 
     this._showStoriesSubscription = reaction(
-      () => Boolean(terria.userProperties.get("playStory")),
+      () => terria.userProperties.get("playStory") === "1",
       (playStory: boolean) => {
         this.storyShown = terria.configParameters.storyEnabled && playStory;
       }
