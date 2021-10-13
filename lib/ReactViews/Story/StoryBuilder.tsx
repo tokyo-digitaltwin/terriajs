@@ -272,7 +272,7 @@ class StoryBuilder extends React.Component<
           background={dataStoriesImg}
           videoName={STORY_VIDEO}
         />
-        <StoryButton
+        {/* <StoryButton
           title={t("story.gettingStartedTitle")}
           btnText={t("story.gettingStarted")}
           onClick={() => {
@@ -281,7 +281,7 @@ class StoryBuilder extends React.Component<
         >
           <StyledIcon glyph={Icon.GLYPHS.play} light styledWidth={"20px"} />
         </StoryButton>
-        <Spacing bottom={2} />
+        <Spacing bottom={2} /> */}
         <CaptureScene
           disabled={this.state.isRemoving}
           onClickCapture={this.onClickCapture}
