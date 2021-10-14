@@ -430,7 +430,10 @@
       "sideLabel": "地形の表示",
       "hideUndergroundFeatures": "ここを押すと地下が非表示になります",
       "showUndergroundFeatures": "ここを押すと地下が表示されます",
-      "hideUnderground": "地下を隠す"
+      "hideUnderground": "地下を隠す",
+      "enableCollisionDetection": "ここを押すと地下に入れなくなります",
+      "disableCollisionDetection": "ここを押すと地下に入れるようになります",
+      "enableToGoUnderground": "地下に入る"
     },
     "timeline": {
       "title": "タイムライン",

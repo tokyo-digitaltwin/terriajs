@@ -35,6 +35,7 @@ import {
   Category,
   DataSourceAction
 } from "../../../Core/AnalyticEvents/analyticEvents";
+import CameraView from "../../..//Models/CameraView";
 
 const BoxViewingControl = styled(Box).attrs({
   centered: true,
@@ -78,6 +79,13 @@ const ViewingControlMenuButton = styled(RawButton).attrs({
     }
   }
 `;
+
+const getInitialCameraInfo = item => {
+  if (!item.customProperties || !item.customProperties.initialCamera) {
+    return null;
+  }
+  return item.customProperties.initialCamera;
+};
 
 const ViewingControls = observer(
   createReactClass({
@@ -126,6 +134,16 @@ const ViewingControls = observer(
       runInAction(() => {
         const viewer = this.props.viewState.terria.currentViewer;
         const item = this.props.item;
+
+        const initialCameraInfo = getInitialCameraInfo(item);
+        if (initialCameraInfo) {
+          this.setState({ isMapZoomingToCatalogItem: true });
+          viewer.zoomTo(initialCameraInfo).finally(() => {
+            this.setState({ isMapZoomingToCatalogItem: false });
+          });
+          return;
+        }
+
         let zoomToView = item;
         if (
           item.rectangle !== undefined &&

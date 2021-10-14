@@ -272,7 +272,7 @@ const StoryBuilder = observer(
             background={dataStoriesImg}
             videoName={STORY_VIDEO}
           />
-          <StoryButton
+          {/* <StoryButton
             title={t("story.gettingStartedTitle")}
             btnText={t("story.gettingStarted")}
             onClick={() => {
@@ -280,8 +280,8 @@ const StoryBuilder = observer(
             }}
           >
             <StyledIcon glyph={Icon.GLYPHS.play} light styledWidth={"20px"} />
-          </StoryButton>
-          <Spacing bottom={2} />
+          </StoryButton> */}
+          {/* <Spacing bottom={2} /> */}
           <CaptureScene
             disabled={this.state.isRemoving}
             t={t}

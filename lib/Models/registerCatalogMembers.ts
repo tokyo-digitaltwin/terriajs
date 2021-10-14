@@ -51,6 +51,7 @@ import CswCatalogGroup from "./CswCatalogGroup";
 import { ApiTableCatalogItem } from "./ApiTableCatalogItem";
 import OpenDataSoftCatalogGroup from "./OpenDataSoftCatalogGroup";
 import OpenDataSoftCatalogItem from "./OpenDataSoftCatalogItem";
+import AnimatedPolylineCatalogItem from "./AnimatedPolylineCatalogItem";
 
 export default function registerCatalogMembers() {
   CatalogMemberFactory.register(CatalogGroup.type, CatalogGroup);
@@ -192,6 +193,10 @@ export default function registerCatalogMembers() {
   CatalogMemberFactory.register(
     OpenDataSoftCatalogItem.type,
     OpenDataSoftCatalogItem
+  );
+  CatalogMemberFactory.register(
+    AnimatedPolylineCatalogItem.type,
+    AnimatedPolylineCatalogItem
   );
 
   UrlToCatalogMemberMapping.register(
