@@ -17,7 +17,7 @@ export default class CompositeCatalogItem extends MappableMixin(
   static readonly type = "composite";
 
   private _visibilityDisposer = autorun(() => {
-    this.syncVisibility();
+    this.syncVisibilityToMembers();
   });
 
   get type() {
@@ -60,11 +60,11 @@ export default class CompositeCatalogItem extends MappableMixin(
     );
   }
 
-  syncVisibility() {
-    const { show } = this;
-    this.memberModels.forEach(model => {
-      runInAction(() => {
-        model.setTrait(CommonStrata.user, "show", show);
+  syncVisibilityToMembers() {
+    this.strata.forEach((stratum, stratumId) => {
+      const show = this.getTrait(stratumId, "show");
+      this.memberModels.forEach(model => {
+        model.setTrait(stratumId, "show", show);
       });
     });
   }
