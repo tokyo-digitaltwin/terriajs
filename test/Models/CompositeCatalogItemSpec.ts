@@ -82,6 +82,42 @@ describe("CompositeCatalogItem", function() {
     );
   });
 
+  it("syncs visibility to its members", function() {
+    const item1 = new GeoJsonCatalogItem("item1", terria);
+    const item2 = new WebMapServiceCatalogItem("item2", terria);
+
+    runInAction(() => {
+      item1.setTrait(
+        CommonStrata.definition,
+        "url",
+        "test/GeoJSON/bike_racks.geojson"
+      );
+      item2.setTrait(
+        CommonStrata.definition,
+        "url",
+        "test/WMS/single_metadata_url.xml"
+      );
+    });
+
+    composite.add(CommonStrata.definition, item1);
+    composite.add(CommonStrata.definition, item2);
+
+    // The visibility flag should be synced on a per stratum basis.
+    // Setting a value to one stratum should only affect the corresponding
+    // stratum of each member.
+    composite.setTrait(CommonStrata.definition, "show", false);
+    expect(item1.getTrait(CommonStrata.definition, "show")).toEqual(false);
+    expect(item2.getTrait(CommonStrata.definition, "show")).toEqual(false);
+    expect(item1.getTrait(CommonStrata.user, "show")).toEqual(undefined);
+    expect(item2.getTrait(CommonStrata.user, "show")).toEqual(undefined);
+
+    composite.setTrait(CommonStrata.user, "show", true);
+    expect(item1.getTrait(CommonStrata.definition, "show")).toEqual(false);
+    expect(item2.getTrait(CommonStrata.definition, "show")).toEqual(false);
+    expect(item1.getTrait(CommonStrata.user, "show")).toEqual(true);
+    expect(item2.getTrait(CommonStrata.user, "show")).toEqual(true);
+  });
+
   // it("concatenates legends", function(done) {
   //   composite
   //     .updateFromJson({
