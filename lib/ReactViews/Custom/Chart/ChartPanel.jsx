@@ -102,9 +102,6 @@ class ChartPanel extends React.Component {
                 <label className={Styles.sectionLabel}>
                   {loader || t("chart.sectionLabel")}
                 </label>
-                <ChartPanelDownloadButton
-                  chartableItems={chartableCatalogItems}
-                />
                 <button
                   type="button"
                   title={t("chart.closePanel")}
