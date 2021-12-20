@@ -8,7 +8,6 @@ import { withTranslation } from "react-i18next";
 import defined from "terriajs-cesium/Source/Core/defined";
 import raiseErrorOnRejectedPromise from "../../../Models/raiseErrorOnRejectedPromise";
 import Icon from "../../../Styled/Icon";
-import ChartPanelDownloadButton from "./ChartPanelDownloadButton";
 import Loader from "../../Loader";
 import Styles from "./chart-panel.scss";
 import Chart from "./BottomDockChart";
@@ -90,7 +89,6 @@ class ChartPanel extends React.Component {
                 <label className={Styles.sectionLabel}>
                   {loader || t("chart.sectionLabel")}
                 </label>
-                <ChartPanelDownloadButton chartableItems={chartItems} />
                 <button
                   type="button"
                   title={t("chart.closePanel")}
