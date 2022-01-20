@@ -8,12 +8,14 @@ import LegendOwnerTraits from "./LegendOwnerTraits";
 import MappableTraits from "./MappableTraits";
 import ImageryProviderTraits from "./ImageryProviderTraits";
 import UrlTraits from "./UrlTraits";
+import FeatureInfoUrlTemplateTraits from "./FeatureInfoTraits";
 
 export default class CartoMapCatalogItemTraits extends mixTraits(
   ImageryProviderTraits,
   LayerOrderingTraits,
   UrlTraits,
   MappableTraits,
+  FeatureInfoUrlTemplateTraits,
   CatalogMemberTraits,
   LegendOwnerTraits
 ) {
