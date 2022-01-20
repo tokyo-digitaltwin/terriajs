@@ -8,12 +8,14 @@ import primitiveTrait from "./primitiveTrait";
 import RasterLayerTraits from "./RasterLayerTraits";
 import SplitterTraits from "./SplitterTraits";
 import UrlTraits from "./UrlTraits";
+import FeatureInfoTraits from "./FeatureInfoTraits";
 
 export default class CartoMapCatalogItemTraits extends mixTraits(
   SplitterTraits,
   RasterLayerTraits,
   LayerOrderingTraits,
   UrlTraits,
+  FeatureInfoTraits,
   MappableTraits,
   CatalogMemberTraits
 ) {
