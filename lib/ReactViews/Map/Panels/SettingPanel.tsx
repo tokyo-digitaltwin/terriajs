@@ -1,5 +1,5 @@
 import { TFunction } from "i18next";
-import { action, computed, observable, runInAction } from "mobx";
+import { action, computed, observable, runInAction, reaction } from "mobx";
 import { observer } from "mobx-react";
 import Slider from "rc-slider";
 import React, { ChangeEvent, ComponentProps, MouseEvent } from "react";
@@ -50,7 +50,7 @@ class SettingPanel extends React.Component<PropTypes> {
 
   @observable _hoverBaseMap = null;
 
-  @observable _enableCollisionDetection = true;
+  @observable _enableCollisionDetection = false;
 
   @computed
   get activeMapName() {
@@ -153,14 +153,26 @@ class SettingPanel extends React.Component<PropTypes> {
 
   @action
   toggleCollisionDetection() {
-    runInAction(() => {
-      this._enableCollisionDetection = !this._enableCollisionDetection;
-      if (this.props.terria.currentViewer instanceof Cesium) {
-        this.props.terria.currentViewer.scene.screenSpaceCameraController.enableCollisionDetection =
-          this._enableCollisionDetection;
+    this._enableCollisionDetection = !this._enableCollisionDetection;
+  }
+
+  setCollisionDetection() {
+    if (this.props.terria.currentViewer instanceof Cesium) {
+      this.props.terria.currentViewer.scene.screenSpaceCameraController.enableCollisionDetection =
+        this._enableCollisionDetection;
+    }
+  }
+
+  componentDidMount() {
+    reaction(
+      () => this._enableCollisionDetection,
+      (_enableCollisionDetection) => {
+        this.setCollisionDetection();
       }
-    });
-    this.props.terria.currentViewer.notifyRepaintRequired();
+    );
+    setTimeout(() => {
+      this.setCollisionDetection();
+    }, 1000);
   }
 
   render() {
