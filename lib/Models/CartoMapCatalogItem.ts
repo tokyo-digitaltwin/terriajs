@@ -12,6 +12,7 @@ import LoadableStratum from "./LoadableStratum";
 import { BaseModel } from "./Model";
 import proxyCatalogItemUrl from "./proxyCatalogItemUrl";
 import StratumOrder from "./StratumOrder";
+import ImageryLayerFeatureInfo from "terriajs-cesium/Source/Scene/ImageryLayerFeatureInfo";
 
 export class CartoLoadableStratum extends LoadableStratum(
   CartoMapCatalogItemTraits
@@ -167,7 +168,21 @@ export default class CartoMapCatalogItem extends MappableMixin(
       maximumLevel: this.maximumLevel,
       minimumLevel: this.minimumLevel,
       credit: this.attribution,
-      subdomains: subdomains
+      subdomains: subdomains,
+      pickFeaturesUrl: this.featureInfoUrlTemplate,
+      getFeatureInfoFormats: [
+        { type: "json", callback: this.onFeatureInfoFetched.bind(this) }
+      ]
     });
+  }
+
+  onFeatureInfoFetched(data: any) {
+    const infos = [];
+    for (const row of data.rows) {
+      const info = new ImageryLayerFeatureInfo();
+      info.properties = row;
+      infos.push(info);
+    }
+    return infos;
   }
 }
