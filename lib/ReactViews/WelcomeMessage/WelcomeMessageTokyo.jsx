@@ -105,15 +105,15 @@ export const WelcomeMessagePure = props => {
       if (viewState.terria.analytics && viewState.terria.analytics.key) {
         delete viewState.terria.analytics.key;
       }
-      window.ga = function() {};
+      window.gtag = function() {};
     }
     setShouldOpenHelp(false);
   };
 
   const handleCookieAcceptance = (accept = false) => {
     if (accept) {
-      if (!viewState.terria.getLocalProperty("useCookie") && window.ga) {
-        delete window.ga;
+      if (!viewState.terria.getLocalProperty("useCookie") && window.gtag) {
+        delete window.gtag;
       }
     }
     viewState.terria.setLocalProperty("useCookie", accept);

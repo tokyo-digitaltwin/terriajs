@@ -518,7 +518,7 @@ export default class Terria {
 
     this.analytics = options.analytics;
     if (!defined(this.analytics)) {
-      if (typeof window !== "undefined" && defined((<any>window).ga)) {
+      if (typeof window !== "undefined" && defined((<any>window).gtag)) {
         this.analytics = new GoogleAnalytics();
       } else {
         this.analytics = new ConsoleAnalytics();
