@@ -65,15 +65,15 @@
     "title": "クリック＋ドラッグでカメラを回転",
     "guidanceBtnText": "コンパスの詳しい使い方を見る",
     "guidanceBtnTitle": "ジャイロスコープの使い方",
-    "description": "・内側の円：視点の自由移動.\n・外側の輪：地図を回転.\n・ダブルクリック：ホームポジションに戻る.\n簡便操作：Ctrlキーと地図のドラッグ操作で視点移動.",
+    "description": "外側の輪：地図を回転（Nが北）\n内側の円：視点の自由な移動\nダブルクリック：ホームポジションに戻る\n回転の簡易操作：Ctrlキーと地図のドラッグ操作でも視点の自由な移動が可能",
     "guidance": {
       "ctrlDragDescription": "CTRLキーを押しながらドラッグしても地図を傾けたり回したりできます。",
       "dismissText": "閉じて今後は表示しない",
       "innerCircleDescription2": "また、ここをダブルクリックすると表示が初期状態に戻ります。",
-      "innerCircleDescription1": "内側の丸い部分をクリックしたまま上下左右にゆっくりとドラッグすると、地図を傾けたり回したりできます。",
-      "innerCircleTitle": "内側の円",
-      "outerRingDescription": "外側の輪をドラッグして回すと地図が回転します。",
-      "outerRingTitle": "外側の輪",
+      "innerCircleDescription1": "内側の丸い部分をクリックして上下左右にドラッグすると、地図を傾けたり回したり自由に視点を移動できます。",
+      "innerCircleTitle": "内側の円（十字矢印）",
+      "outerRingDescription": "外側の輪をドラッグして回すと地図を回転できます。（Nが北）",
+      "outerRingTitle": "外側の輪（白輪）",
       "title": "ジャイロスコープ制御"
     }
   },
@@ -462,7 +462,7 @@
       "hideUnderground": "地下部分を非表示にする",
       "enableCollisionDetection": "ここを押すと地下に入れなくなります",
       "disableCollisionDetection": "ここを押すと地下に入れるようになります",
-      "enableToGoUnderground": "地下に入る"
+      "enableToGoUnderground": "地面との衝突を無効にする"
     },
     "timeline": {
       "alwaysShow": "常に表示",
