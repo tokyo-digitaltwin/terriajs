@@ -151,7 +151,9 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
               onClick={onAddDataClicked}
               title={addData}
               btnText={addData}
-              styledWidth={"200px"}
+              css={`
+                flex: 1;
+              `}
             >
               <StyledIcon glyph={Icon.GLYPHS.add} light styledWidth={"20px"} />
             </SidePanelButton>
@@ -160,7 +162,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
               onClick={onAddLocalDataClicked}
               title={t("addData.load")}
               btnText={uploadText}
-              styledWidth={"130px"}
+              marginLeft={2}
             >
               <StyledIcon
                 glyph={Icon.GLYPHS.uploadThin}

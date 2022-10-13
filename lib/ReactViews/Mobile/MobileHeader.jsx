@@ -279,7 +279,6 @@ const HamburgerButton = styled(RawButton)`
   border-radius: 4px;
   padding: 0 5px;
   margin-right: 3px;
-  background: ${(p) => p.theme.darkLighter};
   width: 50px;
   height: 38px;
   box-sizing: content-box;
