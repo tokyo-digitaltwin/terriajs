@@ -25,6 +25,7 @@ import { runInAction } from "mobx";
 import CommonStrata from "../../../Models/Definition/CommonStrata";
 import MappableMixin from "../../../ModelMixins/MappableMixin";
 import UrlMixin from "../../../ModelMixins/UrlMixin";
+import StorySection from "./StorySection";
 
 type WorkbenchControls = {
   viewingControls?: boolean;
@@ -40,6 +41,7 @@ type WorkbenchControls = {
   colorScaleRange?: boolean;
   shortReport?: boolean;
   legend?: boolean;
+  story?: boolean;
 };
 
 type WorkbenchItemControlsProps = {
@@ -62,7 +64,8 @@ export const defaultControls: Complete<WorkbenchControls> = {
   selectableDimensions: true,
   colorScaleRange: true,
   shortReport: true,
-  legend: true
+  legend: true,
+  story: true
 };
 
 export const hideAllControls: Complete<WorkbenchControls> = {
@@ -78,7 +81,8 @@ export const hideAllControls: Complete<WorkbenchControls> = {
   selectableDimensions: false,
   colorScaleRange: false,
   shortReport: false,
-  legend: false
+  legend: false,
+  story: false
 };
 
 const getSwitchableUrls = (
@@ -127,6 +131,7 @@ const WorkbenchItemControls: React.FC<WorkbenchItemControlsProps> = observer(
         {controls?.viewingControls ? (
           <ViewingControls item={item} viewState={viewState} />
         ) : null}
+        {controls?.story ? <StorySection item={item} /> : null}
         {controls?.opacity ? <OpacitySection item={item} /> : null}
         {controls?.scaleWorkbench ? <ScaleWorkbenchInfo item={item} /> : null}
         {controls?.timer ? <TimerSection item={item} /> : null}
