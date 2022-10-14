@@ -555,7 +555,11 @@
     "addItemErrorTitle": "Catalog item could not be added to workbench.",
     "addItemErrorMessage": "An error occurred while loading the catalog item.",
     "dimensionsSelector": {
-      "undefinedLabel": "Not specified"
+      "undefinedLabel": "Not specified",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "colorAdd": "Add",
+      "colorRemove": "Remove"
     },
     "searchItem": "Search",
     "searchItemTitle": "Search",
@@ -1297,11 +1301,17 @@
       "bulkGeocoderErrorMessage": "Unable to map addresses to lat-long coordinates, as an error occurred while retrieving address coordinates. Please check your internet connection or try again later.",
       "legendZFilterLabel": "Extreme values",
       "legendNullLabel": "(No value)",
+      "activeStyle": "Display Variable",
       "styleDisabledLabel": "Disable style",
       "zFilterEnabled": "Extreme values hidden (click to show)",
       "zFilterDisabled": "Extreme values detected (click to hide)",
       "timeDimensionEnabled": "Time enabled (click to disable)",
-      "timeDimensionDisabled": "Time disabled (click to enable)"
+      "timeDimensionDisabled": "Time disabled (click to enable)",
+      "editStyle": "Edit Style",
+      "custom": "Custom",
+      "regionMapping": "Region Mapping",
+      "regionColumn": "Region Column",
+      "manualRegionMapping": "Manual Region Mapping"
     },
     "terrainCatalog": {
       "notSupportedErrorTitle": "Not supported in 2D",
@@ -1526,6 +1536,228 @@
     "scaleDatasetNotVisible": {
       "scaleZoomIn": "Dataset is not available at this scale, zoom in to see it",
       "scaleZoomOut": "Dataset is not available at this scale, zoom out to see it"
+    },
+    "tableStyling": {
+      "name": "Style",
+      "showAdvancedOptions": "Show advanced options",
+      "hideAdvancedOptions": "Hide advanced options",
+      "copyUserStratum": "Copy user stratum to clipboard",
+      "reset": "Reset to default style",
+      "dimensions": {
+        "dataset": {
+          "name": "Dataset"
+        },
+        "data": {
+          "name": "Data"
+        },
+        "style": {
+          "name": "Style"
+        },
+        "colorColumn": {
+          "name": "Color column"
+        },
+        "colorColumnType": {
+          "name": "Color column type (advanced)"
+        },
+        "symbology": {
+          "name": "Symbology",
+          "fill": "Fill Color",
+          "pointSize": "Point Size",
+          "pointMarkerStyle": "Point/Marker Style",
+          "outlineColor": "Outline Color"
+        },
+        "fill": {
+          "name": "Fill Color"
+        },
+        "fillType": {
+          "name": "Type",
+          "undefinedLabel": "Please specify",
+          "noStyle": "No style",
+          "sequentialContinuous": "Sequential (continuous)",
+          "sequentialDiscrete": "Sequential (discrete)",
+          "divergentContinuous": "Divergent (continuous)",
+          "divergentDiscrete": "Divergent (discrete)",
+          "qualitative": "Qualitative",
+          "customQualitative": "Custom (qualitative)",
+          "customDiscrete": "Custom (discrete)"
+        },
+        "scheme": {
+          "name": "Scheme"
+        },
+        "numberOfBins": {
+          "name": "Number of Bins"
+        },
+        "min": {
+          "name": "Min"
+        },
+        "displayRange": {
+          "name": "Display range"
+        },
+        "max": {
+          "name": "Max"
+        },
+        "bins": {
+          "name": "Bins"
+        },
+        "binItem": {
+          "range": "{{value1}} to {{value2}}"
+        },
+        "binColor": {
+          "name": "Color"
+        },
+        "binStart": {
+          "name": "Start"
+        },
+        "binStop": {
+          "name": "Stop"
+        },
+        "enumColors": {
+          "name": "Colors"
+        },
+        "enumColor": {
+          "name": "Color"
+        },
+        "enumValue": {
+          "name": "Value"
+        },
+        "enumRemove": {
+          "value": "Remove"
+        },
+        "enumAdd": {
+          "value": "Add Color"
+        },
+        "nullColor": {
+          "name": "Default color"
+        },
+        "outlierColor": {
+          "name": "Outlier color"
+        },
+        "additionalColors": {
+          "name": "Additional colors"
+        },
+        "regionColor": {
+          "name": "Region color"
+        },
+        "pointSize": {
+          "name": "Point size"
+        },
+        "pointSizeColumn": {
+          "name": "Variable"
+        },
+        "pointSizeNull": {
+          "name": "Default size"
+        },
+        "pointSizeFactor": {
+          "name": "Size factor"
+        },
+        "pointSizeOffset": {
+          "name": "Size offset"
+        },
+        "regionMapping": {
+          "name": "Region mapping"
+        },
+        "legend": {
+          "name": "Legend"
+        },
+        "legendTitle": {
+          "name": "Title"
+        },
+        "legendTicks": {
+          "name": "Ticks"
+        },
+        "legendItemTitle": {
+          "name": "Item {{index}} Title"
+        },
+        "table": {
+          "name": "Table"
+        },
+        "showDisableStyleOption": {
+          "name": "Show disable style option"
+        },
+        "showDisableTimeOption": {
+          "name": "Show disable time option"
+        },
+        "enableManualRegionMapping": {
+          "name": "Enable manual region mapping"
+        },
+        "variableAndColumn": {
+          "name": "Variable/column"
+        },
+        "columnTitle": {
+          "name": "Title"
+        },
+        "columnUnits": {
+          "name": "Units"
+        },
+        "markerStyle": {
+          "name": "Marker Style"
+        },
+        "tableStyle": {
+          "name": "Variable"
+        },
+        "tableStyleType": {
+          "name": "Type",
+          "undefinedLabel": "Please specify",
+          "constant": "No style",
+          "bin": "Discrete",
+          "enum": "Qualitative"
+        },
+        "enumStyles": {
+          "name": "Enum styles"
+        },
+        "enumStyleItem": {
+          "noValue": "No value"
+        },
+        "enumStyleValue": {
+          "name": "Value"
+        },
+        "enumStyleRemove": {
+          "value": "Remove"
+        },
+        "enumStyleAdd": {
+          "value": "Add style for value"
+        },
+        "binStyles": {
+          "name": "Bin styles"
+        },
+        "binStyleAdd": {
+          "value": "Add style bin"
+        },
+        "binStyleItem": {
+          "noValue": "No value",
+          "range": "{{value1}} to {{value2}}"
+        },
+        "binStyleStart": {
+          "name": "Start"
+        },
+        "binStyleStop": {
+          "name": "Stop"
+        },
+        "binStyleRemove": {
+          "value": "Remove"
+        },
+        "binStyleNull": {
+          "name": "Default"
+        },
+        "marker": {
+          "name": "Marker"
+        },
+        "markerRotation": {
+          "name": "Rotation"
+        },
+        "markerHeight": {
+          "name": "Height"
+        },
+        "markerWidth": {
+          "name": "Width"
+        },
+        "outlineColor": {
+          "name": "Color"
+        },
+        "outlineWidth": {
+          "name": "Width"
+        }
+      }
     }
   },
   "deltaTool": {

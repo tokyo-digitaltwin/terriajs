@@ -274,7 +274,11 @@
   },
   "workbench": {
     "dimensionsSelector": {
-      "undefinedLabel": "未指定"
+      "undefinedLabel": "未指定",
+      "enabled": "有効",
+      "disabled": "無効",
+      "colorAdd": "追加",
+      "colorRemove": "削除"
     },
     "addItemErrorMessage": "カタログのアイテム追加の際にエラーが発生しました。",
     "addItemErrorTitle": "カタログのアイテムをワークベンチに追加できませんでした。",
@@ -1386,12 +1390,18 @@
       "unsupportedCharactersTitle": "緯度・経度の列に無効な文字が含まれています",
       "noData": "表示するデータがありません",
       "legendNullLabel": "(値無し)",
-      "legendZFilterLabel": "異常な値",
-      "zFilterEnabled": "異常な値は表示していません (クリックして表示)",
+      "legendZFilterLabel": "異常値",
+      "zFilterEnabled": "異常値は表示していません (クリックして表示)",
       "zFilterDisabled": "異常値が見つかりました (クリックして非表示)",
-      "timeDimensionEnabled": "時間を有効 (クリックで無効)",
-      "styleDisabledLabel": "スタイルを無効",
-      "timeDimensionDisabled": "時間を無効 (クリックで有効)"
+      "timeDimensionEnabled": "時系列表示が有効 (クリックで無効化)",
+      "activeStyle": "表示する変数",
+      "styleDisabledLabel": "スタイルが無効",
+      "timeDimensionDisabled": "時系列表示が有効 (クリックで無効化)",
+      "editStyle": "スタイルを編集",
+      "custom": "カスタム",
+      "regionMapping": "リージョンマッピング",
+      "regionColumn": "リージョン名の列",
+      "manualRegionMapping": "手動のリージョンマッピング"
     },
     "terriaJSONcatalog": {
       "serviceResponseErrorMessage": "TerriaJsonCatalogFunction JSON を受け取るはずでしたが、{{xhr}} を受け取りました",
@@ -1517,6 +1527,227 @@
       },
       "showClippingBox": "クリップボックスを表示",
       "groupName": "クリップボックス"
+    },
+    "tableStyling": {
+      "showAdvancedOptions": "詳細オプションを表示",
+      "hideAdvancedOptions": "詳細オプションを非表示",
+      "copyUserStratum": "ユーザー設定をクリップボードにコピー",
+      "reset": "デフォルトスタイルに戻す",
+      "dimensions": {
+        "dataset": {
+          "name": "データセット"
+        },
+        "data": {
+          "name": "データ"
+        },
+        "style": {
+          "name": "スタイル"
+        },
+        "colorColumn": {
+          "name": "変数"
+        },
+        "colorColumnType": {
+          "name": "変数の型 (上級者向け)"
+        },
+        "symbology": {
+          "name": "スタイル",
+          "fill": "塗り",
+          "pointSize": "点の大きさ",
+          "pointMarkerStyle": "点・アイコンのスタイル",
+          "outlineColor": "線"
+        },
+        "fill": {
+          "name": "塗り色"
+        },
+        "fillType": {
+          "name": "タイプ",
+          "undefinedLabel": "選択してください",
+          "noStyle": "スタイルなし",
+          "sequentialContinuous": "連続値 (連続的な色指定)",
+          "sequentialDiscrete": "連続値 (段階的な色指定)",
+          "divergentContinuous": "離散値 (連続的な色指定)",
+          "divergentDiscrete": "離散値 (段階的な色指定)",
+          "qualitative": "カテゴリー",
+          "customQualitative": "カスタム (カテゴリー)",
+          "customDiscrete": "カスタム (連続値)"
+        },
+        "scheme": {
+          "name": "スキーム"
+        },
+        "numberOfBins": {
+          "name": "色の数"
+        },
+        "min": {
+          "name": "最小"
+        },
+        "displayRange": {
+          "name": "表示範囲"
+        },
+        "max": {
+          "name": "最大"
+        },
+        "bins": {
+          "name": "分類"
+        },
+        "binItem": {
+          "range": "{{value1}} から {{value2}}"
+        },
+        "binColor": {
+          "name": "色"
+        },
+        "binStart": {
+          "name": "開始値"
+        },
+        "binStop": {
+          "name": "終了値"
+        },
+        "enumColors": {
+          "name": "色"
+        },
+        "enumColor": {
+          "name": "色"
+        },
+        "enumValue": {
+          "name": "値"
+        },
+        "enumRemove": {
+          "value": "削除"
+        },
+        "enumAdd": {
+          "value": "色を追加"
+        },
+        "nullColor": {
+          "name": "デフォルトの色"
+        },
+        "outlierColor": {
+          "name": "外れ値の色"
+        },
+        "additionalColors": {
+          "name": "その他の色"
+        },
+        "regionColor": {
+          "name": "リージョンの色"
+        },
+        "pointSize": {
+          "name": "点の大きさ"
+        },
+        "pointSizeColumn": {
+          "name": "変数"
+        },
+        "pointSizeNull": {
+          "name": "デフォルトの大きさ"
+        },
+        "pointSizeFactor": {
+          "name": "倍率"
+        },
+        "pointSizeOffset": {
+          "name": "オフセット"
+        },
+        "regionMapping": {
+          "name": "リージョンマッピング"
+        },
+        "legend": {
+          "name": "凡例"
+        },
+        "legendTitle": {
+          "name": "タイトル"
+        },
+        "legendTicks": {
+          "name": "凡例の数"
+        },
+        "legendItemTitle": {
+          "name": "タイトル ({{index}}番目)"
+        },
+        "table": {
+          "name": "テーブル"
+        },
+        "showDisableStyleOption": {
+          "name": "スタイル無効化オプションを表示"
+        },
+        "showDisableTimeOption": {
+          "name": "時系列無効化オプションを表示"
+        },
+        "enableManualRegionMapping": {
+          "name": "手動のリージョンマッピングを有効化"
+        },
+        "columnTitle": {
+          "name": "タイトル"
+        },
+        "variableAndColumn": {
+          "name": "変数"
+        },
+        "columnUnits": {
+          "name": "単位"
+        },
+        "markerStyle": {
+          "name": "アイコンのスタイル"
+        },
+        "tableStyle": {
+          "name": "変数"
+        },
+        "tableStyleType": {
+          "name": "タイプ",
+          "undefinedLabel": "選択してください",
+          "constant": "スタイルなし",
+          "bin": "段階的なスタイル",
+          "enum": "カテゴリーごとのスタイル"
+        },
+        "enumStyles": {
+          "name": "カテゴリーごとのスタイル"
+        },
+        "enumStyleItem": {
+          "noValue": "値なし"
+        },
+        "enumStyleValue": {
+          "name": "値"
+        },
+        "enumStyleRemove": {
+          "value": "削除"
+        },
+        "enumStyleAdd": {
+          "value": "カテゴリーを追加"
+        },
+        "binStyles": {
+          "name": "段階的なスタイル"
+        },
+        "binStyleAdd": {
+          "value": "段階を追加"
+        },
+        "binStyleItem": {
+          "noValue": "値なし",
+          "range": "{{value1}} から {{value2}}"
+        },
+        "binStyleStart": {
+          "name": "開始値"
+        },
+        "binStyleStop": {
+          "name": "終了値"
+        },
+        "binStyleRemove": {
+          "value": "削除"
+        },
+        "binStyleNull": {
+          "name": "デフォルト値"
+        },
+        "marker": {
+          "name": "アイコン"
+        },
+        "markerRotation": {
+          "name": "回転"
+        },
+        "markerHeight": {
+          "name": "高さ"
+        },
+        "markerWidth": {
+          "name": "幅"
+        },
+        "outlineColor": {
+          "name": "色"
+        },
+        "outlineWidth": {
+          "name": "幅"
+        }
+      }
     }
   },
   "map": {
