@@ -115,7 +115,8 @@ const CollapsibleTitleBar = styled(RawButton)<
 
 const Title = styled(Text).attrs({
   textLight: true,
-  bold: true
+  bold: true,
+  maxLines: true
 })`
   flex-grow: 1;
   padding: 1em 0.4em;
