@@ -115,6 +115,14 @@ export class GeoJsonTraits extends mixTraits(
   })
   heightProperty?: string;
 
+  @primitiveTrait({
+    type: "number",
+    name: "Cesium classification type",
+    description:
+      "Whether a Cesium entity's classification affects terrain, 3D Tiles or both. 0 = terrain, 1 = 3d-tiles and 2 = both."
+  })
+  cesiumClassificationType: number = 0;
+
   @anyTrait({
     name: "CZML template",
     description: `CZML template to be used to replace each GeoJSON **Point** and **Polygon/MultiPolygon** feature. Feature coordinates and properties will automatically be applied to CZML packet, so they can be used as references.
