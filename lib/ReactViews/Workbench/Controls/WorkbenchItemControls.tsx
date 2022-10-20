@@ -3,7 +3,7 @@ import React, { useState, ChangeEventHandler, useEffect } from "react";
 import { Complete } from "../../../Core/TypeModifiers";
 import DiscretelyTimeVaryingMixin from "../../../ModelMixins/DiscretelyTimeVaryingMixin";
 import hasTraits from "../../../Models/Definition/hasTraits";
-import { BaseModel } from "../../../Models/Definition/Model";
+import Model, { BaseModel } from "../../../Models/Definition/Model";
 import { DEFAULT_PLACEMENT } from "../../../Models/SelectableDimensions/SelectableDimensions";
 import ViewState from "../../../ReactViewModels/ViewState";
 import WebMapServiceCatalogItemTraits from "../../../Traits/TraitsClasses/WebMapServiceCatalogItemTraits";
@@ -26,6 +26,7 @@ import CommonStrata from "../../../Models/Definition/CommonStrata";
 import MappableMixin from "../../../ModelMixins/MappableMixin";
 import UrlMixin from "../../../ModelMixins/UrlMixin";
 import StorySection from "./StorySection";
+import UrlTraits from "../../../Traits/TraitsClasses/UrlTraits";
 
 type WorkbenchControls = {
   viewingControls?: boolean;
@@ -98,6 +99,8 @@ const getSwitchableUrls = (
   return item.customProperties.switchableUrls as any;
 };
 
+const hasUrl = (value: object): value is Model<UrlTraits> => "url" in value;
+
 const WorkbenchItemControls: React.FC<WorkbenchItemControlsProps> = observer(
   ({ item, viewState, controls: controlsWithoutDefaults }) => {
     // Apply controls from props on top of defaultControls
@@ -120,7 +123,7 @@ const WorkbenchItemControls: React.FC<WorkbenchItemControlsProps> = observer(
       runInAction(() => {
         if (!switchableUrls) return;
         if (!MappableMixin.isMixedInto(item)) return;
-        if (!UrlMixin.isMixedInto(item)) return;
+        if (!hasUrl(item)) return;
         item.setTrait(CommonStrata.user, "url", switchableUrls[urlIndex].url);
         item.loadMapItems();
       });
