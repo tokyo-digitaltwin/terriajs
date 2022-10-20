@@ -314,7 +314,8 @@
     "colorScaleRangeTitle": "カラーレンジのスケールが間違っています",
     "searchItemTitle": "検索",
     "searchItem": "検索",
-    "splitScreenMode": "画面分割モード"
+    "splitScreenMode": "画面分割モード",
+    "filter": "{{name}}: {{minimumShown}} から {{maximumShown}}"
   },
   "description": {
     "dataNotLocal": "データの詳細はデータ提供者に確認してください（データ利用上の制限も含む）。",

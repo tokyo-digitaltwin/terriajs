@@ -563,7 +563,8 @@
     },
     "searchItem": "Search",
     "searchItemTitle": "Search",
-    "splitScreenMode": "SPLIT SCREEN MODE"
+    "splitScreenMode": "SPLIT SCREEN MODE",
+    "filter": "Show {{name}}: {{minimumShown}} to {{maximumShown}}"
   },
   "dateTime": {
     "selectorLabel": "Time:",
