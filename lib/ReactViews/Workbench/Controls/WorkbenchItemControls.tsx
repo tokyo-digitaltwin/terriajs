@@ -108,12 +108,12 @@ const WorkbenchItemControls: React.FC<WorkbenchItemControlsProps> = observer(
         switchableUrls: getSwitchableUrls(item)
       })
     );
-    const handleSwitchableUrlChange: ChangeEventHandler<HTMLInputElement> = (
-      e
-    ) => {
+    const handleSwitchableUrlChange: ChangeEventHandler<HTMLInputElement> = ({
+      target: { value }
+    }) => {
       setSwitchableUrlsState((prevState) => ({
         ...prevState,
-        urlIndex: Number(e.target.value)
+        urlIndex: Number(value)
       }));
     };
     useEffect(() => {
