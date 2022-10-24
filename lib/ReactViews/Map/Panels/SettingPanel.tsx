@@ -50,7 +50,7 @@ class SettingPanel extends React.Component<PropTypes> {
 
   @observable _hoverBaseMap = null;
 
-  @observable _enableCollisionDetection = false;
+  @observable _disableCollisionDetection = true;
 
   @computed
   get activeMapName() {
@@ -153,20 +153,21 @@ class SettingPanel extends React.Component<PropTypes> {
 
   @action
   toggleCollisionDetection() {
-    this._enableCollisionDetection = !this._enableCollisionDetection;
+    this._disableCollisionDetection = !this._disableCollisionDetection;
   }
 
   setCollisionDetection() {
     if (this.props.terria.currentViewer instanceof Cesium) {
+      // seems cesium's enableCollisionDetection behaves oppositely to as expected
       this.props.terria.currentViewer.scene.screenSpaceCameraController.enableCollisionDetection =
-        this._enableCollisionDetection;
+        ! this._disableCollisionDetection;
     }
   }
 
   componentDidMount() {
     reaction(
-      () => this._enableCollisionDetection,
-      (_enableCollisionDetection) => {
+      () => this._disableCollisionDetection,
+      (_disableCollisionDetection) => {
         this.setCollisionDetection();
       }
     );
@@ -224,7 +225,7 @@ class SettingPanel extends React.Component<PropTypes> {
       ? t("settingPanel.terrain.showUndergroundFeatures")
       : t("settingPanel.terrain.hideUndergroundFeatures");
 
-    const collisionDetectionLabel = this._enableCollisionDetection
+    const collisionDetectionLabel = this._disableCollisionDetection
       ? t("settingPanel.terrain.disableCollisionDetection")
       : t("settingPanel.terrain.enableCollisionDetection");
 
@@ -326,7 +327,7 @@ class SettingPanel extends React.Component<PropTypes> {
             <Checkbox
               textProps={{ small: true }}
               id="collisionDetection"
-              isChecked={this._enableCollisionDetection}
+              isChecked={this._disableCollisionDetection}
               title={collisionDetectionLabel}
               onChange={() => this.toggleCollisionDetection()}
             >
