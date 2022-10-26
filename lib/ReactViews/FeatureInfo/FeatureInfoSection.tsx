@@ -363,12 +363,7 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
 
     /** Show feature info download if showing raw data - or showing template and `showFeatureInfoDownloadWithTemplate` is true
      */
-    const showFeatureInfoDownload =
-      this.showRawData ||
-      !this.templatedFeatureInfoReactNode ||
-      (this.templatedFeatureInfoReactNode &&
-        this.props.catalogItem.featureInfoTemplate
-          .showFeatureInfoDownloadWithTemplate);
+    const showFeatureInfoDownload = false;
 
     const titleElement = this.props.printView ? (
       <h2>{title}</h2>
