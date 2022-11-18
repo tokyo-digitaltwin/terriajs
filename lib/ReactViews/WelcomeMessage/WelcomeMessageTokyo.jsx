@@ -13,6 +13,7 @@ import { useKeyPress } from "../Hooks/useKeyPress.js";
 import { TourPortalDisplayName } from "../Tour/TourPortal";
 import FadeIn from "../Transitions/FadeIn/FadeIn";
 import SlideUpFadeIn from "../Transitions/SlideUpFadeIn/SlideUpFadeIn";
+import { withViewState } from "../StandardUserInterface/ViewStateContext";
 
 export const WELCOME_MESSAGE_NAME = "welcomeMessage";
 export const LOCAL_PROPERTY_KEY = `${WELCOME_MESSAGE_NAME}Prompted`;
@@ -105,15 +106,15 @@ export const WelcomeMessagePure = props => {
       if (viewState.terria.analytics && viewState.terria.analytics.key) {
         delete viewState.terria.analytics.key;
       }
-      window.ga = function() {};
+      window.gtag = function() {};
     }
     setShouldOpenHelp(false);
   };
 
   const handleCookieAcceptance = (accept = false) => {
     if (accept) {
-      if (!viewState.terria.getLocalProperty("useCookie") && window.ga) {
-        delete window.ga;
+      if (!viewState.terria.getLocalProperty("useCookie") && window.gtag) {
+        delete window.gtag;
       }
     }
     viewState.terria.setLocalProperty("useCookie", accept);
@@ -305,4 +306,4 @@ WelcomeMessagePure.propTypes = {
   viewState: PropTypes.object.isRequired
 };
 
-export default withTranslation()(withTheme(WelcomeMessage));
+export default withTranslation()(withViewState(withTheme(WelcomeMessage)));

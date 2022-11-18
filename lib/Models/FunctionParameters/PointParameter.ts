@@ -1,9 +1,9 @@
-import { observable, computed } from "mobx";
+import { Feature, Point } from "@turf/helpers";
+import { computed } from "mobx";
 import Cartographic from "terriajs-cesium/Source/Core/Cartographic";
 import CesiumMath from "terriajs-cesium/Source/Core/Math";
-import FunctionParameter from "./FunctionParameter";
 import isDefined from "../../Core/isDefined";
-import { Feature, Point } from "geojson";
+import FunctionParameter from "./FunctionParameter";
 import { GeoJsonFunctionParameter } from "./GeoJsonParameter";
 
 export type CartographicPoint = {
@@ -12,8 +12,10 @@ export type CartographicPoint = {
   height: number;
 };
 
-export default class PointParameter extends FunctionParameter<CartographicPoint>
-  implements GeoJsonFunctionParameter {
+export default class PointParameter
+  extends FunctionParameter<CartographicPoint>
+  implements GeoJsonFunctionParameter
+{
   static readonly type = "point";
   readonly type = "point";
 

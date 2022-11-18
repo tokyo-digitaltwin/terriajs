@@ -1,7 +1,8 @@
 import { ChartItemType } from "../../ModelMixins/ChartableMixin";
-import CommonStrata from "../../Models/CommonStrata";
-import CsvCatalogItem from "../../Models/CsvCatalogItem";
-import { BaseModel } from "../../Models/Model";
+import CsvCatalogItem from "../../Models/Catalog/CatalogItems/CsvCatalogItem";
+import CommonStrata from "../../Models/Definition/CommonStrata";
+import { BaseModel } from "../../Models/Definition/Model";
+import { GlyphStyle } from "./Chart/Glyphs";
 import ChartCustomComponent, {
   ChartCustomComponentAttributes,
   splitStringIfDefined
@@ -25,14 +26,15 @@ interface CsvChartCustomComponentAttributes
 
   /** Set the chart type. Note that only "line" and "lineAndPoint" are supported. */
   chartType?: string;
+
+  /** The chart glyph style. */
+  chartGlyphStyle?: string;
 }
 
 // Any chart type not listed here won't work, because FeatureInfoPanelChart only draws line charts.
 const SUPPORTED_CHART_TYPES = ["line", "lineAndPoint"];
 
-export default class CsvChartCustomComponent extends ChartCustomComponent<
-  CsvCatalogItem
-> {
+export default class CsvChartCustomComponent extends ChartCustomComponent<CsvCatalogItem> {
   get name(): string {
     // For backward compatibility reasons, since the original ChartCustomComponent assumed your catalog item was a Csv, we use the name "chart" even though "csv-chart" would be more correct
     return "chart";
@@ -44,7 +46,8 @@ export default class CsvChartCustomComponent extends ChartCustomComponent<
       "poll-sources",
       "poll-replace",
       "chart-disclaimer",
-      "chart-type"
+      "chart-type",
+      "chart-glyph-style"
     ]);
   }
 
@@ -52,8 +55,10 @@ export default class CsvChartCustomComponent extends ChartCustomComponent<
     id: string | undefined,
     context: ProcessNodeContext,
     sourceReference: BaseModel | undefined
-  ): CsvCatalogItem {
-    return new CsvCatalogItem(id, context.terria, sourceReference);
+  ) {
+    return context.terria
+      ? new CsvCatalogItem(id, context.terria, sourceReference)
+      : undefined;
   }
 
   protected setTraitsFromAttrs(
@@ -138,12 +143,20 @@ export default class CsvChartCustomComponent extends ChartCustomComponent<
     // Set chart type
     if (
       attrs.chartType !== undefined &&
-      SUPPORTED_CHART_TYPES.some(supported => supported === attrs.chartType)
+      SUPPORTED_CHART_TYPES.some((supported) => supported === attrs.chartType)
     ) {
       item.setTrait(
         CommonStrata.user,
         "chartType",
         attrs.chartType as ChartItemType
+      );
+    }
+
+    if (attrs.chartGlyphStyle !== undefined) {
+      item.setTrait(
+        CommonStrata.user,
+        "chartGlyphStyle",
+        attrs.chartGlyphStyle as GlyphStyle
       );
     }
 
@@ -155,7 +168,7 @@ export default class CsvChartCustomComponent extends ChartCustomComponent<
         attrs.xColumn
       );
 
-      (attrs.yColumns || []).forEach(y => {
+      (attrs.yColumns || []).forEach((y) => {
         chartStyle.chart.addObject(CommonStrata.user, "lines", y)!;
       });
 
@@ -178,8 +191,14 @@ export default class CsvChartCustomComponent extends ChartCustomComponent<
     parsed.pollReplace = nodeAttrs["poll-replace"] === "true";
     parsed.chartDisclaimer = nodeAttrs["chart-disclaimer"] || undefined;
     parsed.chartType = nodeAttrs["chart-type"];
+    parsed.chartGlyphStyle = nodeAttrs["chart-glyph-style"];
     return parsed;
   }
+
+  constructDownloadUrlFromBody = (body: string) => {
+    const blob = new Blob([body], { type: "text/csv;charset=utf-8" });
+    return URL.createObjectURL(blob);
+  };
 }
 
 function parseIntOrUndefined(s: string | undefined): number | undefined {

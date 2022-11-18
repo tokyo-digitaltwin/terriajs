@@ -1,17 +1,19 @@
-# Understand MobX
+# Model Layer
+
+## Understand MobX
 
 TerriaJS's model layer is based on MobX, so it is essential to understand MobX. In particular, the [MobX Concepts and Principles](https://mobx.js.org/intro/concepts.html) is a short and enlightening read.
 
 It is also helpful to understand [what MobX reacts to](https://mobx.js.org/best/react.html). We recommend giving it a read before you start working on TerriaJS's model layer, and then read it again any time MobX isn't behaving the way you expect it to.
 
-# Types of classes in the Model layer
+## Types of classes in the Model layer
 
-* *Traits*: Define the configurable properties of a each stratum of a model object. Traits classes have no logic or behavior, only properties. Note that traits classes are often built by mixing in several sets of traits. Example: `WebMapServiceCatalogItemTraits`.
-* *Models*: Concrete, usable model objects representing things like map items and groups in the catalog. They are composed of mix-ins plus some model-specific computed properties and logic. Example: `WebMapServiceCatalogItem`.
-* *Mixins*: Provide computed properties and behavior intended to be mixed into model objects to add capabilities to them. Example: `GetCapabilitiesMixin`.
-* *Load Strata*: (singular: Load Stratum) Strata that provide values for a subset of the properties defined on model's traits class, usually by loading them from an external source such as WMS GetCapabilities service. Example: `GetCapabilitiesStratum`.
+- _Traits_: Define the configurable properties of a each stratum of a model object. Traits classes have no logic or behavior, only properties. Note that traits classes are often built by mixing in several sets of traits. Example: `WebMapServiceCatalogItemTraits`.
+- _Models_: Concrete, usable model objects representing things like map items and groups in the catalog. They are composed of mix-ins plus some model-specific computed properties and logic. Example: `WebMapServiceCatalogItem`.
+- _Mixins_: Provide computed properties and behavior intended to be mixed into model objects to add capabilities to them. Example: `GetCapabilitiesMixin`.
+- _Load Strata_: (singular: Load Stratum) Strata that provide values for a subset of the properties defined on model's traits class, usually by loading them from an external source such as WMS GetCapabilities service. Example: `GetCapabilitiesStratum`.
 
-# Reactivity
+## Reactivity
 
 The TerriaJS model layer generally looks and feels - at least on the surface - like a traditional object-oriented design. An item or group in the catalog, for example, is an instance of a class, such as `WebMapServiceCatalogItem`. Model objects are mutable, meaning we can modify them in-place without the need to copy them first or anything of that sort. This is different from the approach used in [Redux](https://redux.js.org/), which requires that the application's state be represented with immutable objects and that transitions to new states happen in a very controlled fashion.
 
@@ -19,11 +21,11 @@ Unlike most OO applications, though, the TerriaJS model layer is _reactive_. Vir
 
 Many classes also define `@computed` properties. Computed properties have a getter and optionally a setter. The getter is invoked once the first time the property is accessed and the value is memoized (cached). Further accesses of the property will get the memoized value.
 
-The interesting part is that MobX automatically keeps track of the set of observables (including other computed observables) that were accessed during the execution of the getter.  If any of _those_ properties change, the computed observable's getter will be invoked again and the new value memoized.  This new invocation may access different observable properties than it did the first time around, and it is those new properties that will trigger any future re-evaluations of the computed property.  We can subscribe to change notification on computed properties in the same way we subscribe to regular observable properties.
+The interesting part is that MobX automatically keeps track of the set of observables (including other computed observables) that were accessed during the execution of the getter. If any of _those_ properties change, the computed observable's getter will be invoked again and the new value memoized. This new invocation may access different observable properties than it did the first time around, and it is those new properties that will trigger any future re-evaluations of the computed property. We can subscribe to change notification on computed properties in the same way we subscribe to regular observable properties.
 
 Rather than directly subscribing to property changes, MobX applications typically use _reactions_. A reaction, such as one created with the `autorun` function, is a bit of code that, when it runs, accesses some observable and computed properties and does something, such as modifying the non-reactive Cesium and Leaflet mapping layers. If any of the properties accessed change in the future, the reaction will run again.
 
-# Avoid reactions and other side effects
+## Avoid reactions and other side effects
 
 A reaction, as described above, is a type of side-effect. When a property changes, "something" happens. That "something" may be surprising to whoever wrote the code that modified the property, and so this is an extremely common source of bugs.
 
@@ -31,8 +33,8 @@ A good rule of thumb is this: all properties should either be simple data proper
 
 Computed properties with setters should be avoided. In our _old_ architecture, we frequently used computed properties with a setter to model properties that are configurable by the user, but that have a default value computed from other properties when there is no user-specified value. In the current architecture, this is better modeled by:
 
-* Defining the configurable property on the `Traits` class.
-* Defining a computed property on the derived Model class that accesses `super.propertyName` (if mixins should be allowed to define the property) or `this.flattened.propertyName` (if only a directly-configured property value should be used) and, if that is undefined, computes and returns the default value from other properties.
+- Defining the configurable property on the `Traits` class.
+- Defining a computed property on the derived Model class that accesses `super.propertyName` (if mixins should be allowed to define the property) or `this.flattened.propertyName` (if only a directly-configured property value should be used) and, if that is undefined, computes and returns the default value from other properties.
 
 If a property does have a setter, it should obey these laws:
 
@@ -46,7 +48,7 @@ We need to be more precise about what we mean by "same value" in the laws above.
 
 For other types of objects, such as Cesium's mutable `JulianDate`, `Cartographic`, and `Cartesian3` types, "same value" means that the instances should conceptually represent the same value (e.g. using the `equals` function on the two instances should return true), but the instance may be different. In particular, properties of these types should declare their type as `Readonly<JulianDate>`, `Readonly<Cartographic>`, or `Readonly<Cartesian3>`. The objects should be copied on _set_. Returning a frozen object (e.g. `Object.freeze`) from _get_ may help to prevent bugs, particular if some clients of the property are expected to not be using TypeScript.
 
-# Scenarios for avoiding side effects
+## Scenarios for avoiding side effects
 
 #### Value comes from loading metadata (e.g. GetCapabilities), but users should be able to override the loaded value by specifying it explicitly in the catalog file or UI.
 
@@ -56,7 +58,7 @@ Create a _load stratum_ for the values loaded from metadata. Example: the `recta
 
 The default can be applied by overriding the property in a mixin or model class, accessing `super.propertyName`, and returning the default value if it is undefined. The default value may be computed from other properties if desired. Example: `legendUrls` property of `WebMapServiceCatalogItem`.
 
-# Single source of truth
+## Single source of truth
 
 Another good rule of thumb is that there should always be a single source of truth for any piece of information. We run into trouble when the same information is stored in multiple places, even if it's stored in slightly different ways. When one is updated, we'll either need to remember to update the other, or we'll need to set up a reaction or other side-effect to automatically keep the other in sync.
 
@@ -74,26 +76,62 @@ MobX provides [Atoms](https://mobx.js.org/refguide/extending.html), which can be
 
 In this scenario, consider whether you could instead let the reactive world take ownership of this property and be the source of truth. Events in the non-reactive world may still trigger changes in this property's value, but all clients - including the non-reactive ones - would query the reactive property whenever they need this piece of information.
 
-# Put as much logic as possible in the model layer
+## Put as much logic as possible in the model layer
 
 We want to keep the UI as small and simple as possible, because:
 
-* The UI is the hardest part of TerriaJS to test with automated tests. If it has lots of complicated logic, we will need to spend a lot of time writing tests for it to ensure that it behaves correctly. A very simple UI is easier to test, and is perhaps so simple that automated tests for it are not needed at all.
-* We would like everything that can be done by a user interacting with the UI to be doable programmatically as well. If the UI encodes complex rules or has its own states, this may not be possible, or doing so may require duplicating complicated "business logic" that already exists in the UI.
+- The UI is the hardest part of TerriaJS to test with automated tests. If it has lots of complicated logic, we will need to spend a lot of time writing tests for it to ensure that it behaves correctly. A very simple UI is easier to test, and is perhaps so simple that automated tests for it are not needed at all.
+- We would like everything that can be done by a user interacting with the UI to be doable programmatically as well. If the UI encodes complex rules or has its own states, this may not be possible, or doing so may require duplicating complicated "business logic" that already exists in the UI.
 
 Therefore, whenever possible, TerriaJS logic should be in the Model layer instead of in the UI. The UI should be a pure function from Model state to React components, and actions that simply execute functions or change a small number of properties in the Model layer.
 
 Evaluate observable properties as late as possible. In particular, avoid getting the value of an observable before starting an async operation and using it when it completes.
 
-# Defining Properties
+## Defining Properties
 
 A few notes on defining properties in Model classes:
 
-* _Set only traits_: All settable properties of a Model should be in its Traits. Because Traits are the only properties that are serialized/deserialized for catalog configuration and for sharing, settable properties that are not part of Traits prevent us from being able to completely recover application state. The only exception to this rule is for highly transient properties, such as whether a load from a remote source is currently in progress.
-* _Covariance_: If you override a gettable property in a derived class, its type must be covariant with the base class type. That is, it is fine of the derived class property returns `string` while the base class property returns `string | undefined`. And it is fine if the derived class returns `Dog` while the base class returns `Animal`. But it is not ok if this relationship is reversed. You shouldn't really have any settable properties, but if you do, the types of such properties must be identical in base and derived classes.
-* _Equals_: Pay attention to the comparer/equals to use with observables to determine if a new value is equal to an old one. The default `equals` is usually fine for primitive types (e.g. string, number, boolean), observable arrays, and objects whose properties are themselves observable (e.g. Traits). But for other types, especially Cesium types like JulianDate, Cartographic, and Cartesian3, it is essential to specify an `equals`. Typically this looks like this: `@computed({ equals: JulianDate.equals })`.
+- _Set only traits_: All settable properties of a Model should be in its Traits. Because Traits are the only properties that are serialized/deserialized for catalog configuration and for sharing, settable properties that are not part of Traits prevent us from being able to completely recover application state. The only exception to this rule is for highly transient properties, such as whether a load from a remote source is currently in progress.
+- _Covariance_: If you override a gettable property in a derived class, its type must be covariant with the base class type. That is, it is fine of the derived class property returns `string` while the base class property returns `string | undefined`. And it is fine if the derived class returns `Dog` while the base class returns `Animal`. But it is not ok if this relationship is reversed. You shouldn't really have any settable properties, but if you do, the types of such properties must be identical in base and derived classes.
+- _Equals_: Pay attention to the comparer/equals to use with observables to determine if a new value is equal to an old one. The default `equals` is usually fine for primitive types (e.g. string, number, boolean), observable arrays, and objects whose properties are themselves observable (e.g. Traits). But for other types, especially Cesium types like JulianDate, Cartographic, and Cartesian3, it is essential to specify an `equals`. Typically this looks like this: `@computed({ equals: JulianDate.equals })`.
 
-# Time
+## `Traits`
+
+### Creating new `Traits`
+
+**Correct**:
+
+```ts
+export class SomeNewTraits extends ModelTraits {
+  ...
+}
+```
+
+### Extending existing `Traits` classes
+
+Never extend existing `Traits` classes directly - instead use the `mixTraits()` function.
+
+For example
+
+**Correct**:
+
+```ts
+export class SomeExtendingTraits extends mixTraits(DimensionTraits) {
+  ...
+}
+```
+
+**Incorrect**:
+
+```ts
+export class SomeExtendingTraits extends DimensionTraits {
+  ...
+}
+```
+
+If `Traits` are extended directly, trait properties may leak into the super class. For more details see [traits in depth](./traits-in-depth.md).
+
+## Time
 
 Time-varying Models have their own `currentTime`, `startTime`, `stopTime`, etc. properties. The `currentTime` is the property that the dataset should use to determine what to display (i.e. what time to show).
 
@@ -105,7 +143,7 @@ On tick of the timeline clock, the `TimelineStack` will the current time and pau
 
 When a dataset becomes the top of the timeline stack, or the top dataset's time-related properties change, the `currentTime`, `startTime`, `stopTime`, and `multiplier` properties are copied to the timeline's clock.
 
-# ReferenceMixin
+## ReferenceMixin
 
 `ReferenceMixin` is used to create models that are references to other models. For example, a `MagdaReference` is a model that points to a particular record in a Magda catalog. The type of catalog item we need to use to access it is not known until we load that record from the Magda registry and see what kind of record it is (e.g. a WMS, GeoJSON, etc.). In fact, it may not even be a catalog item, it might be a group.
 
@@ -115,64 +153,121 @@ So, instead of trying to make a model change type upon load, `ReferenceMixin` cr
 
 Some rules:
 
-* The target model of a `ReferenceMixin` may be obtained from the `target` property, but it may be undefined until the promise returned by `loadReference` resolves. It may also be stale if a relevant trait of the reference has changed but `loadReference` hasn't yet been called or hasn't yet finished.
-* For simplicity, a particular model may _only_ be the target of a single reference. Multiple references cannot point to the same target. The reference that points to a particular model may be obtained from the model's `sourceReference` property.
-* The `uniqueId` of the `target` model must be the same as the `uniqueId` of the model with `ReferenceMixin`.
-* The model with `ReferenceMixin` _may_ be in `terria.models`.
-* The `target` model must _not_ be in `terria.models`.
-* The instance referred to by the `target` property should remain stable (the same instance) whenever possible. But if something drastic changes (e.g. we need an instance of a different model class), it's possible for the `target` property to switch to pointing at an entirely new instance. So it's important to only hold on to references to the `ReferenceMixin` model and access the `target` as needed, rather than holding a reference to the `target` directly.
+- The target model of a `ReferenceMixin` may be obtained from the `target` property, but it may be undefined until the promise returned by `loadReference` resolves. It may also be stale if a relevant trait of the reference has changed but `loadReference` hasn't yet been called or hasn't yet finished.
+- For simplicity, a particular model may _only_ be the target of a single reference. Multiple references cannot point to the same target. The reference that points to a particular model may be obtained from the model's `sourceReference` property.
+- The `uniqueId` of the `target` model must be the same as the `uniqueId` of the model with `ReferenceMixin`.
+- The model with `ReferenceMixin` _may_ be in `terria.models`.
+- The `target` model must _not_ be in `terria.models`.
+- The instance referred to by the `target` property should remain stable (the same instance) whenever possible. But if something drastic changes (e.g. we need an instance of a different model class), it's possible for the `target` property to switch to pointing at an entirely new instance. So it's important to only hold on to references to the `ReferenceMixin` model and access the `target` as needed, rather than holding a reference to the `target` directly.
 
-# AsyncLoader
+### Weak Reference
 
-The AsyncLoader class provides a way to memoize (of sorts) async requests. In a `forceLoadX` function you should load from an asynchronous service, transform the data into something that can be stored in 1 or multiple observables and then set those observables.
+If `weakReference` is `true`, the reference will be treated more like a shortcut.
 
-It works by calling `loadCallback` in `@computed loadKeepAlive`. This `@computed` will update if observables change that were used in `loadCallback()`.Because we are using a `@computed` in this way - it is **very important** that no changes to `observables` are made **before an async call**.
+In this case:
+
+- `sourceReference` must not be set.
+- If the reference is shared or added to the workbench, the target will be used in instead of `sourceReference`.
+
+## AsyncLoader
+
+The AsyncLoader class provides a way to memoize (of sorts) async requests.
+
+`AsyncLoader` accepts an async function which can be use to do the following:
+
+1. load data from an asynchronous service
+2. transform the data into something that can be stored in 1 or multiple observables
+3. set those observables.
+
+It works by calling an async function `forceLoadX()` in a `@computed` called `loadKeepAlive`. This `@computed` will update if observables change that were used in `forceLoadX()`. Because we are using a `@computed` in this way - it is **very important** that no changes to `observables` are made **before an async call**.
+
+This means that we can call `asyncLoader.load()` many times without worrying about
+
+`forceLoadX()` shouldn't be called directly - instead you should use `asyncLoader.load()` method - for example in `CatalogMemberMixin` we have
+
+- the abstract method `forceLoadMetadata`
+- `loadMetadata()` which wraps `asyncLoader.load()`
+- `loadMetadata()` can be called as many times as needed
+- See [CatalogMemberMixin example](#CatalogMemberMixin-example)
 
 A **correct** example:
 
 ```ts
-async function loadX() {
-  const url = this.someObservableUrl
-  const someData = await loadText(url)
-  runInAction(() => this.someOtherObservable = someData)
+async function forceLoadX() {
+  const url = this.someObservableUrl;
+  const someData = await loadText(url);
+  runInAction(() => (this.someOtherObservable = someData));
 }
 ```
 
-This function will only be called *again* when `someObservableUrl` changes.
+This function will only be called _again_ when `someObservableUrl` changes.
 
-------------------------
+---
 
 If there is any synchronous processing present it should be pulled out of forceLoadX and placed into 1 or multiple computeds.
 
 An **incorrect** example:
 
 ```ts
-async function loadX() {
-  const arg = this.someObservable
-  const someData = someSynchronousFn(arg)
-  runInAction(() => this.someOtherObservable = someData)
+async function forceLoadX() {
+  const arg = this.someObservable;
+  const someData = someSynchronousFn(arg);
+  runInAction(() => (this.someOtherObservable = someData));
 }
 ```
 
 Instead this should be in a `@computed`:
 
 ```ts
-@computed 
+@computed
 get newComputed {
   return someSynchronousFn(this.someObservable);
 }
 ```
 
-------------------------
+---
 
 **Other tips**:
 
-- You can not nest together `AsyncLoaders`.
+- You should not nest together `AsyncLoaders`.
   Eg.
   ```ts
-  async function loadX() {
-    await loadY()
+  async function forceLoadX() {
+    await this.forceLoadY();
   }
   ```
 
 For more info, see `lib\Core\AsyncLoader.ts`
+
+## CatalogMemberMixin example
+
+`CatalogMemberMixin` contains an `AsyncLoader`, which uses the followingfunction which must be implemented by a class:
+
+```ts
+/** Calls AsyncLoader to load metadata. It is safe to call this as often as necessary.
+ * If metadata is already loaded or already loading, it will
+ * return the existing promise.
+ *
+ * This returns a Result object, it will contain errors if they occur - they will not be thrown.
+ * To throw errors, use `(await loadMetadata()).throwIfError()`
+ *
+ * {@see AsyncLoader}
+ */
+async loadMetadata(): Promise<Result<void>> {
+  return (await this._metadataLoader.load()).clone(
+    `Failed to load \`${getName(this)}\` metadata`
+  );
+}
+
+/**
+ * Forces load of the metadata. This method does _not_ need to consider
+ * whether the metadata is already loaded.
+ *
+ * You **can not** make changes to observables until **after** an asynchronous call {@see AsyncLoader}.
+ *
+ * Errors can be thrown here.
+ *
+ * {@see AsyncLoader}
+ */
+protected async forceLoadMetadata() {}
+```

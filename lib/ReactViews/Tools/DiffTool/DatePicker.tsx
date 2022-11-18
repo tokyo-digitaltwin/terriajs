@@ -5,7 +5,7 @@ import { WithTranslation, withTranslation } from "react-i18next";
 import styled from "styled-components";
 import JulianDate from "terriajs-cesium/Source/Core/JulianDate";
 import DiffableMixin from "../../../ModelMixins/DiffableMixin";
-import CommonStrata from "../../../Models/CommonStrata";
+import CommonStrata from "../../../Models/Definition/CommonStrata";
 import { formatDateTime } from "../../BottomDock/Timeline/DateFormats";
 import Icon, { StyledIcon } from "../../../Styled/Icon";
 import DateTimePicker from "../../BottomDock/Timeline/DateTimePicker";
@@ -69,6 +69,18 @@ class DatePicker extends React.Component<PropsType> {
   }
 
   @action.bound
+  moveToPreviousDate() {
+    this.props.item.moveToPreviousDiscreteTime(CommonStrata.user);
+    this.props.onDateSet();
+  }
+
+  @action.bound
+  moveToNextDate() {
+    this.props.item.moveToNextDiscreteTime(CommonStrata.user);
+    this.props.onDateSet();
+  }
+
+  @action.bound
   onClickExternalButton(event: MouseEvent) {
     this.setIsOpen(true);
     // stopPropagation is required to prevent the datetime picker popup from closing when
@@ -127,7 +139,7 @@ class DatePicker extends React.Component<PropsType> {
           <PrevButton
             disabled={item.isPreviousDiscreteTimeAvailable === false}
             title={t("diffTool.datePicker.previousDateTitle")}
-            onClick={() => item.moveToPreviousDiscreteTime(CommonStrata.user)}
+            onClick={this.moveToPreviousDate}
           />
           <DateButton
             primary
@@ -140,7 +152,7 @@ class DatePicker extends React.Component<PropsType> {
           <NextButton
             disabled={item.isNextDiscreteTimeAvailable === false}
             title={t("diffTool.datePicker.nextDateTitle")}
-            onClick={() => item.moveToNextDiscreteTime(CommonStrata.user)}
+            onClick={this.moveToNextDate}
           />
         </Box>
         <div
@@ -171,7 +183,7 @@ const PagerButton = styled(Button).attrs({
   }
 })`
   cursor: pointer;
-  background-color: ${props => props.theme.colorPrimary};
+  background-color: ${(props) => props.theme.colorPrimary};
   width: 40px;
   border: 1px solid transparent;
 
@@ -210,10 +222,10 @@ const NextButton = styled(PagerButton).attrs({
 const DateButton = styled(Button)<{ isOpen: boolean }>`
   // z-index: 1000; // (Nanda): So that we don't loose the button clicks to the date picker popup
   z-index: 0;
-  ${props => props.isOpen && `z-index: 1000;`};
+  ${(props) => props.isOpen && `z-index: 1000;`};
 
   border-radius: 0px;
-  border: 1px solid ${props => props.theme.colorPrimary};
+  border: 1px solid ${(props) => props.theme.colorPrimary};
 
   min-width: 235px;
   @media (max-width: ${(props: any) => props.theme.lg}px) {

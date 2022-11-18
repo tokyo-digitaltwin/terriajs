@@ -1,7 +1,7 @@
-import FunctionParameter from "./FunctionParameter";
-import { observable, computed } from "mobx";
+import { Feature, Polygon } from "@turf/helpers";
+import { computed } from "mobx";
 import isDefined from "../../Core/isDefined";
-import { Feature, Polygon } from "geojson";
+import FunctionParameter from "./FunctionParameter";
 import { GeoJsonFunctionParameter } from "./GeoJsonParameter";
 
 type Coordinates = number[];
@@ -10,7 +10,8 @@ export type PolygonCoordinates = LinearRing[];
 
 export default class PolygonParameter
   extends FunctionParameter<PolygonCoordinates>
-  implements GeoJsonFunctionParameter {
+  implements GeoJsonFunctionParameter
+{
   static readonly type = "polygon";
   readonly type = "polygon";
 

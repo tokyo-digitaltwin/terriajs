@@ -8,7 +8,6 @@ import { withTranslation } from "react-i18next";
 import styled from "styled-components";
 import defined from "terriajs-cesium/Source/Core/defined";
 import MappableMixin from "../../ModelMixins/MappableMixin";
-import openGroup from "../../Models/openGroup";
 import Styles from "./tabs.scss";
 import DataCatalogTab from "./Tabs/DataCatalogTab";
 import MyDataTab from "./Tabs/MyDataTab/MyDataTab";
@@ -24,13 +23,15 @@ const Tabs = observer(
       t: PropTypes.func.isRequired
     },
 
-    onFileAddFinished(files) {
-      const file = files.find(f => MappableMixin.isMixedInto(f));
+    async onFileAddFinished(files) {
+      const file = files.find((f) => MappableMixin.isMixedInto(f));
       if (file) {
-        file
-          .loadMapItems()
-          .then(() => this.props.terria.currentViewer.zoomTo(file, 1));
-        this.props.viewState.viewCatalogMember(file);
+        const result = await this.props.viewState.viewCatalogMember(file);
+        if (result.error) {
+          result.raiseError(this.props.terria);
+        } else {
+          this.props.terria.currentViewer.zoomTo(file, 1);
+        }
       }
       this.props.viewState.myDataIsUploadView = false;
     },
@@ -50,7 +51,7 @@ const Tabs = observer(
           <MyDataTab
             terria={this.props.terria}
             viewState={this.props.viewState}
-            onFileAddFinished={files => this.onFileAddFinished(files)}
+            onFileAddFinished={(files) => this.onFileAddFinished(files)}
           />
         )
       };
@@ -59,7 +60,8 @@ const Tabs = observer(
         return [].concat(
           this.props.terria.catalog.group.memberModels
             .filter(
-              member => member !== this.props.terria.catalog.userAddedDataGroup
+              (member) =>
+                member !== this.props.terria.catalog.userAddedDataGroup
             )
             .map((member, i) => ({
               name: member.nameInCatalog,
@@ -97,21 +99,22 @@ const Tabs = observer(
       }
     },
 
-    activateTab(category, idInCategory) {
+    async activateTab(category, idInCategory) {
       runInAction(() => {
         this.props.viewState.activeTabCategory = category;
         if (this.props.terria.configParameters.tabbedCatalog) {
           this.props.viewState.activeTabIdInCategory = idInCategory;
           if (category === "data-catalog") {
             const member = this.props.terria.catalog.group.memberModels.filter(
-              m => m.uniqueId === idInCategory
+              (m) => m.uniqueId === idInCategory
             )[0];
             // If member was found and member can be opened, open it (causes CkanCatalogGroups to fetch etc.)
             if (defined(member)) {
-              // Open if it's a group or reference that hasn't already been loaded
-              // Otherwise nothing happens
-              openGroup(member);
-              this.props.viewState.previewedItem = member;
+              this.props.viewState
+                .viewCatalogMember(member)
+                .then((result) =>
+                  result.raiseError(this.props.viewState.terria)
+                );
             }
           }
         }
@@ -121,11 +124,11 @@ const Tabs = observer(
     render() {
       const tabs = this.getTabs();
       const sameCategory = tabs.filter(
-        t => t.category === this.props.viewState.activeTabCategory
+        (t) => t.category === this.props.viewState.activeTabCategory
       );
       const currentTab =
         sameCategory.filter(
-          t => t.idInCategory === this.props.viewState.activeTabIdInCategory
+          (t) => t.idInCategory === this.props.viewState.activeTabIdInCategory
         )[0] ||
         sameCategory[0] ||
         tabs[0];
@@ -136,7 +139,7 @@ const Tabs = observer(
             className={Styles.tabList}
             role="tablist"
             css={`
-              background-color: ${p => p.theme.colorPrimary};
+              background-color: ${(p) => p.theme.colorPrimary};
             `}
           >
             <For each="item" index="i" of={tabs}>
@@ -183,7 +186,7 @@ const Tabs = observer(
 );
 
 const ButtonTab = styled.button`
-  ${props => `
+  ${(props) => `
     background: transparent;
     color: ${props.theme.textLight};
     &:hover,
@@ -191,13 +194,15 @@ const ButtonTab = styled.button`
       background: ${props.theme.textLight};
       color: ${props.theme.colorPrimary};
     }
-    ${props.isCurrent &&
+    ${
+      props.isCurrent &&
       `
       background: ${props.theme.textLight};
       color: ${props.theme.colorPrimary};
-    `}
+    `
+    }
 
   `}
 `;
 
-module.exports = withTranslation()(Tabs);
+export default withTranslation()(Tabs);

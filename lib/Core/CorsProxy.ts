@@ -1,14 +1,11 @@
-import URI from "urijs";
-
 import defined from "terriajs-cesium/Source/Core/defined";
-import defaultValue from "terriajs-cesium/Source/Core/defaultValue";
-import loadJson from "./loadJson";
+import URI from "urijs";
 
 // We want TS to look at the type declared in lib/ThirdParty/terriajs-cesium-extra/index.d.ts
 // and import doesn't allows us to do that, so instead we use require + type casting to ensure
 // we still maintain the type checking, without TS screaming with errors
-const FeatureDetection: FeatureDetection = require("terriajs-cesium/Source/Core/FeatureDetection")
-  .default;
+const FeatureDetection: FeatureDetection =
+  require("terriajs-cesium/Source/Core/FeatureDetection").default;
 
 /**
  * Rewrites URLs so that they're resolved via the TerriaJS-Server proxy rather than going direct. This is most useful
@@ -121,11 +118,11 @@ export default class CorsProxy {
    *       the cache headers with. E.g. '2d' for 2 days.
    * @returns The proxied URL
    */
-  getURL(resource: string, proxyFlag: string) {
+  getURL(resource: string, proxyFlag?: string) {
     return this.getProxyBaseURL(proxyFlag) + resource;
   }
 
-  getProxyBaseURL(proxyFlag: string) {
+  getProxyBaseURL(proxyFlag: string | undefined) {
     var flag = proxyFlag === undefined ? "" : "_" + proxyFlag + "/";
     return this.baseProxyUrl + flag;
   }
@@ -143,7 +140,7 @@ export default class CorsProxy {
    *       the cache headers with. E.g. '2d' for 2 days.
    * @returns Either the URL passed in or a proxied URL if it should be proxied.
    */
-  getURLProxyIfNecessary(resource: string, proxyFlag: string) {
+  getURLProxyIfNecessary(resource: string, proxyFlag?: string) {
     if (this.shouldUseProxy(resource)) {
       return this.getURL(resource, proxyFlag);
     }
