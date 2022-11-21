@@ -5,7 +5,7 @@
   border-bottom: 1px solid $border-color;
   font-size: $font-size-mini;
   label {
-    margin-right: $padding-small;
+    margin-right: 15px;
     float: left;
     width: 80px;
   }
@@ -17,6 +17,6 @@
 .filter {
   display: flex;
   label {
-    flex-basis: 100px;
+    flex-basis: 50%;
   }
 }

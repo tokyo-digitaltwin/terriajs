@@ -5,7 +5,7 @@ import { withTranslation } from "react-i18next";
 import defined from "terriajs-cesium/Source/Core/defined";
 import Ellipsoid from "terriajs-cesium/Source/Core/Ellipsoid";
 import CesiumMath from "terriajs-cesium/Source/Core/Math";
-import CommonStrata from "../../Models/CommonStrata";
+import CommonStrata from "../../Models/Definition/CommonStrata";
 import UserDrawing from "../../Models/UserDrawing";
 import Styles from "./parameter-editors.scss";
 
@@ -47,9 +47,8 @@ const LineParameterEditor = createReactClass({
       const currentPointPos = currentPoint.position.getValue(
         this.props.previewed.terria.clock?.currentTime
       );
-      const cartographic = Ellipsoid.WGS84.cartesianToCartographic(
-        currentPointPos
-      );
+      const cartographic =
+        Ellipsoid.WGS84.cartesianToCartographic(currentPointPos);
       const points = [];
       points.push(CesiumMath.toDegrees(cartographic.longitude));
       points.push(CesiumMath.toDegrees(cartographic.latitude));
@@ -89,7 +88,7 @@ const LineParameterEditor = createReactClass({
  * @param {String} e Text that user has entered manually.
  * @param {FunctionParameter} parameter Parameter to set value on.
  */
-LineParameterEditor.setValueFromText = function(e, parameter) {
+LineParameterEditor.setValueFromText = function (e, parameter) {
   const coordinatePairs = e.target.value.split("], [");
   const pointsLongLats = [];
   for (let i = 0; i < coordinatePairs.length; i++) {

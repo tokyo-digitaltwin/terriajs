@@ -10,17 +10,19 @@ For the translations TerriaJS uses [react-i18next](https://react.i18next.com/) t
 If you are an advanced user or expert, we recommend reading the short and concise react-i18next documentation.
 
 The following i18next plugins are used:
-* [i18next-browser-languagedetector](https://github.com/i18next/i18next-browser-languageDetector) to detect the browser language, use the localStorage and react to URL query
-* [i18next-http-backend](https://github.com/i18next/i18next-http-backend) to enable loading translations from editable language files
+
+- [i18next-browser-languagedetector](https://github.com/i18next/i18next-browser-languageDetector) to detect the browser language, use the localStorage and react to URL query
+- [i18next-http-backend](https://github.com/i18next/i18next-http-backend) to enable loading translations from editable language files
 
 ### Languages
 
 Currently, the only available language is English, and it is configured as the default fallback language. Default fallback language can be changed in the [`config.json`] file.
 
 **List of available languages**
-|Abbreviation|Language|
-|------------|--------|
-|en|english|
+
+| Abbreviation | Language |
+| ------------ | -------- |
+| en           | english  |
 
 ### Configuration
 
@@ -29,6 +31,7 @@ Language configuration is done within [`config.json`]. See the [config.json docu
 ## Language files
 
 Language files are translation core. To add an additional language, a separate language file is needed for it. Translations can be provided using two files:
+
 1. translation
 2. languageOverrides
 
@@ -46,11 +49,11 @@ This section describes how to use i18next to provide a translation of TerriaJS.
 
 ### Translation of configurable elements
 
-To translate configurable elements, the value itself must be formatted correctly (it is called a translation key). The formatted value must then be added to the translation files with the corresponding translation. Currently only elements that are available for translation are `helpContent` and `helpContentTerms`.
-
->***This is likely to be changed in the future by adding an additional parameter to specify which configurable elements should be changed. The reason for it is that there is a possible issue with using single words when specifying static names of items to get a `missing key` as translation.***
+To translate configurable elements, the value itself must be formatted correctly (it is called a translation key). The formatted value must then be added to the translation files with the corresponding translation. If the part of the config.json is considered for translations by the TerriaJS, the translation will take place. Elements that are available for translation are `helpContent`, and `helpContentTerms`.
+The translation key must be prefixed with `"translate#"`, so the structure of the key is `translate#[path.to.key]`, resulting in e.g. `translate#help.gettingstarted.content`
 
 **Translation file**
+
 ```json
 {
   "help": {
@@ -65,16 +68,17 @@ To translate configurable elements, the value itself must be formatted correctly
 ```
 
 **Translateable content**
+
 ```json
 "helpContent": [
   {
-    "title": "help.gettingstarted.title",
+    "title": "translate#help.gettingstarted.title",
     "itemName": "gettingstarted",
     "paneMode": "videoAndContent",
-    "markdownText": "help.gettingstarted.content",
+    "markdownText": "translate#help.gettingstarted.content",
     "icon": "video",
-    "videoUrl": "help.gettingstarted.video",
-    "placeholderImage": "help.gettingstarted.image"
+    "videoUrl": "translate#help.gettingstarted.video",
+    "placeholderImage": "translate#help.gettingstarted.image"
   }
 ]
 ```
@@ -85,6 +89,7 @@ To override the translation of an already translated element you need to overrid
 
 **Example**
 Button MapSetting has a name specified using key `settingPanel.btnText`:
+
 ```json5
 "settingPanel": {
   "btnText": "Map Settings",
@@ -92,7 +97,8 @@ Button MapSetting has a name specified using key `settingPanel.btnText`:
 }
 ```
 
-Defining the following in the language overrides language file will override the name of the map settings button and it will be named *Map Configuration*:
+Defining the following in the language overrides language file will override the name of the map settings button and it will be named _Map Configuration_:
+
 ```json5
 "settingPanel": {
   "btnText": "Map Configuration"

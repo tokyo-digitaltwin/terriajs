@@ -1,23 +1,31 @@
-import { computed, runInAction } from "mobx";
+import { action, computed, isObservableArray, runInAction, toJS } from "mobx";
+import Mustache from "mustache";
 import AsyncLoader from "../Core/AsyncLoader";
 import Constructor from "../Core/Constructor";
 import isDefined from "../Core/isDefined";
-import TerriaError from "../Core/TerriaError";
-import Model from "../Models/Model";
+import { isJsonObject, isJsonString, JsonObject } from "../Core/Json";
+import Result from "../Core/Result";
+import hasTraits from "../Models/Definition/hasTraits";
+import Model, { BaseModel } from "../Models/Definition/Model";
+import updateModelFromJson from "../Models/Definition/updateModelFromJson";
 import SelectableDimensions, {
   SelectableDimension
-} from "../Models/SelectableDimensions";
-import updateModelFromJson from "../Models/updateModelFromJson";
-import CatalogMemberTraits from "../Traits/CatalogMemberTraits";
+} from "../Models/SelectableDimensions/SelectableDimensions";
+import ViewingControls, { ViewingControl } from "../Models/ViewingControls";
+import CatalogMemberReferenceTraits from "../Traits/TraitsClasses/CatalogMemberReferenceTraits";
+import CatalogMemberTraits from "../Traits/TraitsClasses/CatalogMemberTraits";
 import AccessControlMixin from "./AccessControlMixin";
 import GroupMixin from "./GroupMixin";
 import MappableMixin from "./MappableMixin";
 import ReferenceMixin from "./ReferenceMixin";
+
 type CatalogMember = Model<CatalogMemberTraits>;
 
 function CatalogMemberMixin<T extends Constructor<CatalogMember>>(Base: T) {
-  abstract class CatalogMemberMixin extends AccessControlMixin(Base)
-    implements SelectableDimensions {
+  abstract class CatalogMemberMixin
+    extends AccessControlMixin(Base)
+    implements SelectableDimensions, ViewingControls
+  {
     abstract get type(): string;
 
     // The names of items in the CatalogMember's info array that contain details of the source of this CatalogMember's data.
@@ -32,6 +40,10 @@ function CatalogMemberMixin<T extends Constructor<CatalogMember>>(Base: T) {
       this.forceLoadMetadata.bind(this)
     );
 
+    get loadMetadataResult() {
+      return this._metadataLoader.result;
+    }
+
     /**
      * Gets a value indicating whether metadata is currently loading.
      */
@@ -44,13 +56,25 @@ function CatalogMemberMixin<T extends Constructor<CatalogMember>>(Base: T) {
       return (
         this.isLoadingMetadata ||
         (MappableMixin.isMixedInto(this) && this.isLoadingMapItems) ||
-        (ReferenceMixin.is(this) && this.isLoadingReference) ||
+        (ReferenceMixin.isMixedInto(this) && this.isLoadingReference) ||
         (GroupMixin.isMixedInto(this) && this.isLoadingMembers)
       );
     }
 
-    loadMetadata(): Promise<void> {
-      return this._metadataLoader.load();
+    /** Calls AsyncLoader to load metadata. It is safe to call this as often as necessary.
+     * If metadata is already loaded or already loading, it will
+     * return the existing promise.
+     *
+     * This returns a Result object, it will contain errors if they occur - they will not be thrown.
+     * To throw errors, use `(await loadMetadata()).throwIfError()`
+     *
+     * {@see AsyncLoader}
+     */
+    async loadMetadata(): Promise<Result<void>> {
+      return (await this._metadataLoader.load()).clone({
+        message: `Failed to load \`${getName(this)}\` metadata`,
+        importance: -1
+      });
     }
 
     /**
@@ -58,6 +82,10 @@ function CatalogMemberMixin<T extends Constructor<CatalogMember>>(Base: T) {
      * whether the metadata is already loaded.
      *
      * You **can not** make changes to observables until **after** an asynchronous call {@see AsyncLoader}.
+     *
+     * Errors can be thrown here.
+     *
+     * {@see AsyncLoader}
      */
     protected async forceLoadMetadata() {}
 
@@ -70,11 +98,9 @@ function CatalogMemberMixin<T extends Constructor<CatalogMember>>(Base: T) {
       return this.terria.workbench.contains(this);
     }
 
-    /**
-     * Default value for showsInfo (About Data button)
-     */
-    get showsInfo() {
-      return true;
+    @computed
+    get name(): string | undefined {
+      return super.name || this.uniqueId;
     }
 
     @computed
@@ -85,7 +111,7 @@ function CatalogMemberMixin<T extends Constructor<CatalogMember>>(Base: T) {
     @computed
     get nameSortKey() {
       var parts = (this.nameInCatalog || "").split(/(\d+)/);
-      return parts.map(function(part) {
+      return parts.map(function (part) {
         var parsed = parseInt(part, 10);
         if (parsed === parsed) {
           return parsed;
@@ -98,9 +124,9 @@ function CatalogMemberMixin<T extends Constructor<CatalogMember>>(Base: T) {
     @computed
     get hasDescription(): boolean {
       return (
-        (this.description !== undefined && this.description.length > 0) ||
-        (this.info !== undefined &&
-          this.info.some(info => descriptionRegex.test(info.name || "")))
+        (isJsonString(this.description) && this.description.length > 0) ||
+        (isObservableArray(this.info) &&
+          this.info.some((info) => descriptionRegex.test(info.name || "")))
       );
     }
 
@@ -108,7 +134,7 @@ function CatalogMemberMixin<T extends Constructor<CatalogMember>>(Base: T) {
     get infoAsObject() {
       const infoObject: any = {};
 
-      this.info.forEach(infoItem => {
+      this.info.forEach((infoItem) => {
         if (infoItem.name !== undefined && infoItem.name.length > 0) {
           const infoNameNoSpaces = infoItem.name.replace(/ /g, "");
           if (
@@ -131,7 +157,7 @@ function CatalogMemberMixin<T extends Constructor<CatalogMember>>(Base: T) {
       if (sourceInfoItemNames === undefined) {
         return this.info;
       } else {
-        return this.info.filter(infoItem => {
+        return this.info.filter((infoItem) => {
           if (infoItem.name === undefined) return true;
           return sourceInfoItemNames.indexOf(infoItem.name) === -1;
         });
@@ -144,7 +170,7 @@ function CatalogMemberMixin<T extends Constructor<CatalogMember>>(Base: T) {
     @computed
     get selectableDimensions(): SelectableDimension[] {
       return (
-        this.modelDimensions.map(dim => ({
+        this.modelDimensions.map((dim) => ({
           id: dim.id,
           name: dim.name,
           selectedId: dim.selectedId,
@@ -156,17 +182,33 @@ function CatalogMemberMixin<T extends Constructor<CatalogMember>>(Base: T) {
             runInAction(() =>
               dim.setTrait(stratumId, "selectedId", selectedId)
             );
-            const value = dim.options.find(o => o.id === selectedId)?.value;
+            const value = dim.options.find((o) => o.id === selectedId)?.value;
             if (isDefined(value)) {
-              updateModelFromJson(this, stratumId, value).catchError(e =>
-                this.terria.raiseErrorToUser(
-                  TerriaError.from(e, "Failed to update catalog member model")
-                )
+              const result = updateModelFromJson(
+                this,
+                stratumId,
+                mustacheNestedJsonObject(toJS(value), this)
               );
+
+              result.raiseError(
+                this.terria,
+                `Failed to update catalog item ${getName(this)}`
+              );
+
+              // If no error then call loadMapItems
+              if (!result.error && MappableMixin.isMixedInto(this)) {
+                this.loadMapItems().then((loadMapItemsResult) => {
+                  loadMapItemsResult.raiseError(this.terria);
+                });
+              }
             }
           }
         })) ?? []
       );
+    }
+
+    @computed get viewingControls(): ViewingControl[] {
+      return [];
     }
 
     dispose() {
@@ -181,11 +223,37 @@ function CatalogMemberMixin<T extends Constructor<CatalogMember>>(Base: T) {
 const descriptionRegex = /description/i;
 
 namespace CatalogMemberMixin {
-  export interface CatalogMemberMixin
+  export interface Instance
     extends InstanceType<ReturnType<typeof CatalogMemberMixin>> {}
-  export function isMixedInto(model: any): model is CatalogMemberMixin {
+  export function isMixedInto(model: any): model is Instance {
     return model && model.hasCatalogMemberMixin;
   }
 }
 
 export default CatalogMemberMixin;
+
+/** Convenience function to get user readable name of a BaseModel */
+export const getName = action((model: BaseModel | undefined) => {
+  return (
+    (CatalogMemberMixin.isMixedInto(model) ? model.name : undefined) ??
+    (hasTraits(model, CatalogMemberReferenceTraits, "name")
+      ? model.name
+      : undefined) ??
+    model?.uniqueId ??
+    "Unknown model"
+  );
+});
+
+/** Recursively apply mustache template to all nested string properties in a JSON Object */
+function mustacheNestedJsonObject(obj: JsonObject, view: any) {
+  return Object.entries(obj).reduce<JsonObject>((acc, [key, value]) => {
+    if (isJsonString(value)) {
+      acc[key] = Mustache.render(value, view);
+    } else if (isJsonObject(value, false)) {
+      acc[key] = mustacheNestedJsonObject(value, view);
+    } else {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
+}

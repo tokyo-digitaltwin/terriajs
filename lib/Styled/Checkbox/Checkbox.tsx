@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { useUID } from "react-uid";
 import { TextSpan } from "../Text";
-import { Spacing } from "./../Spacing";
+import { SpacingSpan } from "./../Spacing";
 import CheckboxIcon from "./Elements/CheckboxIcon";
 import HiddenCheckbox from "./Elements/HiddenCheckbox";
 import { ICheckboxProps } from "./types";
@@ -24,9 +24,12 @@ const Checkbox = memo(
       defaultChecked = false,
       isIndeterminate = false,
       onChange: onChangeProps,
-      label,
+      title,
       name,
       value,
+      children,
+      textProps,
+      className,
       ...rest
     } = props;
 
@@ -48,8 +51,27 @@ const Checkbox = memo(
     const isChecked =
       isCheckedProp === undefined ? isCheckedState : isCheckedProp;
     const id = useUID();
+
+    // Add props to children
+    const childrenWithProps = React.Children.map(children, (child) => {
+      // Checking isValidElement is the safe way and avoids a typescript
+      // error too.
+      if (React.isValidElement(child)) {
+        return React.cloneElement(child, {
+          isDisabled,
+          isChecked,
+          style: { fontSize: "inherit" }
+        });
+      }
+      return child;
+    });
+
     return (
       <TextSpan
+        as={"label"}
+        title={title}
+        htmlFor={`checkbox-${id}`}
+        className={className}
         css={`
           display: flex;
           flex-shrink: 0;
@@ -59,16 +81,18 @@ const Checkbox = memo(
             outline: 3px solid #c390f9;
           }
           ${!isDisabled &&
-            `
+          `
+            cursor: pointer;
             &:hover svg {
               opacity: 0.6;
             }
           `}
           ${isDisabled &&
-            `
+          `
             cursor: not-allowed;
           `}
         `}
+        {...textProps}
       >
         <HiddenCheckbox
           disabled={isDisabled}
@@ -76,26 +100,16 @@ const Checkbox = memo(
           onChange={onChange}
           value={value}
           name={name}
-          id={id}
+          id={`checkbox-${id}`}
           ref={ref}
         />
         <CheckboxIcon
           isIndeterminate={isIndeterminate}
           isChecked={isChecked}
           isDisabled={isDisabled}
-          label=""
         />
-        <Spacing right={1} />
-        <TextSpan
-          as={"label"}
-          htmlFor={id}
-          isDisabled={isDisabled}
-          css={`
-            font-size: inherit;
-          `}
-        >
-          {label}
-        </TextSpan>
+        <SpacingSpan right={1} />
+        {childrenWithProps}
       </TextSpan>
     );
   })

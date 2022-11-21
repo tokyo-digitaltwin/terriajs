@@ -1,14 +1,15 @@
 import ModelTraits from "./ModelTraits";
 import TraitsConstructor from "./TraitsConstructor";
-import StratumFromTraits from "../Models/StratumFromTraits";
-import createStratumInstance from "../Models/createStratumInstance";
+import StratumFromTraits from "../Models/Definition/StratumFromTraits";
+import createStratumInstance from "../Models/Definition/createStratumInstance";
 
 /**
  * A strata map where the strata are obtained from a sub-property of another
  * parent strata map.
  */
 export default class NestedStrataMap<T extends ModelTraits>
-  implements Map<string, T> {
+  implements Map<string, T>
+{
   constructor(
     readonly parentTraitsClass: TraitsConstructor<ModelTraits>,
     readonly parent: Map<string, StratumFromTraits<ModelTraits>>,

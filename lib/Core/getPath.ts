@@ -1,6 +1,6 @@
 import CatalogMemberMixin from "../ModelMixins/CatalogMemberMixin";
 import getAncestors from "../Models/getAncestors";
-import { BaseModel } from "../Models/Model";
+import { BaseModel } from "../Models/Definition/Model";
 import getDereferencedIfExists from "./getDereferencedIfExists";
 import isDefined from "./isDefined";
 
@@ -15,7 +15,7 @@ export function getParentGroups(item: BaseModel) {
     ...getAncestors(dereferenced).map(getDereferencedIfExists),
     dereferenced
   ].map(
-    ancestor =>
+    (ancestor) =>
       (CatalogMemberMixin.isMixedInto(ancestor) && ancestor.nameInCatalog) ||
       ancestor.uniqueId
   );

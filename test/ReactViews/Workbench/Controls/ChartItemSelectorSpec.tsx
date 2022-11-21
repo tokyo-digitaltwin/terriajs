@@ -1,15 +1,18 @@
 import React from "react";
 import { act } from "react-dom/test-utils";
-import TestRenderer, { ReactTestRenderer } from "react-test-renderer";
+import TestRenderer, {
+  ReactTestInstance,
+  ReactTestRenderer
+} from "react-test-renderer";
 import ChartableMixin, {
   ChartItem
 } from "../../../../lib/ModelMixins/ChartableMixin";
-import CreateModel from "../../../../lib/Models/CreateModel";
+import CreateModel from "../../../../lib/Models/Definition/CreateModel";
 import Terria from "../../../../lib/Models/Terria";
 import ChartItemSelector from "../../../../lib/ReactViews/Workbench/Controls/ChartItemSelector";
-import UrlTraits from "../../../../lib/Traits/UrlTraits";
+import UrlTraits from "../../../../lib/Traits/TraitsClasses/UrlTraits";
 import mixTraits from "../../../../lib/Traits/mixTraits";
-import MappableTraits from "../../../../lib/Traits/MappableTraits";
+import MappableTraits from "../../../../lib/Traits/TraitsClasses/MappableTraits";
 
 class SomeChartableItem extends ChartableMixin(
   CreateModel(mixTraits(UrlTraits, MappableTraits))
@@ -58,12 +61,12 @@ class SomeChartableItem extends ChartableMixin(
   }
 }
 
-describe("ChartItemSelector", function() {
+describe("ChartItemSelector", function () {
   let terria: Terria;
   let item: SomeChartableItem;
   let testRenderer: ReactTestRenderer;
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     terria = new Terria({
       baseUrl: "./"
     });
@@ -75,10 +78,10 @@ describe("ChartItemSelector", function() {
     });
   });
 
-  it("sorts the chart items by name", function() {
+  it("sorts the chart items by name", function () {
     const chartItemNames = testRenderer.root
-      .findAllByType("span")
-      .map(c => c.children[0]);
+      .findAllByType("label")
+      .map((c) => (c.children[3] as any).children[0].children[0]);
     expect(chartItemNames).toEqual(["aaa", "zzz"]);
   });
 });

@@ -23,13 +23,15 @@ const MobileSearch = observer(
     },
 
     onLocationClick(result) {
-      result.clickAction();
+      runInAction(() => {
+        result.clickAction();
 
-      addMarker(this.props.terria, result);
+        addMarker(this.props.terria, result);
 
-      // Close modal window
-      this.props.viewState.switchMobileView(null);
-      this.props.viewState.searchState.showMobileLocationSearch = false;
+        // Close modal window
+        this.props.viewState.switchMobileView(null);
+        this.props.viewState.searchState.showMobileLocationSearch = false;
+      });
     },
 
     searchInDataCatalog() {
@@ -80,7 +82,7 @@ const MobileSearch = observer(
 
     renderLocationResult(theme) {
       const searchState = this.props.viewState.searchState;
-      return searchState.locationSearchResults.map(search => (
+      return searchState.locationSearchResults.map((search) => (
         <LocationSearchResults
           key={search.searchProvider.name}
           terria={this.props.terria}

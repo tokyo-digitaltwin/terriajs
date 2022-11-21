@@ -104,6 +104,7 @@ class TooltipWrapperRaw extends React.Component<Props, State> {
         parseFloat(launcherElementStyle.paddingLeft)) /
       2;
     // only update if the difference is big enough to prevent indefinite loop caused by browser sub pixel error
+    // FIXME: this test however passes in safari mobile each time resulting in a inifinite render loop
     if (Math.abs(this.state.offset - offset) > 5) {
       this.setState({
         offset: offset
@@ -235,14 +236,11 @@ type ButtonLauncherProps = {
   [spread: string]: any;
 };
 
-export const TooltipWithButtonLauncher: React.SFC<ButtonLauncherProps> = props => {
-  const {
-    launcherComponent,
-    children,
-    dismissOnLeave,
-    orientation,
-    ...rest
-  } = props;
+export const TooltipWithButtonLauncher: React.SFC<ButtonLauncherProps> = (
+  props
+) => {
+  const { launcherComponent, children, dismissOnLeave, orientation, ...rest } =
+    props;
 
   const idForAria = `ButtonLauncher-${useUID()}`;
   const idForChildAria = `ButtonLauncher-child-${useUID()}`;
@@ -255,7 +253,7 @@ export const TooltipWithButtonLauncher: React.SFC<ButtonLauncherProps> = props =
       orientation={orientation || "below"}
       {...rest}
       disableEventListeners
-      launcher={launchObj => {
+      launcher={(launchObj) => {
         const handleClose = () => {
           if (launchObj.state.open) {
             launchObj.forceSetState(false);
@@ -286,7 +284,7 @@ export const TooltipWithButtonLauncher: React.SFC<ButtonLauncherProps> = props =
         );
       }}
     >
-      {applyAriaId => (
+      {(applyAriaId) => (
         <TextSpan
           // provide some base text styles as a textspan,
           // as this will be rendered outside the tree
