@@ -11,7 +11,7 @@ import CatalogItem from "../DataCatalog/CatalogItem";
 import CatalogGroup from "../DataCatalog/CatalogGroup";
 
 import Styles from "./parameter-editors.scss";
-import CommonStrata from "../../Models/CommonStrata";
+import CommonStrata from "../../Models/Definition/CommonStrata";
 
 const RegionDataParameterEditor = createReactClass({
   displayName: "RegionDataParameterEditor",
@@ -54,9 +54,10 @@ const RegionDataParameterEditor = createReactClass({
     if (newValue) {
       value[column.name] = {
         regionProvider: this.regionProvider(),
-        regionColumn: catalogItem.regionMapping.tableStructure.getColumnWithNameOrId(
-          catalogItem.regionMapping.regionDetails[0].columnName
-        ),
+        regionColumn:
+          catalogItem.regionMapping.tableStructure.getColumnWithNameOrId(
+            catalogItem.regionMapping.regionDetails[0].columnName
+          ),
         valueColumn: column
       };
 
@@ -98,9 +99,10 @@ const RegionDataParameterEditor = createReactClass({
       ) {
         value[column.name] = {
           regionProvider: this.regionProvider(),
-          regionColumn: catalogItem.regionMapping.tableStructure.getColumnWithNameOrId(
-            catalogItem.regionMapping.regionDetails[0].columnName
-          ),
+          regionColumn:
+            catalogItem.regionMapping.tableStructure.getColumnWithNameOrId(
+              catalogItem.regionMapping.regionDetails[0].columnName
+            ),
           valueColumn: column
         };
       }

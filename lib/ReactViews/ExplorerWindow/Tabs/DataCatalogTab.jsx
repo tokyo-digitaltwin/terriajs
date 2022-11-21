@@ -19,7 +19,6 @@ class DataCatalogTab extends React.Component {
     viewState: PropTypes.object,
     items: PropTypes.array,
     searchPlaceholder: PropTypes.string,
-    overrideState: PropTypes.string,
     onActionButtonClicked: PropTypes.func,
     theme: PropTypes.object,
     t: PropTypes.func.isRequired
@@ -56,7 +55,7 @@ class DataCatalogTab extends React.Component {
               {searchState.catalogSearchProvider && (
                 <SearchBox
                   searchText={searchState.catalogSearchText}
-                  onSearchTextChanged={val => this.changeSearchText(val)}
+                  onSearchTextChanged={(val) => this.changeSearchText(val)}
                   onDoSearch={() => this.search()}
                   placeholder={this.searchPlaceholder}
                   debounceDuration={
@@ -71,7 +70,6 @@ class DataCatalogTab extends React.Component {
               <DataCatalog
                 terria={this.props.terria}
                 viewState={this.props.viewState}
-                overrideState={this.props.overrideState}
                 onActionButtonClicked={this.props.onActionButtonClicked}
                 items={this.props.items}
               />

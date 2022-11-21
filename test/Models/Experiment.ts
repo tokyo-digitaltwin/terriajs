@@ -1,18 +1,18 @@
 import { autorun, configure, runInAction } from "mobx";
 import CatalogMemberMixin from "../../lib/ModelMixins/CatalogMemberMixin";
 import MappableMixin from "../../lib/ModelMixins/MappableMixin";
-import CommonStrata from "../../lib/Models/CommonStrata";
+import CommonStrata from "../../lib/Models/Definition/CommonStrata";
 import Terria from "../../lib/Models/Terria";
-import WebMapServiceCatalogGroup from "../../lib/Models/WebMapServiceCatalogGroup";
-import WebMapServiceCatalogItem from "../../lib/Models/WebMapServiceCatalogItem";
+import WebMapServiceCatalogGroup from "../../lib/Models/Catalog/Ows/WebMapServiceCatalogGroup";
+import WebMapServiceCatalogItem from "../../lib/Models/Catalog/Ows/WebMapServiceCatalogItem";
 
 configure({
   enforceActions: true,
   computedRequiresReaction: true
 });
 
-describe("NewStuff", function() {
-  it("test", function() {
+describe("NewStuff", function () {
+  it("test", function () {
     const terria = new Terria();
     const wms = new WebMapServiceCatalogGroup(
       "Taxation Statistics 2011-2012",
@@ -49,9 +49,9 @@ describe("NewStuff", function() {
       );
     });
 
-    autorun(dispose => {
+    autorun((dispose) => {
       console.log("Run: " + wms.memberModels.length);
-      wms.memberModels.forEach(model => {
+      wms.memberModels.forEach((model) => {
         if (CatalogMemberMixin.isMixedInto(model)) {
           console.log(`${model.name}: ${model.uniqueId}`);
         }

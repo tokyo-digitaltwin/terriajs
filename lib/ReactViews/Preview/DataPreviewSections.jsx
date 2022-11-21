@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { withTranslation } from "react-i18next";
 import isDefined from "../../Core/isDefined";
-import CommonStrata from "../../Models/CommonStrata";
+import CommonStrata from "../../Models/Definition/CommonStrata";
 import Box from "../../Styled/Box";
 import { item } from "../Custom/Chart/tooltip.scss";
 import Collapsible from "../Custom/Collapsible/Collapsible";
@@ -16,7 +16,7 @@ import MetadataTable from "./MetadataTable";
 
 naturalSort.insensitive = true;
 
-Mustache.escape = function(string) {
+Mustache.escape = function (string) {
   return string;
 };
 
@@ -36,7 +36,7 @@ const DataPreviewSections = observer(
     sortInfoSections(items) {
       const infoSectionOrder = this.props.metadataItem.infoSectionOrder;
 
-      items.sort(function(a, b) {
+      items.sort(function (a, b) {
         const aIndex = infoSectionOrder.indexOf(a.name);
         const bIndex = infoSectionOrder.indexOf(b.name);
         if (aIndex >= 0 && bIndex < 0) {
@@ -49,12 +49,17 @@ const DataPreviewSections = observer(
         return aIndex - bIndex;
       });
 
-      return items;
+      return items.filter(
+        (item) =>
+          isDefined(item.content ?? item.contentAsObject) &&
+          (item.content ?? item.contentAsObject) !== null &&
+          item.content !== ""
+      );
     },
 
     clickInfoSection(reportName, isOpen) {
       const info = this.props.metadataItem.info;
-      const clickedInfo = info.find(report => report.name === reportName);
+      const clickedInfo = info.find((report) => report.name === reportName);
 
       if (isDefined(clickedInfo)) {
         runInAction(() => {
@@ -70,7 +75,7 @@ const DataPreviewSections = observer(
         ? metadataItem.infoWithoutSources
         : metadataItem.info.slice();
 
-      const renderSection = item => {
+      const renderSection = (item) => {
         let content = item.content;
         try {
           content = Mustache.render(content, metadataItem);
@@ -94,7 +99,7 @@ const DataPreviewSections = observer(
                 light={false}
                 title={item.name}
                 isOpen={item.show}
-                onToggle={show =>
+                onToggle={(show) =>
                   this.clickInfoSection.bind(this, item.name, show)()
                 }
                 bodyTextProps={{ medium: true }}

@@ -4,22 +4,22 @@ import PropTypes from "prop-types";
 import React from "react";
 import { withTranslation } from "react-i18next";
 import defined from "terriajs-cesium/Source/Core/defined";
-import getPath from "../../Core/getPath";
+import { DataSourceAction } from "../../Core/AnalyticEvents/analyticEvents";
 import MappableMixin from "../../ModelMixins/MappableMixin";
+import toggleItemOnMapFromCatalog, {
+  Op as ToggleOnMapOp
+} from "../DataCatalog/toggleItemOnMapFromCatalog";
 import measureElement from "../HOCs/measureElement";
-import SharePanel from "../Map/Panels/SharePanel/SharePanel.jsx";
+import SharePanel from "../Map/Panels/SharePanel/SharePanel";
 import DataPreviewMap from "./DataPreviewMap";
 import Description from "./Description";
 import Styles from "./mappable-preview.scss";
-import {
-  Category,
-  DataSourceAction
-} from "../../Core/AnalyticEvents/analyticEvents";
+import WarningBox from "./WarningBox";
 
 /**
  * @typedef {object} Props
  * @prop {Terria} terria
- * @prop {MappableMixin.MappableMixin} previewed
+ * @prop {MappableMixin.Instance} previewed
  * @prop {ViewState} viewState
  *
  */
@@ -45,32 +45,16 @@ class MappablePreview extends React.Component {
     }
 
     const keepCatalogOpen = event.shiftKey || event.ctrlKey;
-    const toAdd = !this.props.terria.workbench.contains(this.props.previewed);
 
-    try {
-      if (toAdd) {
-        this.props.terria.timelineStack.addToTop(this.props.previewed);
-        await this.props.terria.workbench.add(this.props.previewed);
-      } else {
-        this.props.terria.timelineStack.remove(this.props.previewed);
-        this.props.terria.workbench.remove(this.props.previewed);
+    await toggleItemOnMapFromCatalog(
+      this.props.viewState,
+      this.props.previewed,
+      keepCatalogOpen,
+      {
+        [ToggleOnMapOp.Add]: DataSourceAction.addFromPreviewButton,
+        [ToggleOnMapOp.Remove]: DataSourceAction.removeFromPreviewButton
       }
-      if (
-        this.props.terria.workbench.contains(this.props.previewed) &&
-        !keepCatalogOpen
-      ) {
-        this.props.viewState.closeCatalog();
-        this.props.terria.analytics?.logEvent(
-          Category.dataSource,
-          toAdd
-            ? DataSourceAction.addFromPreviewButton
-            : DataSourceAction.removeFromPreviewButton,
-          getPath(this.props.previewed)
-        );
-      }
-    } catch (e) {
-      this.props.terria.raiseErrorToUser(e);
-    }
+    );
   }
 
   backToMap() {
@@ -109,7 +93,7 @@ class MappablePreview extends React.Component {
         <div className={Styles.previewedInfo}>
           <div
             className={Styles.titleAndShareWrapper}
-            ref={component => (this.refToMeasure = component)}
+            ref={(component) => (this.refToMeasure = component)}
           >
             <h3 className={Styles.h3}>{catalogItem.name}</h3>
             <If
@@ -129,6 +113,18 @@ class MappablePreview extends React.Component {
               </div>
             </If>
           </div>
+          <If condition={catalogItem.loadMetadataResult?.error}>
+            <WarningBox
+              error={catalogItem.loadMetadataResult?.error}
+              viewState={this.props.viewState}
+            />
+          </If>
+          <If condition={catalogItem.loadMapItemsResult?.error}>
+            <WarningBox
+              error={catalogItem.loadMapItemsResult?.error}
+              viewState={this.props.viewState}
+            />
+          </If>
           <Description item={catalogItem} />
         </div>
       </div>

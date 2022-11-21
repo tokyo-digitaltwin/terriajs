@@ -8,7 +8,7 @@ import ItemSearchProvider, {
   ItemSearchParameter,
   ItemSearchParameterType,
   ItemSearchResult
-} from "../../../Models/ItemSearchProvider";
+} from "../../../Models/ItemSearchProviders/ItemSearchProvider";
 import ViewState from "../../../ReactViewModels/ViewState";
 import Box from "../../../Styled/Box";
 import { Frame, Main } from "../ToolModal";
@@ -38,7 +38,7 @@ export type ItemSearchQuery = Record<
 export type ItemSearchResults = ItemSearchResult[];
 export type ActiveSelectionDisposer = () => void | undefined;
 
-const ItemSearchTool: React.FC<PropsType> = observer(props => {
+const ItemSearchTool: React.FC<PropsType> = observer((props) => {
   const { viewState, item, itemSearchProvider, t } = props;
   const itemName = CatalogMemberMixin.isMixedInto(item) ? item.name : "Item";
 
@@ -51,7 +51,7 @@ const ItemSearchTool: React.FC<PropsType> = observer(props => {
       itemSearchProvider
         .initialize()
         .then(() =>
-          itemSearchProvider.describeParameters().then(parameters => {
+          itemSearchProvider.describeParameters().then((parameters) => {
             setState({ is: "search" });
             setParameters(parameters);
             setQuery({});
@@ -87,9 +87,8 @@ const ItemSearchTool: React.FC<PropsType> = observer(props => {
   };
 
   const searchAgain = () => setState({ is: "search" });
-  const loadIndexForParameter = itemSearchProvider.loadParameterHint?.bind(
-    itemSearchProvider
-  );
+  const loadIndexForParameter =
+    itemSearchProvider.loadParameterHint?.bind(itemSearchProvider);
 
   return (
     <Frame

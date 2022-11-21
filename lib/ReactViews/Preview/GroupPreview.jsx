@@ -10,8 +10,9 @@ import DataPreviewUrl from "./DataPreviewUrl";
 import measureElement from "../HOCs/measureElement";
 import Styles from "./mappable-preview.scss";
 import parseCustomMarkdownToReact from "../Custom/parseCustomMarkdownToReact";
-import SharePanel from "../Map/Panels/SharePanel/SharePanel.jsx";
+import SharePanel from "../Map/Panels/SharePanel/SharePanel";
 import { withTranslation } from "react-i18next";
+import WarningBox from "./WarningBox";
 
 /**
  * A "preview" for CatalogGroup.
@@ -40,7 +41,7 @@ const GroupPreview = observer(
         <div>
           <div
             className={Styles.titleAndShareWrapper}
-            ref={component => (this.refToMeasure = component)}
+            ref={(component) => (this.refToMeasure = component)}
           >
             <h3>{this.props.previewed.name}</h3>
             <div className={Styles.shareLinkWrapper}>
@@ -52,6 +53,18 @@ const GroupPreview = observer(
               />
             </div>
           </div>
+          <If condition={this.props.previewed.loadMetadataResult?.error}>
+            <WarningBox
+              error={this.props.previewed.loadMetadataResult?.error}
+              viewState={this.props.viewState}
+            />
+          </If>
+          <If condition={this.props.previewed.loadMembersResult?.error}>
+            <WarningBox
+              error={this.props.previewed.loadMembersResult?.error}
+              viewState={this.props.viewState}
+            />
+          </If>
           <div className={Styles.previewedInfo}>
             <div className={Styles.url}>
               <Choose>

@@ -1,16 +1,18 @@
-import CommonStrata from "../../lib/Models/CommonStrata";
-import MagdaReference from "../../lib/Models/MagdaReference";
-import { BaseModel } from "../../lib/Models/Model";
+import CommonStrata from "../../lib/Models/Definition/CommonStrata";
+import MagdaReference from "../../lib/Models/Catalog/CatalogReferences/MagdaReference";
+import { BaseModel } from "../../lib/Models/Definition/Model";
 import Terria from "../../lib/Models/Terria";
-import WebMapServiceCatalogItem from "../../lib/Models/WebMapServiceCatalogItem";
+import WebMapServiceCatalogItem from "../../lib/Models/Catalog/Ows/WebMapServiceCatalogItem";
 import Workbench from "../../lib/Models/Workbench";
+import Result from "../../lib/Core/Result";
+import TerriaError, { TerriaErrorSeverity } from "../../lib/Core/TerriaError";
 
-describe("Workbench", function() {
+describe("Workbench", function () {
   let terria: Terria;
   let workbench: Workbench;
   let item1: BaseModel, item2: BaseModel, item3: BaseModel, item4: BaseModel;
 
-  beforeEach(function() {
+  beforeEach(function () {
     terria = new Terria();
     workbench = terria.workbench;
 
@@ -29,7 +31,7 @@ describe("Workbench", function() {
     terria.addModel(item3);
   });
 
-  it("re-orders items correctly", function() {
+  it("re-orders items correctly", function () {
     workbench.items = [item1, item2, item3];
 
     expect(workbench.items).toEqual([item1, item2, item3]);
@@ -48,7 +50,7 @@ describe("Workbench", function() {
     expect(workbench.itemIds).toEqual(["C", "A", "B"]);
   });
 
-  describe("re-orders items correctly (with keepOnTop)", function() {
+  describe("re-orders items correctly (with keepOnTop)", function () {
     beforeEach(async () => {
       item3.setTrait("definition", "keepOnTop", true);
 
@@ -92,7 +94,7 @@ describe("Workbench", function() {
     });
   });
 
-  describe("will keep non layer-reordering layers at top of workbench list", function() {
+  describe("will keep non layer-reordering layers at top of workbench list", function () {
     beforeEach(async () => {
       item3.setTrait("definition", "supportsReordering", false);
 
@@ -131,23 +133,58 @@ describe("Workbench", function() {
     });
   });
 
-  it("add item", async function() {
+  it("add item", async function () {
     workbench.items = [item1, item2, item3];
 
     const wmsItem = item4 as WebMapServiceCatalogItem;
 
-    spyOn(wmsItem, "loadMetadata");
-    spyOn(wmsItem, "loadMapItems");
-
     await workbench.add(item4);
+
     expect(workbench.items).toEqual([item4, item1, item2, item3]);
     expect(workbench.itemIds).toEqual(["D", "A", "B", "C"]);
 
-    expect(wmsItem.loadMetadata).toHaveBeenCalledTimes(1);
-    expect(wmsItem.loadMapItems).toHaveBeenCalledTimes(1);
+    expect(wmsItem.loadMetadataResult).toBeDefined();
+    expect(wmsItem.loadMetadataResult?.error).toBeUndefined();
+    expect(wmsItem.loadMapItemsResult).toBeDefined();
+    expect(wmsItem.loadMapItemsResult?.error).toBeUndefined();
   });
 
-  it("doesn't add duplicate model", async function() {
+  it("doesn't add item if Error occurs, but adds item in Warning occurs", async function () {
+    workbench.items = [item1, item2];
+
+    const wmsItem3 = item3 as WebMapServiceCatalogItem;
+    const wmsItem4 = item4 as WebMapServiceCatalogItem;
+
+    (wmsItem3 as any).loadMapItems = () =>
+      Result.error(
+        new TerriaError({
+          message: "Failed to Load",
+          severity: TerriaErrorSeverity.Error
+        })
+      );
+
+    (wmsItem4 as any).loadMapItems = () =>
+      Result.error(
+        new TerriaError({
+          message: "Some warning",
+          severity: TerriaErrorSeverity.Warning
+        })
+      );
+
+    const addResult1 = await workbench.add(wmsItem3);
+
+    expect(addResult1.error).toBeDefined();
+    expect(addResult1.error?.severity).toEqual(TerriaErrorSeverity.Error);
+    expect(workbench.itemIds).toEqual(["A", "B"]);
+
+    const addResult2 = await workbench.add(wmsItem4);
+
+    expect(addResult2.error).toBeDefined();
+    expect(addResult2.error?.severity).toEqual(TerriaErrorSeverity.Warning);
+    expect(workbench.itemIds).toEqual(["D", "A", "B"]);
+  });
+
+  it("doesn't add duplicate model", async function () {
     workbench.items = [item1, item2, item3];
 
     await workbench.add(item1);
@@ -159,7 +196,7 @@ describe("Workbench", function() {
     expect(workbench.itemIds).toEqual(["A", "B", "C"]);
   });
 
-  it("remove item", async function() {
+  it("remove item", async function () {
     workbench.items = [item1, item2, item3];
 
     workbench.remove(item2);
@@ -167,7 +204,7 @@ describe("Workbench", function() {
     expect(workbench.itemIds).toEqual(["A", "C"]);
   });
 
-  it("add reference item", async function() {
+  it("add reference item", async function () {
     const model = new MagdaReference("magda-reference", terria);
     model.setTrait(CommonStrata.definition, "recordId", "test-group");
     model.setTrait(CommonStrata.definition, "magdaRecord", {
@@ -187,7 +224,6 @@ describe("Workbench", function() {
 
     const workbenchWithSingleModel = () => {
       expect(model.target).toBeDefined();
-      console.log(workbench.items);
       expect(workbench.items).toEqual([model.target!]); // Note gets deferenced model
       expect(workbench.itemIds).toEqual(["magda-reference"]); // This just gets id of model
       expect(workbench.items[0].type).toBe(WebMapServiceCatalogItem.type);

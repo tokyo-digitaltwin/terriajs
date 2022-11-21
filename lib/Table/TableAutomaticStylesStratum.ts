@@ -1,27 +1,23 @@
+import i18next from "i18next";
+import { uniq } from "lodash-es";
 import { computed } from "mobx";
-import { createTransformer } from "mobx-utils";
 import filterOutUndefined from "../Core/filterOutUndefined";
 import isDefined from "../Core/isDefined";
-import { JsonObject } from "../Core/Json";
-import ConstantColorMap from "../Map/ConstantColorMap";
-import DiscreteColorMap from "../Map/DiscreteColorMap";
-import EnumColorMap from "../Map/EnumColorMap";
 import TableMixin from "../ModelMixins/TableMixin";
-import createStratumInstance from "../Models/createStratumInstance";
-import LoadableStratum from "../Models/LoadableStratum";
-import { BaseModel } from "../Models/Model";
-import StratumFromTraits from "../Models/StratumFromTraits";
-import LegendTraits, { LegendItemTraits } from "../Traits/LegendTraits";
+import createStratumInstance from "../Models/Definition/createStratumInstance";
+import LoadableStratum from "../Models/Definition/LoadableStratum";
+import { BaseModel } from "../Models/Definition/Model";
+import StratumFromTraits from "../Models/Definition/StratumFromTraits";
+import { ShortReportTraits } from "../Traits/TraitsClasses/CatalogMemberTraits";
 import TableChartStyleTraits, {
   TableChartLineStyleTraits
-} from "../Traits/TableChartStyleTraits";
-import TableColorStyleTraits from "../Traits/TableColorStyleTraits";
-import TablePointSizeStyleTraits from "../Traits/TablePointSizeStyleTraits";
-import TableStyleTraits from "../Traits/TableStyleTraits";
-import TableTimeStyleTraits from "../Traits/TableTimeStyleTraits";
-import TableTraits from "../Traits/TableTraits";
+} from "../Traits/TraitsClasses/TableChartStyleTraits";
+import TableColorStyleTraits from "../Traits/TraitsClasses/TableColorStyleTraits";
+import TablePointSizeStyleTraits from "../Traits/TraitsClasses/TablePointSizeStyleTraits";
+import TableStyleTraits from "../Traits/TraitsClasses/TableStyleTraits";
+import TableTimeStyleTraits from "../Traits/TraitsClasses/TableTimeStyleTraits";
+import TableTraits from "../Traits/TraitsClasses/TableTraits";
 import TableColumnType from "./TableColumnType";
-import TableStyle from "./TableStyle";
 
 const DEFAULT_ID_COLUMN = "id";
 
@@ -40,6 +36,61 @@ export default class TableAutomaticStylesStratum extends LoadableStratum(
     return new TableAutomaticStylesStratum(
       newModel as TableCatalogItem
     ) as this;
+  }
+
+  @computed
+  get rectangle() {
+    return this.catalogItem.activeTableStyle.rectangle;
+  }
+
+  @computed
+  get disableOpacityControl() {
+    // disable opacity control for point tables - or if no mapItems
+    return this.catalogItem.activeTableStyle.isPoints() ||
+      this.catalogItem.mapItems.length === 0
+      ? true
+      : undefined;
+  }
+
+  @computed
+  get disableSplitter() {
+    return !isDefined(this.catalogItem.activeTableStyle.regionColumn)
+      ? true
+      : undefined;
+  }
+
+  /**
+   * Set default activeStyle to first style with a scalar color column (if none is found then find first style with enum, text and then region)
+   * Ignores styles with `hidden: true`
+   */
+  @computed get activeStyle() {
+    if (this.catalogItem.styles && this.catalogItem.styles.length > 0) {
+      // Find default active style in this order:
+      // - First scalar style
+      // - First enum style
+      // - First text style
+      // - First region style
+
+      const types = [
+        TableColumnType.scalar,
+        TableColumnType.enum,
+        TableColumnType.text,
+        TableColumnType.region
+      ];
+
+      const firstStyleOfEachType = types.map(
+        (columnType) =>
+          this.catalogItem.styles
+            .filter((style) => !style.hidden)
+            .find(
+              (s) =>
+                this.catalogItem.findColumnByName(s.color?.colorColumn)
+                  ?.type === columnType
+            )?.id
+      );
+
+      return filterOutUndefined(firstStyleOfEachType)[0];
+    }
   }
 
   @computed
@@ -87,17 +138,18 @@ export default class TableAutomaticStylesStratum extends LoadableStratum(
     }
 
     // Can't do much with this dataset.
-    return createStratumInstance(TableStyleTraits);
+    // Just add default legend
+    return createStratumInstance(TableStyleTraits, {});
   }
 
   @computed
   get defaultChartStyle(): StratumFromTraits<TableStyleTraits> | undefined {
     const timeColumns = this.catalogItem.tableColumns.filter(
-      column => column.type === TableColumnType.time
+      (column) => column.type === TableColumnType.time
     );
 
     const scalarColumns = this.catalogItem.tableColumns.filter(
-      column => column.type === TableColumnType.scalar
+      (column) => column.type === TableColumnType.scalar
     );
 
     const hasTime = timeColumns.length > 0;
@@ -119,38 +171,83 @@ export default class TableAutomaticStylesStratum extends LoadableStratum(
 
   @computed
   get styles(): StratumFromTraits<TableStyleTraits>[] {
-    // Create a style to color by every scalar and enum.
-    let columns = this.catalogItem.tableColumns.filter(
-      column =>
-        column.type === TableColumnType.scalar ||
-        column.type === TableColumnType.enum ||
-        column.type === TableColumnType.text
+    // If no styles for scalar, enum - show styles using region columns
+    const showRegionStyles = this.catalogItem.tableColumns.every(
+      (column) =>
+        column.type !== TableColumnType.scalar &&
+        column.type !== TableColumnType.enum
     );
 
-    // If no styles for scalar, enum or text, try to create a style using region columns
-    if (columns.length === 0) {
-      columns = this.catalogItem.tableColumns.filter(
-        column => column.type === TableColumnType.region
-      );
-    }
-
-    return columns.map((column, i) =>
+    const columnStyles = this.catalogItem.tableColumns.map((column, i) =>
       createStratumInstance(TableStyleTraits, {
         id: column.name,
         color: createStratumInstance(TableColorStyleTraits, {
-          colorColumn: column.name,
-          legend: this._createLegendForColorStyle(i)
+          colorColumn: column.name
         }),
         pointSize: createStratumInstance(TablePointSizeStyleTraits, {
           pointSizeColumn: column.name
-        })
+        }),
+        hidden:
+          column.type !== TableColumnType.scalar &&
+          column.type !== TableColumnType.enum &&
+          (column.type !== TableColumnType.region || !showRegionStyles)
       })
     );
+
+    return [
+      ...columnStyles,
+
+      // Create "User Style" traits for legend
+      // This style is used by `TableStylingWorkflow` if no other styles are available
+      createStratumInstance(TableStyleTraits, {
+        id: "User Style",
+        hidden: true
+      })
+    ];
   }
 
   @computed
   get disableDateTimeSelector() {
-    return this.catalogItem.mapItems.length === 0 ? true : undefined;
+    if (
+      this.catalogItem.mapItems.length === 0 ||
+      !this.catalogItem.activeTableStyle.moreThanOneTimeInterval
+    )
+      return true;
+  }
+
+  @computed get showDisableTimeOption() {
+    // Return nothing if no row groups or if time column doesn't have at least one interval
+    if (
+      this.catalogItem.activeTableStyle.rowGroups.length === 0 ||
+      !this.catalogItem.activeTableStyle.moreThanOneTimeInterval
+    )
+      return undefined;
+
+    // Return true if at least 50% of rowGroups only have one unique time interval (i.e. they don't change over time)
+    let flat = 0;
+
+    for (
+      let i = 0;
+      i < this.catalogItem.activeTableStyle.rowGroups.length;
+      i++
+    ) {
+      const [rowGroupId, rowIds] =
+        this.catalogItem.activeTableStyle.rowGroups[i];
+      // Check if there is only 1 unique date in this rowGroup
+      const dates = rowIds
+        .map((rowId) =>
+          this.catalogItem.activeTableStyle.timeColumn?.valuesAsDates.values[
+            rowId
+          ]?.getTime()
+        )
+        .filter(isDefined);
+      if (uniq(dates).length <= 1) flat++;
+    }
+
+    if (flat / this.catalogItem.activeTableStyle.rowGroups.length >= 0.5)
+      return true;
+
+    return undefined;
   }
 
   @computed
@@ -158,151 +255,46 @@ export default class TableAutomaticStylesStratum extends LoadableStratum(
     return "start";
   }
 
-  private readonly _createLegendForColorStyle = createTransformer(
-    (i: number) => {
-      return new ColorStyleLegend(this.catalogItem, i);
+  /** Return title of timeColumn if defined
+   * This will be displayed on DateTimeSelectorSection in the workbench
+   */
+  @computed get timeLabel() {
+    if (this.catalogItem.activeTableStyle.timeColumn) {
+      return `${this.catalogItem.activeTableStyle.timeColumn.title}: `;
     }
-  );
-}
-
-export class ColorStyleLegend extends LoadableStratum(LegendTraits) {
-  constructor(readonly catalogItem: TableCatalogItem, readonly index: number) {
-    super();
-  }
-
-  duplicateLoadableStratum(newModel: BaseModel): this {
-    return new ColorStyleLegend(
-      newModel as TableCatalogItem,
-      this.index
-    ) as this;
-  }
-
-  /** Add column title as legend title if showing a Discrete or Enum ColorMap */
-  @computed get title() {
-    if (
-      this.catalogItem.activeTableStyle.colorMap instanceof DiscreteColorMap ||
-      this.catalogItem.activeTableStyle.colorMap instanceof EnumColorMap
-    )
-      return this.catalogItem.activeTableStyle.title;
   }
 
   @computed
-  get items(): StratumFromTraits<LegendItemTraits>[] {
-    const activeStyle = this.catalogItem.activeTableStyle;
-    if (activeStyle === undefined) {
-      return [];
-    }
+  get shortReport() {
+    return this.catalogItem.mapItems.length === 0 &&
+      this.catalogItem.chartItems.length === 0 &&
+      !this.catalogItem.isLoading
+      ? i18next.t("models.tableData.noData")
+      : undefined;
+  }
 
-    const colorMap = activeStyle.colorMap;
-    if (colorMap instanceof DiscreteColorMap) {
-      return this._createLegendItemsFromDiscreteColorMap(activeStyle, colorMap);
-    } else if (colorMap instanceof EnumColorMap) {
-      return this._createLegendItemsFromEnumColorMap(activeStyle, colorMap);
-    } else if (colorMap instanceof ConstantColorMap) {
-      return this._createLegendItemsFromConstantColorMap(activeStyle, colorMap);
+  /** Show "Regions: xxx" short report for region-mapping */
+  @computed get shortReportSections() {
+    const regionCol = this.catalogItem.activeTableStyle.regionColumn;
+
+    const regionType = regionCol?.regionType;
+
+    if (regionType && this.catalogItem.showingRegions) {
+      return [
+        createStratumInstance(ShortReportTraits, {
+          name: `**Regions:** ${regionType.description}`
+        })
+      ];
     }
     return [];
   }
 
-  private _createLegendItemsFromDiscreteColorMap(
-    activeStyle: TableStyle,
-    colorMap: DiscreteColorMap
-  ): StratumFromTraits<LegendItemTraits>[] {
-    const colorColumn = activeStyle.colorColumn;
-    const minimum =
-      colorColumn && colorColumn.valuesAsNumbers.minimum !== undefined
-        ? colorColumn.valuesAsNumbers.minimum
-        : 0.0;
-
-    const nullBin =
-      colorColumn &&
-      colorColumn.valuesAsNumbers.numberOfValidNumbers <
-        colorColumn.valuesAsNumbers.values.length
-        ? [
-            createStratumInstance(LegendItemTraits, {
-              color: activeStyle.colorTraits.nullColor || "rgba(0, 0, 0, 0)",
-              addSpacingAbove: true,
-              title: activeStyle.colorTraits.nullLabel || "(No value)"
-            })
-          ]
-        : [];
-    let numberFormatOptions: Intl.NumberFormatOptions | JsonObject | undefined;
-    if (colorColumn?.traits?.format !== undefined) {
-      numberFormatOptions = colorColumn.traits.format;
-    }
-    return colorMap.maximums
-      .map((maximum, i) => {
-        const isBottom = i === 0;
-        const formattedMin = isBottom
-          ? this._formatValue(minimum, numberFormatOptions)
-          : this._formatValue(colorMap.maximums[i - 1], numberFormatOptions);
-        const formattedMax = this._formatValue(maximum, numberFormatOptions);
-        return createStratumInstance(LegendItemTraits, {
-          color: colorMap.colors[i].toCssColorString(),
-          title: `${formattedMin} to ${formattedMax}`
-          // titleBelow: isBottom ? minimum.toString() : undefined, // TODO: format value
-          // titleAbove: maximum.toString() // TODO: format value
-        });
-      })
-      .reverse()
-      .concat(nullBin);
-  }
-
-  private _createLegendItemsFromEnumColorMap(
-    activeStyle: TableStyle,
-    colorMap: EnumColorMap
-  ): StratumFromTraits<LegendItemTraits>[] {
-    const colorColumn = activeStyle.colorColumn;
-    const nullBin =
-      colorColumn && colorColumn.uniqueValues.numberOfNulls > 0
-        ? [
-            createStratumInstance(LegendItemTraits, {
-              color: activeStyle.colorTraits.nullColor || "rgba(0, 0, 0, 0)",
-              addSpacingAbove: true,
-              title: activeStyle.colorTraits.nullLabel || "(No value)"
-            })
-          ]
-        : [];
-
-    // Aggregate colours (don't show multiple legend items for the same colour)
-    const colorMapValues = colorMap.values.reduce<{
-      [color: string]: string[];
-    }>((prev, current, i) => {
-      const cssCol = colorMap.colors[i].toCssColorString();
-      if (isDefined(prev[cssCol])) {
-        prev[cssCol].push(current);
-      } else {
-        prev[cssCol] = [current];
-      }
-      return prev;
-    }, {});
-
-    return Object.entries(colorMapValues)
-      .map(([color, multipleTitles]) =>
-        createStratumInstance(LegendItemTraits, {
-          multipleTitles,
-          color
-        })
-      )
-      .concat(nullBin);
-  }
-
-  private _createLegendItemsFromConstantColorMap(
-    activeStyle: TableStyle,
-    colorMap: ConstantColorMap
-  ): StratumFromTraits<LegendItemTraits>[] {
-    return [
-      createStratumInstance(LegendItemTraits, {
-        color: colorMap.color.toCssColorString(),
-        title: colorMap.title
-      })
-    ];
-  }
-
-  private _formatValue(
-    value: number,
-    format: Intl.NumberFormatOptions | JsonObject | undefined
-  ): string {
-    return Math.round(value).toLocaleString(undefined, format);
+  /** Show chart by default - if not loading and no mappable items */
+  @computed get showInChartPanel() {
+    return (
+      this.catalogItem.show &&
+      !this.catalogItem.isLoading &&
+      this.catalogItem.mapItems.length === 0
+    );
   }
 }

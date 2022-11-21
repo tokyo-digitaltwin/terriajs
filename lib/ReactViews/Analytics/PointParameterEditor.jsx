@@ -16,7 +16,7 @@ import MapInteractionMode from "../../Models/MapInteractionMode";
 import Styles from "./parameter-editors.scss";
 import { runInAction, autorun } from "mobx";
 import { withTranslation } from "react-i18next";
-import CommonStrata from "../../Models/CommonStrata";
+import CommonStrata from "../../Models/Definition/CommonStrata";
 
 const PointParameterEditor = createReactClass({
   displayName: "PointParameterEditor",
@@ -32,10 +32,8 @@ const PointParameterEditor = createReactClass({
   inputOnChange(e) {
     const text = e.target.value;
     this.props.parameterViewModel.userValue = text;
-    this.props.parameterViewModel.isValueValid = PointParameterEditor.setValueFromText(
-      e,
-      this.props.parameter
-    );
+    this.props.parameterViewModel.isValueValid =
+      PointParameterEditor.setValueFromText(e, this.props.parameter);
   },
 
   inputOnBlur(e) {
@@ -104,7 +102,7 @@ const PointParameterEditor = createReactClass({
  * @param {FunctionParameter} parameter Parameter to set value on.
  * @returns {Boolean} True if the value was set successfully; false if the value could not be parsed.
  */
-PointParameterEditor.setValueFromText = function(e, parameter) {
+PointParameterEditor.setValueFromText = function (e, parameter) {
   const text = e.target.value;
 
   if (text.trim().length === 0 && !parameter.isRequired) {
@@ -179,7 +177,7 @@ export function selectOnMap(terria, viewState, parameter, interactionMessage) {
   let pickedFeaturesSubscription;
   const pickPointMode = new MapInteractionMode({
     message: interactionMessage,
-    onCancel: function() {
+    onCancel: function () {
       terria.mapInteractionModeStack.pop();
       viewState.openAddData();
       if (pickedFeaturesSubscription) {
@@ -192,7 +190,7 @@ export function selectOnMap(terria, viewState, parameter, interactionMessage) {
     terria.mapInteractionModeStack.push(pickPointMode);
   });
 
-  autorun(reaction => {
+  autorun((reaction) => {
     pickedFeaturesSubscription = reaction;
     if (pickPointMode.pickedFeatures) {
       const pickedFeatures = pickPointMode.pickedFeatures;

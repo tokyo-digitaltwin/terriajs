@@ -4,7 +4,7 @@ import { observer } from "mobx-react";
 import Styles from "./parameter-editors.scss";
 import { action } from "mobx";
 import EnumerationParameter from "../../Models/FunctionParameters/EnumerationParameter";
-import CommonStrata from "../../Models/CommonStrata";
+import CommonStrata from "../../Models/Definition/CommonStrata";
 import isDefined from "../../Core/isDefined";
 
 @observer
@@ -31,7 +31,9 @@ export default class EnumerationParameterEditor extends React.Component<{
         )}
         {/* Create option if value is invalid (not in possibleValues) */}
         {isDefined(value) &&
-          !this.props.parameter.options.find(option => option.id === value) && (
+          !this.props.parameter.options.find(
+            (option) => option.id === value
+          ) && (
             <option key="__invalid__" value={value}>
               Invalid value ({value})
             </option>
