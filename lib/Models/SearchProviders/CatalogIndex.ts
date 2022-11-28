@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Document } from "flexsearch";
 import { action, observable, runInAction } from "mobx";
 import { isJsonObject, isJsonString, isJsonStringArray } from "../../Core/Json";
