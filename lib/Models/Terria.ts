@@ -320,6 +320,12 @@ interface ConfigParameters {
   googleAnalyticsOptions?: unknown;
 
   relatedMaps?: RelatedMap[];
+
+  /**
+   * Options for Azure AD SSO
+   */
+   azureADClientID?: string;
+   azureADTenantID?: string;
 }
 
 interface StartOptions {
@@ -530,7 +536,9 @@ export default class Terria {
     storyRouteUrlPrefix: undefined,
     enableConsoleAnalytics: undefined,
     googleAnalyticsOptions: undefined,
-    relatedMaps: defaultRelatedMaps
+    relatedMaps: defaultRelatedMaps,
+    azureADClientID: undefined,
+    azureADTenantID: undefined
   };
 
   @observable
