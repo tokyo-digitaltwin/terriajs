@@ -73,7 +73,7 @@ class WelcomeMessage extends React.Component {
     return (
       <WelcomeMessagePure
         showWelcomeMessage={viewState.showWelcomeMessage}
-        setShowWelcomeMessage={bool =>
+        setShowWelcomeMessage={(bool) =>
           this.props.viewState.setShowWelcomeMessage(bool)
         }
         isTopElement={this.props.viewState.topElement === "WelcomeMessage"}
@@ -83,7 +83,7 @@ class WelcomeMessage extends React.Component {
   }
 }
 
-export const WelcomeMessagePure = props => {
+export const WelcomeMessagePure = (props) => {
   const { showWelcomeMessage, setShowWelcomeMessage, viewState } = props;
   const { t } = useTranslation();
   // This is required so we can do nested animations
@@ -106,7 +106,7 @@ export const WelcomeMessagePure = props => {
       if (viewState.terria.analytics && viewState.terria.analytics.key) {
         delete viewState.terria.analytics.key;
       }
-      window.gtag = function() {};
+      window.gtag = function () {};
     }
     setShouldOpenHelp(false);
   };
@@ -180,7 +180,7 @@ export const WelcomeMessagePure = props => {
               styledMinHeight={"504px"}
               displayInlineBlock
               paddedRatio={6}
-              onClick={e => {
+              onClick={(e) => {
                 viewState.setTopElement("WelcomeMessage");
                 e.stopPropagation();
               }}
@@ -245,7 +245,7 @@ export const WelcomeMessagePure = props => {
                   Cookieの使用について同意いただける場合は、「同意します」をクリックしてください。
                   <br />
                   <a
-                    href={viewState.terria.configParameters.policyUrl}
+                    href={t("map.extraCreditLinks.policyUrl")}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
