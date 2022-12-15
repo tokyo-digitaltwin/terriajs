@@ -245,7 +245,7 @@ export const WelcomeMessagePure = (props) => {
                   Cookieの使用について同意いただける場合は、「同意します」をクリックしてください。
                   <br />
                   <a
-                    href={t("map.extraCreditLinks.policyUrl")}
+                    href={t("welcomeMessage.policyUrl")}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
