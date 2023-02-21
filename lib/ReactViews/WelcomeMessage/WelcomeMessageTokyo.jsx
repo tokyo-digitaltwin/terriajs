@@ -65,7 +65,8 @@ class WelcomeMessage extends React.Component {
         !viewState.terria.getLocalProperty(LOCAL_PROPERTY_KEY)) ||
       false;
 
-    this.props.viewState.setShowWelcomeMessage(shouldShow);
+    // this.props.viewState.setShowWelcomeMessage(shouldShow);
+    this.props.viewState.setShowWelcomeMessage(true);
   }
 
   render() {
@@ -116,16 +117,19 @@ export const WelcomeMessagePure = (props) => {
       if (!viewState.terria.getLocalProperty("useCookie") && window.gtag) {
         delete window.gtag;
       }
+    }else{
+      window.location.href = "https://info.tokyo-digitaltwin.metro.tokyo.lg.jp/3dmodel/";
+      return;
     }
     viewState.terria.setLocalProperty("useCookie", accept);
     handleClose(false);
   };
 
-  useKeyPress("Escape", () => {
-    if (showWelcomeMessage && viewState.videoGuideVisible === "") {
-      handleClose(false);
-    }
-  });
+  // useKeyPress("Escape", () => {
+  //   if (showWelcomeMessage && viewState.videoGuideVisible === "") {
+  //     handleClose(false);
+  //   }
+  // });
 
   return (
     <FadeIn
@@ -163,7 +167,7 @@ export const WelcomeMessagePure = (props) => {
         fullHeight
         position="absolute"
         right
-        onClick={() => handleClose(false)}
+        // onClick={() => handleClose(false)}
       >
         <Box
           styledWidth={
@@ -185,18 +189,6 @@ export const WelcomeMessagePure = (props) => {
                 e.stopPropagation();
               }}
             >
-              <RawButton
-                onClick={handleClose.bind(null, false)}
-                css={`
-                  float: right;
-                `}
-              >
-                <StyledIcon
-                  styledWidth={"24px"}
-                  light
-                  glyph={Icon.GLYPHS.closeLight}
-                />
-              </RawButton>
               <Spacing bottom={7} />
               <Box displayInlineBlock col10>
                 <Text
@@ -218,7 +210,7 @@ export const WelcomeMessagePure = (props) => {
                 </Text>
               </Box>
               <Spacing bottom={viewState.useSmallScreenInterface ? 2 : 3} />
-              <Box fullWidth centered>
+              {/* <Box fullWidth centered>
                 <Box fullWidth column>
                   <WelcomeMessageButton
                     onClick={() => {
@@ -237,12 +229,10 @@ export const WelcomeMessagePure = (props) => {
                   />
                 </Box>
               </Box>
-              <Spacing bottom={viewState.useSmallScreenInterface ? 2 : 3} />
-              <Box fullWidth centered>
+              <Spacing bottom={viewState.useSmallScreenInterface ? 2 : 3} /> */}
+              <Box displayInlineBlock col10>
                 <Text textLight medium>
-                  本ウェブサイトでは、より良いサイト運営のため、Cookie技術を使用します。
-                  <br />
-                  Cookieの使用について同意いただける場合は、「同意します」をクリックしてください。
+                  サイトポリシーに同意いただける場合は、「同意する」をクリックください。
                   <br />
                   <a
                     href={t("welcomeMessage.policyUrl")}
@@ -282,14 +272,6 @@ export const WelcomeMessagePure = (props) => {
                     </TextSpan>
                   </Box>
                 </Button>
-              </Box>
-              <Spacing bottom={3} />
-              <Box fullWidth centered>
-                <RawButton onClick={handleClose.bind(null, true)}>
-                  <TextSpan textLight isLink>
-                    {t("welcomeMessage.dismissText")}
-                  </TextSpan>
-                </RawButton>
               </Box>
             </Box>
           </SlideUpFadeIn>
