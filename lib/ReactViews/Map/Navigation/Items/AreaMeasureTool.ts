@@ -1,6 +1,8 @@
 "use strict";
 import i18next from "i18next";
 import React from "react";
+import turfArea from '@turf/area'
+import { polygon as turfPolygon } from '@turf/helpers'
 import Cartesian3 from "terriajs-cesium/Source/Core/Cartesian3";
 import Ellipsoid from "terriajs-cesium/Source/Core/Ellipsoid";
 import EllipsoidGeodesic from "terriajs-cesium/Source/Core/EllipsoidGeodesic";
@@ -11,20 +13,21 @@ import PolygonHierarchy from "terriajs-cesium/Source/Core/PolygonHierarchy";
 import VertexFormat from "terriajs-cesium/Source/Core/VertexFormat";
 import CustomDataSource from "terriajs-cesium/Source/DataSources/CustomDataSource";
 import Terria from "../../../../Models/Terria";
+import Polygon, {PositionsArray } from '../../../../Map/Cesium/Polygon'
 import UserDrawing from "../../../../Models/UserDrawing";
 import ViewerMode from "../../../../Models/ViewerMode";
 import { GLYPHS } from "../../../../Styled/Icon";
 import MapNavigationItemController from "../../../../ViewModels/MapNavigation/MapNavigationItemController";
 
-interface MeasureToolOptions {
+interface AreaMeasureToolOptions {
   terria: Terria;
   onClose(): void;
   handleClick(): void;
 }
 
-export default class MeasureTool extends MapNavigationItemController {
-  static id = "measure-tool";
-  static displayName = "MeasureTool";
+export default class AreaMeasureTool extends MapNavigationItemController {
+  static id = "area-measure-tool";
+  static displayName = "AreaMeasureTool";
 
   private readonly terria: Terria;
   private totalDistanceMetres: number = 0;
@@ -35,13 +38,13 @@ export default class MeasureTool extends MapNavigationItemController {
   handleClick: () => void;
   itemRef: React.RefObject<HTMLDivElement> = React.createRef();
 
-  constructor(props: MeasureToolOptions) {
+  constructor(props: AreaMeasureToolOptions) {
     super();
     this.terria = props.terria;
     this.userDrawing = new UserDrawing({
       terria: props.terria,
-      messageHeader: () => i18next.t("measure.measureTool"),
-      allowPolygon: false,
+      messageHeader: () => i18next.t("measure.areaMeasureTool"),
+      allowPolygon: true,
       onPointClicked: this.onPointClicked.bind(this),
       onPointMoved: this.onPointMoved.bind(this),
       onCleanUp: this.onCleanUp.bind(this),
@@ -52,7 +55,7 @@ export default class MeasureTool extends MapNavigationItemController {
   }
 
   get glyph(): any {
-    return GLYPHS.measure;
+    return GLYPHS.measureArea;
   }
 
   get viewerMode(): ViewerMode | undefined {
@@ -130,13 +133,19 @@ export default class MeasureTool extends MapNavigationItemController {
     }
     const perPositionHeight = true;
 
-    const positions = [];
+    
+    const positions:PositionsArray = [];
     for (let i = 0; i < pointEntities.entities.values.length; i++) {
       const currentPoint = pointEntities.entities.values[i];
       const currentPointPos = currentPoint.position!.getValue(
         this.terria.timelineClock.currentTime
       );
       positions.push(currentPointPos);
+    }
+    const polygon = new Polygon();
+    if(!polygon.validatePolygon(positions)){
+      this.userDrawing.errorText="<span style='font-weight:bold;color:red;'>"+i18next.t("measure.areaMeasureInvalidError")+"</span>";
+      return
     }
 
     // Request the triangles that make up the polygon from Cesium.
@@ -167,30 +176,15 @@ export default class MeasureTool extends MapNavigationItemController {
     }
 
     const coords = [];
-    for (let i = 0; i < geom.attributes.position.values.length; i += 3) {
-      coords.push(
-        new Cartesian3(
-          geom.attributes.position.values[i],
-          geom.attributes.position.values[i + 1],
-          geom.attributes.position.values[i + 2]
-        )
-      );
+    for (let i = 0; i < positions.length; i++) {
+      const pointsCartographic = Ellipsoid.WGS84.cartesianToCartographic(positions[i]);
+      var lon = CesiumMath.toDegrees(pointsCartographic.longitude);
+      var lat = CesiumMath.toDegrees(pointsCartographic.latitude);
+      coords.push([lon,lat]);
     }
-    let area = 0;
-    for (let i = 0; i < geom.indices.length; i += 3) {
-      const ind1 = geom.indices[i];
-      const ind2 = geom.indices[i + 1];
-      const ind3 = geom.indices[i + 2];
-
-      const a = Cartesian3.distance(coords[ind1], coords[ind2]);
-      const b = Cartesian3.distance(coords[ind2], coords[ind3]);
-      const c = Cartesian3.distance(coords[ind3], coords[ind1]);
-
-      // Heron's formula
-      const s = (a + b + c) / 2.0;
-      area += Math.sqrt(s * (s - a) * (s - b) * (s - c));
-    }
-    this.totalAreaMetresSquared = area;
+    coords.push(coords[0]);
+    let areas = turfArea(turfPolygon([coords]))
+    this.totalAreaMetresSquared = areas;
   }
 
   getGeodesicDistance(pointOne: Cartesian3, pointTwo: Cartesian3) {
@@ -225,11 +219,15 @@ export default class MeasureTool extends MapNavigationItemController {
 
   onMakeDialogMessage = () => {
     const distance = this.prettifyNumber(this.totalDistanceMetres, false);
-    let message = distance;
+    let message = "";
     if (this.totalAreaMetresSquared !== 0) {
+      if (distance !== '') {
+        message +=  "<br>" + i18next.t("measure.areaMeasureLineLabel") + distance;
+      }
       message +=
-        "<br>" + this.prettifyNumber(this.totalAreaMetresSquared, true);
+        "<br>" + i18next.t("measure.areaMeasureAreaLabel") + this.prettifyNumber(this.totalAreaMetresSquared, true)+"<br>";
     }
+    message += "<span style='font-size:8px;color:blue;'>"+i18next.t("measure.areaMeasureHelp")+"</span>";
     return message;
   };
 

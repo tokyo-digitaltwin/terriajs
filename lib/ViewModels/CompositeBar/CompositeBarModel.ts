@@ -227,6 +227,10 @@ export abstract class CompositeBarModel<
     return this.items.filter((item) => item.id === id)[0];
   }
 
+  findItems(ids: string[]): CompositeBarItem[] | undefined {
+    return this.items.filter((item) => item.id in ids);
+  }
+
   protected createCompositeBarItem(item: CompositeBarItem): CompositeBarItem {
     return item;
   }
