@@ -563,7 +563,16 @@
   "measure": {
     "measureDistance": "距離を計測します",
     "measureToolTitle": "距離の計測",
-    "measureTool": "計測ツール"
+    "measureTool": "計測ツール",
+    "measureArea": "面積を計測します",
+    "areaMeasureToolTitle": "面積の計測",
+    "areaMeasureTool": "面積計測ツール",
+    "areaMeasureLineLabel": "周の長さ　",
+    "areaMeasureAreaLabel": "面　　積　",
+    "areaMeasureHelp": "利用上の留意点は<a href='/area_measurement_tool.html'>こちら</a>",
+    "areaMeasureInvalidError":"ポリゴンにエラーがあります。正しいポリゴンを描画してください。",
+    "areaMeasureAttention":"※注意：ポリゴンが交差した場合は面積計測ができません。",
+    "areaMeasureNotify":"※既に選択したポイントを取り消す場合、当該ポイントをクリックしてください。"
   },
   "addData": {
     "note": "<0>注意：</0>この方法で追加されたデータは保存されず、他の人に見せることもできません。",

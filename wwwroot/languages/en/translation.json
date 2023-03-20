@@ -55,7 +55,16 @@
   "measure": {
     "measureTool": "Measure Tool",
     "measureToolTitle": "Line Measure",
-    "measureDistance": "Measure distance between locations"
+    "measureDistance": "Measure distance between locations",
+    "measureArea": "Measure the area",
+    "areaMeasureToolTitle": "Area Measure",
+    "areaMeasureTool": "Area measure Tool",
+    "areaMeasureLineLabel": "Length ",
+    "areaMeasureAreaLabel": "  Area ",
+    "areaMeasureHelp": "Click <a href='/area_measurement_tool.html'>here</a> for usage notes",
+    "areaMeasureInvalidError": "There is an error in the polygon. Draw the correct polygons.",
+    "areaMeasureAttention":"*Caution: Area measurement is not possible when polygons intersect.",
+    "areaMeasureNotify":"*To cancel a point that has already been selected, click on that point."
   },
   "location": {
     "errorGettingLocation": "Error getting location",
