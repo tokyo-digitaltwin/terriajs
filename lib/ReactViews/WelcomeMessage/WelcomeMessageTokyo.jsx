@@ -117,8 +117,9 @@ export const WelcomeMessagePure = (props) => {
       if (!viewState.terria.getLocalProperty("useCookie") && window.gtag) {
         delete window.gtag;
       }
-    }else{
-      window.location.href = "https://info.tokyo-digitaltwin.metro.tokyo.lg.jp/3dmodel/";
+    } else {
+      window.location.href =
+        "https://info.tokyo-digitaltwin.metro.tokyo.lg.jp/3dmodel/";
       return;
     }
     viewState.terria.setLocalProperty("useCookie", accept);
@@ -272,6 +273,22 @@ export const WelcomeMessagePure = (props) => {
                     </TextSpan>
                   </Box>
                 </Button>
+              </Box>
+              <Spacing bottom={2} />
+              <Box displayInlineBlock col10>
+                <Text textLight medium>
+                  ご不明な点がございましたら東京都デジタルツイン3Dビューア運営事務局&#0020;
+                  <a
+                    href={`mailto:${viewState.terria.supportEmail}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <TextSpan textLight isLink>
+                      {viewState.terria.supportEmail}
+                    </TextSpan>
+                  </a>
+                  &#0020;までお問合せください。
+                </Text>
               </Box>
             </Box>
           </SlideUpFadeIn>
