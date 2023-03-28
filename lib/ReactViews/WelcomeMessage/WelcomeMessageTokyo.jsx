@@ -277,7 +277,7 @@ export const WelcomeMessagePure = (props) => {
               <Spacing bottom={2} />
               <Box displayInlineBlock col10>
                 <Text textLight medium>
-                  ご不明な点がございましたら東京都デジタルツイン3Dビューア運営事務局&#0020;
+                  ご不明な点がございましたら東京都デジタルツイン3Dビューア運営事務局{" "}
                   <a
                     href={`mailto:${viewState.terria.supportEmail}`}
                     target="_blank"
@@ -286,8 +286,8 @@ export const WelcomeMessagePure = (props) => {
                     <TextSpan textLight isLink>
                       {viewState.terria.supportEmail}
                     </TextSpan>
-                  </a>
-                  &#0020;までお問合せください。
+                  </a>{" "}
+                  までお問合せください。
                 </Text>
               </Box>
             </Box>
