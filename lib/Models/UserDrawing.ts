@@ -68,6 +68,7 @@ export default class UserDrawing extends MappableMixin(
   pointEntities: CustomDataSource;
   otherEntities: CustomDataSource;
   polygon?: Entity;
+  errorText: string;
 
   @observable
   private inDrawMode: boolean;
@@ -144,6 +145,8 @@ export default class UserDrawing extends MappableMixin(
      * Whether the first and last point in the user drawing are the same
      */
     this.closeLoop = false;
+    
+    this.errorText = '';
 
     this.drawRectangle = defaultValue(options.drawRectangle, false);
 
@@ -561,6 +564,13 @@ export default class UserDrawing extends MappableMixin(
         ? this.messageHeader()
         : this.messageHeader) +
       "</strong></br>";
+
+    if(this.errorText){
+      message +=  "" + this.errorText + "";
+      this.errorText = "";
+      return "<div>" + message + "</div>";
+    }
+
     let innerMessage = isDefined(this.onMakeDialogMessage)
       ? this.onMakeDialogMessage()
       : "";
@@ -568,17 +578,21 @@ export default class UserDrawing extends MappableMixin(
     if (innerMessage !== "") {
       message += innerMessage + "</br>";
     }
-
+    let userDrawingMessage='';
     if (this.drawRectangle && this.pointEntities.entities.values.length >= 2) {
-      message +=
+      userDrawingMessage +=
         "<i>" + i18next.t("models.userDrawing.clickToRedrawRectangle") + "</i>";
     } else if (this.pointEntities.entities.values.length > 0) {
-      message +=
+      userDrawingMessage +=
         "<i>" + i18next.t("models.userDrawing.clickToAddAnotherPoint") + "</i>";
     } else {
-      message +=
+      userDrawingMessage +=
         "<i>" + i18next.t("models.userDrawing.clickToAddFirstPoint") + "</i>";
     }
+    if(this.allowPolygon){
+      userDrawingMessage = '';
+    }
+    message += userDrawingMessage;
     // htmlToReactParser will fail if html doesn't have only one root element.
     return "<div>" + message + "</div>";
   }

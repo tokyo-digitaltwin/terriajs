@@ -9,6 +9,8 @@ import DropPedestrianToGround from "./DropPedestrianToGround";
 import MiniMap, { getViewFromScene, MiniMapView } from "./MiniMap";
 import MovementControls from "./MovementControls";
 import MeasureTool from "../../Map/Navigation/Items/MeasureTool";
+import AreaMeasureTool from "../../Map/Navigation/Items/AreaMeasureTool";
+
 
 // The desired camera height measured from the surface in metres
 export const PEDESTRIAN_HEIGHT = 1.7;
@@ -37,15 +39,22 @@ const PedestrianMode: React.FC<PedestrianModeProps> = observer((props) => {
   const updateView = () => setView(getViewFromScene(cesium.scene));
 
   useEffect(() => {
-    const item = viewState.terria.mapNavigationModel.findItem(
-      MeasureTool.id
-    )?.controller;
-    if (item && item.active) {
-      item.deactivate();
+    const targetIds = [MeasureTool.id, AreaMeasureTool.id]
+    const items = viewState.terria.mapNavigationModel.items.filter(val=>targetIds.includes(val.id))
+
+    if (items && items.length>0) {
+      for (let index = 0; index < items.length; index++) {
+        let item = items[index];
+        if (item && item.controller && item.controller.active) {
+          item.controller.deactivate();
+        }
+      }
     }
     viewState.terria.mapNavigationModel.disable(MeasureTool.id);
+    viewState.terria.mapNavigationModel.disable(AreaMeasureTool.id);
     return () => {
       viewState.terria.mapNavigationModel.enable(MeasureTool.id);
+      viewState.terria.mapNavigationModel.enable(AreaMeasureTool.id);
     };
   }, []);
 

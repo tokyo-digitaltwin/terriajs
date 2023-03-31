@@ -65,7 +65,8 @@ class WelcomeMessage extends React.Component {
         !viewState.terria.getLocalProperty(LOCAL_PROPERTY_KEY)) ||
       false;
 
-    this.props.viewState.setShowWelcomeMessage(shouldShow);
+    // this.props.viewState.setShowWelcomeMessage(shouldShow);
+    this.props.viewState.setShowWelcomeMessage(true);
   }
 
   render() {
@@ -73,7 +74,7 @@ class WelcomeMessage extends React.Component {
     return (
       <WelcomeMessagePure
         showWelcomeMessage={viewState.showWelcomeMessage}
-        setShowWelcomeMessage={bool =>
+        setShowWelcomeMessage={(bool) =>
           this.props.viewState.setShowWelcomeMessage(bool)
         }
         isTopElement={this.props.viewState.topElement === "WelcomeMessage"}
@@ -83,7 +84,7 @@ class WelcomeMessage extends React.Component {
   }
 }
 
-export const WelcomeMessagePure = props => {
+export const WelcomeMessagePure = (props) => {
   const { showWelcomeMessage, setShowWelcomeMessage, viewState } = props;
   const { t } = useTranslation();
   // This is required so we can do nested animations
@@ -106,7 +107,7 @@ export const WelcomeMessagePure = props => {
       if (viewState.terria.analytics && viewState.terria.analytics.key) {
         delete viewState.terria.analytics.key;
       }
-      window.gtag = function() {};
+      window.gtag = function () {};
     }
     setShouldOpenHelp(false);
   };
@@ -116,16 +117,20 @@ export const WelcomeMessagePure = props => {
       if (!viewState.terria.getLocalProperty("useCookie") && window.gtag) {
         delete window.gtag;
       }
+    } else {
+      window.location.href =
+        "https://info.tokyo-digitaltwin.metro.tokyo.lg.jp/3dmodel/";
+      return;
     }
     viewState.terria.setLocalProperty("useCookie", accept);
     handleClose(false);
   };
 
-  useKeyPress("Escape", () => {
-    if (showWelcomeMessage && viewState.videoGuideVisible === "") {
-      handleClose(false);
-    }
-  });
+  // useKeyPress("Escape", () => {
+  //   if (showWelcomeMessage && viewState.videoGuideVisible === "") {
+  //     handleClose(false);
+  //   }
+  // });
 
   return (
     <FadeIn
@@ -163,7 +168,7 @@ export const WelcomeMessagePure = props => {
         fullHeight
         position="absolute"
         right
-        onClick={() => handleClose(false)}
+        // onClick={() => handleClose(false)}
       >
         <Box
           styledWidth={
@@ -180,23 +185,11 @@ export const WelcomeMessagePure = props => {
               styledMinHeight={"504px"}
               displayInlineBlock
               paddedRatio={6}
-              onClick={e => {
+              onClick={(e) => {
                 viewState.setTopElement("WelcomeMessage");
                 e.stopPropagation();
               }}
             >
-              <RawButton
-                onClick={handleClose.bind(null, false)}
-                css={`
-                  float: right;
-                `}
-              >
-                <StyledIcon
-                  styledWidth={"24px"}
-                  light
-                  glyph={Icon.GLYPHS.closeLight}
-                />
-              </RawButton>
               <Spacing bottom={7} />
               <Box displayInlineBlock col10>
                 <Text
@@ -218,7 +211,7 @@ export const WelcomeMessagePure = props => {
                 </Text>
               </Box>
               <Spacing bottom={viewState.useSmallScreenInterface ? 2 : 3} />
-              <Box fullWidth centered>
+              {/* <Box fullWidth centered>
                 <Box fullWidth column>
                   <WelcomeMessageButton
                     onClick={() => {
@@ -237,15 +230,13 @@ export const WelcomeMessagePure = props => {
                   />
                 </Box>
               </Box>
-              <Spacing bottom={viewState.useSmallScreenInterface ? 2 : 3} />
-              <Box fullWidth centered>
+              <Spacing bottom={viewState.useSmallScreenInterface ? 2 : 3} /> */}
+              <Box displayInlineBlock col10>
                 <Text textLight medium>
-                  本ウェブサイトでは、より良いサイト運営のため、Cookie技術を使用します。
-                  <br />
-                  Cookieの使用について同意いただける場合は、「同意します」をクリックしてください。
+                  サイトポリシーに同意いただける場合は、「同意する」をクリックください。
                   <br />
                   <a
-                    href={viewState.terria.configParameters.policyUrl}
+                    href={t("welcomeMessage.policyUrl")}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -283,13 +274,21 @@ export const WelcomeMessagePure = props => {
                   </Box>
                 </Button>
               </Box>
-              <Spacing bottom={3} />
-              <Box fullWidth centered>
-                <RawButton onClick={handleClose.bind(null, true)}>
-                  <TextSpan textLight isLink>
-                    {t("welcomeMessage.dismissText")}
-                  </TextSpan>
-                </RawButton>
+              <Spacing bottom={2} />
+              <Box displayInlineBlock col10>
+                <Text textLight medium>
+                  ご不明な点がございましたら東京都デジタルツイン3Dビューア運営事務局{" "}
+                  <a
+                    href={`mailto:${viewState.terria.supportEmail}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <TextSpan textLight isLink>
+                      {viewState.terria.supportEmail}
+                    </TextSpan>
+                  </a>{" "}
+                  までお問合せください。
+                </Text>
               </Box>
             </Box>
           </SlideUpFadeIn>

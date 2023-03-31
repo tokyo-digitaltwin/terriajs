@@ -23,6 +23,7 @@ import {
 import CloseToolButton from "./Items/CloseToolButton";
 import Compass, { COMPASS_TOOL_ID } from "./Items/Compass";
 import MeasureTool from "./Items/MeasureTool";
+import AreaMeasureTool from "./Items/AreaMeasureTool";
 import MyLocation from "./Items/MyLocation";
 import { ToggleSplitterController } from "./Items/ToggleSplitterTool";
 import ZoomControl, { ZOOM_CONTROL_ID } from "./Items/ZoomControl";
@@ -91,6 +92,14 @@ export const registerMapNavigations = (viewState: ViewState) => {
 
   const measureTool = new MeasureTool({
     terria,
+    handleClick: () => {
+      if (measureTool.active) {
+        measureTool.deactivate();
+      } else {
+        if (areaMeasureTool.active) areaMeasureTool.deactivate();
+        measureTool.activate();
+      }
+    },
     onClose: () => {
       runInAction(() => {
         viewState.panel = undefined;
@@ -105,6 +114,32 @@ export const registerMapNavigations = (viewState: ViewState) => {
     controller: measureTool,
     screenSize: undefined,
     order: 6
+  });
+  
+  const areaMeasureTool = new AreaMeasureTool({
+    terria,
+    handleClick: () => {
+      if (areaMeasureTool.active) {
+        areaMeasureTool.deactivate();
+      } else {
+        if (measureTool.active) measureTool.deactivate();
+        areaMeasureTool.activate();
+      }
+    },
+    onClose: () => {
+      runInAction(() => {
+        viewState.panel = undefined;
+      });
+    }
+  });
+  mapNavigationModel.addItem({
+    id: AreaMeasureTool.id,
+    name: "translate#measure.areaMeasureToolTitle",
+    title: "translate#measure.measureArea",
+    location: "TOP",
+    controller: areaMeasureTool,
+    screenSize: undefined,
+    order: 9
   });
 
   const pedestrianModeToolController = new ToolButtonController({
