@@ -15,6 +15,8 @@ import Cesium3DTileset from "terriajs-cesium/Source/Scene/Cesium3DTileset";
 import GeometryAttribute from "terriajs-cesium/Source/Core/GeometryAttribute";
 import ComponentDatatype from "terriajs-cesium/Source/Core/ComponentDatatype";
 import GeometryInstanceAttribute from "terriajs-cesium/Source/Core/GeometryInstanceAttribute";
+import Color from "terriajs-cesium/Source/Core/Color";
+import Material from "terriajs-cesium/Source/Scene/Material";
 // PolylineCommon.js does exist.
 // @ts-ignore
 import PolylineCommon from "terriajs-cesium/Source/Shaders/PolylineCommon";
@@ -304,7 +306,6 @@ class AnimatedPolylineCatalogItem extends MappableMixin(
     attribute float batchId;
     attribute float timeTable;
     attribute vec4 startColor;
-    attribute vec4 color;
 
     varying float v_width;
     varying float v_polylineAngle;
@@ -377,6 +378,9 @@ class AnimatedPolylineCatalogItem extends MappableMixin(
     return new Primitive({
       geometryInstances,
       appearance: new PolylineMaterialAppearance({
+        material: Material.fromType("Color", {
+          color: new Color(1.0, 0.0, 0.0)
+        }),
         translucent: false,
         renderState: {
           depthTest: {
