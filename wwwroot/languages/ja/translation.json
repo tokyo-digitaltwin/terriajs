@@ -1824,7 +1824,7 @@
       "basemap": "背景地図",
       "disclaimer": "免責事項",
       "dataAttribution": "データの帰属",
-      "dataProvider": "データ提供先:"
+      "dataProvider": "データ出典:"
     }
   },
   "toast": {
