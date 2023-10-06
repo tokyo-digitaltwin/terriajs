@@ -1,6 +1,6 @@
 import i18next from "i18next";
 import { uniq } from "lodash-es";
-import { computed } from "mobx";
+import { computed, makeObservable } from "mobx";
 import filterOutUndefined from "../Core/filterOutUndefined";
 import isDefined from "../Core/isDefined";
 import TableMixin from "../ModelMixins/TableMixin";
@@ -11,12 +11,12 @@ import StratumFromTraits from "../Models/Definition/StratumFromTraits";
 import { ShortReportTraits } from "../Traits/TraitsClasses/CatalogMemberTraits";
 import TableChartStyleTraits, {
   TableChartLineStyleTraits
-} from "../Traits/TraitsClasses/TableChartStyleTraits";
-import TableColorStyleTraits from "../Traits/TraitsClasses/TableColorStyleTraits";
-import TablePointSizeStyleTraits from "../Traits/TraitsClasses/TablePointSizeStyleTraits";
-import TableStyleTraits from "../Traits/TraitsClasses/TableStyleTraits";
-import TableTimeStyleTraits from "../Traits/TraitsClasses/TableTimeStyleTraits";
-import TableTraits from "../Traits/TraitsClasses/TableTraits";
+} from "../Traits/TraitsClasses/Table/ChartStyleTraits";
+import TableColorStyleTraits from "../Traits/TraitsClasses/Table/ColorStyleTraits";
+import TablePointSizeStyleTraits from "../Traits/TraitsClasses/Table/PointSizeStyleTraits";
+import TableStyleTraits from "../Traits/TraitsClasses/Table/StyleTraits";
+import TableTimeStyleTraits from "../Traits/TraitsClasses/Table/TimeStyleTraits";
+import TableTraits from "../Traits/TraitsClasses/Table/TableTraits";
 import TableColumnType from "./TableColumnType";
 
 const DEFAULT_ID_COLUMN = "id";
@@ -30,6 +30,7 @@ export default class TableAutomaticStylesStratum extends LoadableStratum(
   static stratumName = "automaticTableStyles";
   constructor(readonly catalogItem: TableCatalogItem) {
     super();
+    makeObservable(this);
   }
 
   duplicateLoadableStratum(newModel: BaseModel): this {

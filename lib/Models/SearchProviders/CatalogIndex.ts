@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { Document } from "flexsearch";
-import { action, observable, runInAction } from "mobx";
+import { action, observable, runInAction, makeObservable } from "mobx";
 import { isJsonObject, isJsonString, isJsonStringArray } from "../../Core/Json";
 import loadBlob, { isZip, parseZipJsonBlob } from "../../Core/loadBlob";
 import loadJson from "../../Core/loadJson";
@@ -33,7 +33,9 @@ export default class CatalogIndex {
   @observable
   private _loadPromise: Promise<void> | undefined;
 
-  constructor(private readonly terria: Terria, private readonly url: string) {}
+  constructor(private readonly terria: Terria, private readonly url: string) {
+    makeObservable(this);
+  }
 
   get models() {
     return this._models;

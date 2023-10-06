@@ -5,7 +5,9 @@ import {
   isObservableArray,
   observable,
   runInAction,
-  toJS
+  toJS,
+  makeObservable,
+  override
 } from "mobx";
 import Cartesian2 from "terriajs-cesium/Source/Core/Cartesian2";
 import Cartesian3 from "terriajs-cesium/Source/Core/Cartesian3";
@@ -23,7 +25,7 @@ import Cesium3DTileFeature from "terriajs-cesium/Source/Scene/Cesium3DTileFeatur
 import Cesium3DTilePointFeature from "terriajs-cesium/Source/Scene/Cesium3DTilePointFeature";
 import Cesium3DTileset from "terriajs-cesium/Source/Scene/Cesium3DTileset";
 import Cesium3DTileStyle from "terriajs-cesium/Source/Scene/Cesium3DTileStyle";
-import Constructor from "../Core/Constructor";
+import AbstractConstructor from "../Core/AbstractConstructor";
 import isDefined from "../Core/isDefined";
 import { isJsonObject, JsonObject } from "../Core/Json";
 import runLater from "../Core/runLater";
@@ -45,6 +47,11 @@ import MappableMixin from "./MappableMixin";
 import ShadowMixin from "./ShadowMixin";
 
 class Cesium3dTilesStratum extends LoadableStratum(Cesium3dTilesTraits) {
+  constructor(...args: any[]) {
+    super(...args);
+    makeObservable(this);
+  }
+
   duplicateLoadableStratum(model: BaseModel): this {
     return new Cesium3dTilesStratum() as this;
   }
@@ -67,6 +74,11 @@ class ObservableCesium3DTileset extends Cesium3DTileset {
   _catalogItem?: Cesium3DTilesCatalogItemIface;
   @observable destroyed = false;
 
+  constructor(...args: ConstructorParameters<typeof Cesium3DTileset>) {
+    super(...args);
+    makeObservable(this);
+  }
+
   destroy() {
     super.destroy();
     // TODO: we are running later to prevent this
@@ -80,9 +92,9 @@ class ObservableCesium3DTileset extends Cesium3DTileset {
   }
 }
 
-function Cesium3dTilesMixin<T extends Constructor<Model<Cesium3dTilesTraits>>>(
-  Base: T
-) {
+type BaseType = Model<Cesium3dTilesTraits>;
+
+function Cesium3dTilesMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
   abstract class Cesium3dTilesMixin extends ClippingMixin(
     ShadowMixin(MappableMixin(CatalogMemberMixin(Base)))
   ) {
@@ -90,9 +102,14 @@ function Cesium3dTilesMixin<T extends Constructor<Model<Cesium3dTilesTraits>>>(
 
     constructor(...args: any[]) {
       super(...args);
+      makeObservable(this);
       runInAction(() => {
         this.strata.set(Cesium3dTilesStratum.name, new Cesium3dTilesStratum());
       });
+    }
+
+    get hasCesium3dTilesMixin() {
+      return true;
     }
 
     // Just a variable to save the original tileset.root.transform if it exists
@@ -289,7 +306,7 @@ function Cesium3dTilesMixin<T extends Constructor<Model<Cesium3dTilesTraits>>>(
       return [this.tileset, ...this.clippingMapItems];
     }
 
-    @computed
+    @override
     get shortReport(): string | undefined {
       if (this.terria.currentViewer.type === "Leaflet") {
         return i18next.t("models.commonModelErrors.3dTypeIn2dMode", this);
@@ -479,12 +496,14 @@ function Cesium3dTilesMixin<T extends Constructor<Model<Cesium3dTilesTraits>>>(
     }
 
     /**
-     * Modifies the style traits to show/hide a 3d tile feature
+     * Returns a selector that can be used for filtering or styling the given
+     * feature.  For this to work, the feature should have a property called
+     * `id` or the catalog item should have the trait `featureIdProperties` defined.
      *
+     * @returns Selector string or `undefined` when no unique selector can be constructed for the feature
      */
-    @action
-    setFeatureVisibility(feature: Cesium3DTileFeature, visibiltiy: boolean) {
-      const idProperties = this.getIdPropertiesForFeature(feature)?.sort();
+    getSelectorForFeature(feature: Cesium3DTileFeature): string | undefined {
+      const idProperties = this.getIdPropertiesForFeature(feature).sort();
       if (idProperties.length === 0) {
         return;
       }
@@ -492,12 +511,28 @@ function Cesium3dTilesMixin<T extends Constructor<Model<Cesium3dTilesTraits>>>(
       const terms = idProperties.map(
         (p: string) => `\${${p}} === ${JSON.stringify(feature.getProperty(p))}`
       );
-      const showExpr = terms.join(" && ");
-      if (showExpr) {
+      const selector = terms.join(" && ");
+      return selector ? selector : undefined;
+    }
+
+    setVisibilityForMatchingFeature(expression: string, visibility: boolean) {
+      if (expression) {
         const style = this.style || {};
         const show = normalizeShowExpression(style?.show);
-        show.conditions.unshift([showExpr, visibiltiy]);
+        show.conditions.unshift([expression, visibility]);
         this.setTrait(CommonStrata.user, "style", { ...style, show });
+      }
+    }
+
+    /**
+     * Modifies the style traits to show/hide a 3d tile feature
+     *
+     */
+    @action
+    setFeatureVisibility(feature: Cesium3DTileFeature, visibility: boolean) {
+      const showExpr = this.getSelectorForFeature(feature);
+      if (showExpr) {
+        this.setVisibilityForMatchingFeature(showExpr, visibility);
       }
     }
 
@@ -588,13 +623,21 @@ function Cesium3dTilesMixin<T extends Constructor<Model<Cesium3dTilesTraits>>>(
      * The color to use for highlighting features in this catalog item.
      *
      */
-    @computed
+    @override
     get highlightColor(): string {
       return super.highlightColor || DEFAULT_HIGHLIGHT_COLOR;
     }
   }
 
   return Cesium3dTilesMixin;
+}
+
+namespace Cesium3dTilesMixin {
+  export interface Instance
+    extends InstanceType<ReturnType<typeof Cesium3dTilesMixin>> {}
+  export function isMixedInto(model: any): model is Instance {
+    return model && model.hasCesium3dTilesMixin;
+  }
 }
 
 export default Cesium3dTilesMixin;

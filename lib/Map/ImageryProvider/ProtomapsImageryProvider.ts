@@ -4,8 +4,8 @@ import booleanIntersects from "@turf/boolean-intersects";
 import circle from "@turf/circle";
 import { Feature } from "@turf/helpers";
 import i18next from "i18next";
-import { cloneDeep } from "lodash-es";
-import { action, observable, runInAction } from "mobx";
+import { cloneDeep, isEmpty } from "lodash-es";
+import { action, observable, runInAction, makeObservable } from "mobx";
 import {
   Bbox,
   Feature as ProtomapsFeature,
@@ -93,6 +93,9 @@ interface Options {
   credit?: Credit | string;
   paintRules: PaintRule[];
   labelRules: LabelRule[];
+
+  /** The name of the property that is a unique ID for features */
+  idProperty?: string;
 }
 
 /** Buffer (in pixels) used when rendering (and generating - through geojson-vt) vector tiles */
@@ -120,6 +123,7 @@ export class GeojsonSource implements TileSource {
   tileIndex: Promise<any> | undefined;
 
   constructor(url: string | FeatureCollectionWithCrs) {
+    makeObservable(this);
     this.data = url;
     if (!(typeof url === "string")) {
       this.geojsonObject = url;
@@ -284,13 +288,17 @@ export default class ProtomapsImageryProvider
   // Protomaps properties
   /** Data object from constructor options (this is transformed into `source`) */
   private readonly data: ProtomapsData;
+  readonly maximumNativeZoom: number;
   private readonly labelers: Labelers;
   private readonly view: View | undefined;
+  readonly idProperty: string;
+
   readonly source: Source;
   readonly paintRules: PaintRule[];
   readonly labelRules: LabelRule[];
 
   constructor(options: Options) {
+    makeObservable(this);
     this.data = options.data;
     this.terria = options.terria;
     this.tilingScheme = new WebMercatorTilingScheme();
@@ -300,6 +308,10 @@ export default class ProtomapsImageryProvider
 
     this.minimumLevel = defaultValue(options.minimumZoom, 0);
     this.maximumLevel = defaultValue(options.maximumZoom, 24);
+    this.maximumNativeZoom = defaultValue(
+      options.maximumNativeZoom,
+      this.maximumLevel
+    );
 
     this.rectangle = isDefined(options.rectangle)
       ? Rectangle.intersection(
@@ -341,6 +353,7 @@ export default class ProtomapsImageryProvider
     // Protomaps
     this.paintRules = options.paintRules;
     this.labelRules = options.labelRules;
+    this.idProperty = options.idProperty ?? "FID";
 
     // Generate protomaps source based on this.data
     // - URL of pmtiles, geojson or pbf files
@@ -348,7 +361,7 @@ export default class ProtomapsImageryProvider
       if (this.data.endsWith(".pmtiles")) {
         this.source = new PmtilesSource(this.data, false);
         let cache = new TileCache(this.source, 1024);
-        this.view = new View(cache, 14, 2);
+        this.view = new View(cache, this.maximumNativeZoom, 2);
       } else if (
         this.data.endsWith(".json") ||
         this.data.endsWith(".geojson")
@@ -357,7 +370,7 @@ export default class ProtomapsImageryProvider
       } else {
         this.source = new ZxySource(this.data, false);
         let cache = new TileCache(this.source, 1024);
-        this.view = new View(cache, 14, 2);
+        this.view = new View(cache, this.maximumNativeZoom, 2);
       }
     }
     // Source object
@@ -496,7 +509,7 @@ export default class ProtomapsImageryProvider
             // Only create FeatureInfo for visible features with properties
             if (
               !f.feature.props ||
-              f.feature.props === {} ||
+              isEmpty(f.feature.props) ||
               !renderedLayers.includes(f.layerName)
             )
               return;
@@ -638,7 +651,7 @@ export default class ProtomapsImageryProvider
       data,
       minimumZoom: options?.minimumZoom ?? this.minimumLevel,
       maximumZoom: options?.maximumZoom ?? this.maximumLevel,
-      maximumNativeZoom: options?.maximumNativeZoom,
+      maximumNativeZoom: options?.maximumNativeZoom ?? this.maximumNativeZoom,
       rectangle: options?.rectangle ?? this.rectangle,
       credit: options?.credit ?? this.credit,
       paintRules: options?.paintRules ?? this.paintRules,
@@ -660,7 +673,7 @@ export default class ProtomapsImageryProvider
       featureProp = GEOJSON_FEATURE_ID_PROP;
       layerName = GEOJSON_SOURCE_LAYER_NAME;
     } else {
-      featureProp = "FID";
+      featureProp = this.idProperty;
       layerName = feature.properties?.[LAYER_NAME_PROP]?.getValue();
     }
 

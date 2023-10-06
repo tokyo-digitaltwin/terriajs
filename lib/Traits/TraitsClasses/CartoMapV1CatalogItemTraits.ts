@@ -9,6 +9,7 @@ import LayerOrderingTraits from "./LayerOrderingTraits";
 import LegendOwnerTraits from "./LegendOwnerTraits";
 import MappableTraits from "./MappableTraits";
 import UrlTraits from "./UrlTraits";
+import FeatureInfoTraits from "./FeatureInfoTraits";
 import FeatureInfoUrlTemplateTraits from "./FeatureInfoTraits";
 
 @traitClass({
@@ -18,6 +19,7 @@ export default class CartoMapV1CatalogItemTraits extends mixTraits(
   ImageryProviderTraits,
   LayerOrderingTraits,
   UrlTraits,
+  FeatureInfoTraits,
   MappableTraits,
   FeatureInfoUrlTemplateTraits,
   CatalogMemberTraits,

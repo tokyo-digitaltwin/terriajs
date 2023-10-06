@@ -1,4 +1,5 @@
-# TerriaJS
+TerriaJS
+============
 
 <img src="hello_logo.png" alt="drawing" width="300"/>
 
