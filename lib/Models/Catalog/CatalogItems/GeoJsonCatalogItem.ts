@@ -1,6 +1,6 @@
 import i18next from "i18next";
 import { get as _get, set as _set } from "lodash";
-import { computed, toJS } from "mobx";
+import { computed, toJS, makeObservable } from "mobx";
 import isDefined from "../../../Core/isDefined";
 import JsonValue, { isJsonObject } from "../../../Core/Json";
 import loadBlob, { isZip, parseZipJsonBlob } from "../../../Core/loadBlob";
@@ -14,6 +14,7 @@ import GeoJsonCatalogItemTraits from "../../../Traits/TraitsClasses/GeoJsonCatal
 import CreateModel from "../../Definition/CreateModel";
 import HasLocalData from "../../HasLocalData";
 import Terria from "../../Terria";
+import { ModelConstructorParameters } from "../../Definition/Model";
 import proxyCatalogItemUrl from "../proxyCatalogItemUrl";
 
 class GeoJsonCatalogItem
@@ -21,6 +22,12 @@ class GeoJsonCatalogItem
   implements HasLocalData
 {
   static readonly type = "geojson";
+
+  constructor(...args: ModelConstructorParameters) {
+    super(...args);
+    makeObservable(this);
+  }
+
   get type() {
     return GeoJsonCatalogItem.type;
   }
@@ -68,7 +75,11 @@ class GeoJsonCatalogItem
           throw fileApiNotSupportedError(this.terria);
         }
         const body = this.requestData ? toJS(this.requestData) : undefined;
-        const blob = await loadBlob(this.url, undefined, body);
+        const blob = await loadBlob(
+          proxyCatalogItemUrl(this, this.url),
+          undefined,
+          body
+        );
         jsonData = await parseZipJsonBlob(blob);
       } else {
         jsonData = await loadJson(

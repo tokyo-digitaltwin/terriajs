@@ -5,8 +5,11 @@ interface CssExports {
   'baseLegend': string;
   'distanceLegend': string;
   'locationBar': string;
+  'section': string;
   'section-long': string;
+  'section-short': string;
   'sectionLong': string;
+  'sectionShort': string;
 }
 declare var cssExports: CssExports;
 export = cssExports;

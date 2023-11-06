@@ -59,10 +59,12 @@ $distance-bg: rgba($dark, 0.9);
 
   .section {
     // width: 130px;
+    width: initial;
   }
 
   .section-short {
     // width: 70px;
+    width: initial;
   }
 }
 

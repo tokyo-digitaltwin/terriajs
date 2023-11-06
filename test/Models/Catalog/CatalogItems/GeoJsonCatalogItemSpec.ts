@@ -728,9 +728,7 @@ describe("GeoJsonCatalogItemSpec", () => {
 
       const polygonSymbol = protomaps.paintRules[0]
         .symbolizer as PolygonSymbolizer;
-      const polygonLineSymbol = protomaps.paintRules[1]
-        .symbolizer as LineSymbolizer;
-      const polylineSymbol = protomaps.paintRules[2]
+      const polylineSymbol = protomaps.paintRules[1]
         .symbolizer as LineSymbolizer;
 
       const testFeature = {
@@ -764,12 +762,23 @@ describe("GeoJsonCatalogItemSpec", () => {
         ).toBe(col);
 
         expect(
-          polygonLineSymbol.color.get(1, {
+          polygonSymbol.stroke.get(1, {
             ...testFeature,
             geomType: GeomType.Polygon,
             props: { _id_: rowId }
           })
         ).toBe(getColor(terria.baseMapContrastColor).toCssHexString());
+
+        expect(
+          polygonSymbol.width.get(1, {
+            ...testFeature,
+            geomType: GeomType.Polygon,
+            props: { _id_: rowId }
+          })
+        ).toBe(
+          geojson.activeTableStyle.outlineStyleMap.traitValues.null.width ??
+            Infinity
+        );
 
         expect(
           polylineSymbol.color.get(1, {
@@ -856,32 +865,32 @@ describe("GeoJsonCatalogItemSpec", () => {
 
       await geojson.loadMapItems();
 
-      expect(
-        "imageryProvider" in geojson.mapItems[0] &&
-          geojson.mapItems[0].imageryProvider instanceof
-            ProtomapsImageryProvider
-      ).toBeTruthy();
+      runInAction(() => {
+        expect(
+          "imageryProvider" in geojson.mapItems[0] &&
+            geojson.mapItems[0].imageryProvider instanceof
+              ProtomapsImageryProvider
+        ).toBeTruthy();
 
-      geojson.setTrait("user", "activeStyle", "");
+        geojson.setTrait("user", "activeStyle", "");
 
-      expect(geojson.legends.length).toBe(1);
-      expect(geojson.legends[0].items.length).toBe(1);
-      expect(geojson.legends[0].items.map((i) => i.color)).toEqual([
-        "rgb(102,194,165)"
-      ]);
+        expect(geojson.legends.length).toBe(1);
+        expect(geojson.legends[0].items.length).toBe(1);
+        expect(geojson.legends[0].items.map((i) => i.color)).toEqual([
+          "rgb(102,194,165)"
+        ]);
 
-      runInAction(() =>
         updateModelFromJson(geojson, CommonStrata.definition, {
           legends: [
             {
               url: "some-url"
             }
           ]
-        })
-      );
+        });
 
-      expect(geojson.legends.length).toBe(1);
-      expect(geojson.legends[0].url).toBe("some-url");
+        expect(geojson.legends.length).toBe(1);
+        expect(geojson.legends[0].url).toBe("some-url");
+      });
     });
 
     it("correctly builds `Feature` from picked Entity", function () {

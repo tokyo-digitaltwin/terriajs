@@ -1,5 +1,5 @@
 import * as d3Scale from "d3-scale-chromatic";
-import { computed } from "mobx";
+import { computed, makeObservable } from "mobx";
 import Color from "terriajs-cesium/Source/Core/Color";
 import createColorForIdTransformer from "../Core/createColorForIdTransformer";
 import filterOutUndefined from "../Core/filterOutUndefined";
@@ -16,7 +16,7 @@ import Model from "../Models/Definition/Model";
 import ModelPropertiesFromTraits from "../Models/Definition/ModelPropertiesFromTraits";
 import TableColorStyleTraits, {
   EnumColorTraits
-} from "../Traits/TraitsClasses/TableColorStyleTraits";
+} from "../Traits/TraitsClasses/Table/ColorStyleTraits";
 import TableColumn from "./TableColumn";
 import TableColumnType from "./TableColumnType";
 import { StyleMapType } from "./TableStyleMap";
@@ -103,7 +103,9 @@ export default class TableColorMap {
     readonly title: string | undefined,
     readonly colorColumn: TableColumn | undefined,
     readonly colorTraits: Model<TableColorStyleTraits>
-  ) {}
+  ) {
+    makeObservable(this);
+  }
 
   @computed get type(): StyleMapType {
     return this.colorMap instanceof DiscreteColorMap

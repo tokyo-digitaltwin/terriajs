@@ -1,5 +1,12 @@
 import { TFunction } from "i18next";
-import { action, computed, observable, runInAction, reaction } from "mobx";
+import {
+  action,
+  computed,
+  observable,
+  runInAction,
+  makeObservable,
+  reaction
+} from "mobx";
 import { observer } from "mobx-react";
 import Slider from "rc-slider";
 import React, { ChangeEvent, ComponentProps, MouseEvent } from "react";
@@ -24,6 +31,7 @@ import Text, { TextSpan } from "../../../Styled/Text";
 import withTerriaRef from "../../HOCs/withTerriaRef";
 import MenuPanel from "../../StandardUserInterface/customizable/MenuPanel";
 import Styles from "./setting-panel.scss";
+import defined from "terriajs-cesium/Source/Core/defined";
 
 const sides = {
   left: "settingPanel.terrain.left",
@@ -46,6 +54,7 @@ class SettingPanel extends React.Component<PropTypes> {
    */
   constructor(props: PropTypes) {
     super(props);
+    makeObservable(this);
   }
 
   @observable _hoverBaseMap = null;
@@ -152,8 +161,10 @@ class SettingPanel extends React.Component<PropTypes> {
   }
 
   @action
-  toggleCollisionDetection() {
+  toggleCollisionDetection(event: ChangeEvent<HTMLInputElement>) {
+    event.stopPropagation();
     this._disableCollisionDetection = !this._disableCollisionDetection;
+    // this.props.terria.currentViewer.notifyRepaintRequired();
   }
 
   setCollisionDetection() {
@@ -167,7 +178,7 @@ class SettingPanel extends React.Component<PropTypes> {
   componentDidMount() {
     reaction(
       () => this._disableCollisionDetection,
-      (_disableCollisionDetection) => {
+      _disableCollisionDetection => {
         this.setCollisionDetection();
       }
     );
@@ -329,8 +340,10 @@ class SettingPanel extends React.Component<PropTypes> {
               id="collisionDetection"
               isChecked={this._disableCollisionDetection}
               title={collisionDetectionLabel}
-              onChange={() => this.toggleCollisionDetection()}
-            >
+              onChange={(event) => {
+                this.toggleCollisionDetection(event);
+              }}
+          >
               <TextSpan>
                 {t("settingPanel.terrain.enableToGoUnderground")}
               </TextSpan>
@@ -356,7 +369,7 @@ class SettingPanel extends React.Component<PropTypes> {
                     }
                     onClick={(event) => this.selectBaseMap(baseMap.item, event)}
                     onMouseEnter={this.mouseEnterBaseMap.bind(this, baseMap)}
-                    onMouseLeave={this.mouseLeaveBaseMap.bind(this, baseMap)}
+                    onMouseLeave={this.mouseLeaveBaseMap.bind(this)}
                     onFocus={this.mouseEnterBaseMap.bind(this, baseMap)}
                   >
                     {baseMap.item === this.props.terria.mainViewer.baseMap ? (
