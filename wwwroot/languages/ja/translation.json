@@ -2219,5 +2219,15 @@
     "colorAdd": "追加",
     "colorRemove": "削除",
     "invalid": "無効"
+  },
+  "downloadControls": {
+    "ariaDownloadUnselected": "選択範囲をダウンロード",
+    "ariaDownloadSelected": "Shift+クリックで範囲選択"
+  },
+  "downloadDialog": {
+    "title": "ダウンロード",
+    "message": "{{count}}件のダウンロードがあります",
+    "confirmText": "ダウンロード",
+    "denyText": "キャンセル"
   }
 }

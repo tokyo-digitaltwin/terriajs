@@ -37,6 +37,7 @@
     "@turf/meta": "^6.5.0",
     "@turf/kinks": "^6.5.0",
     "@turf/boolean-point-on-line": "^6.5.0",
+    "@turf/bbox-polygon": "^6.5.0",
     "@types/arcgis-rest-api": "^10.4.5",
     "@types/create-react-class": "^15.6.2",
     "@types/d3-array": "^2.0.0",

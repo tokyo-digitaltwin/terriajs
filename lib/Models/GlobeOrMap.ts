@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import Cartesian2 from "terriajs-cesium/Source/Core/Cartesian2";
 import Cartesian3 from "terriajs-cesium/Source/Core/Cartesian3";
@@ -32,6 +33,8 @@ import CommonStrata from "./Definition/CommonStrata";
 import createStratumInstance from "./Definition/createStratumInstance";
 import TerriaFeature from "./Feature/Feature";
 import Terria from "./Terria";
+import Camera from "terriajs-cesium/Source/Scene/Camera";
+import DataSource from "terriajs-cesium/Source/DataSources/DataSource";
 
 require("./Feature/ImageryLayerFeatureInfo"); // overrides Cesium's prototype.configureDescriptionFromProperties
 
@@ -54,6 +57,12 @@ export default abstract class GlobeOrMap {
   // An internal id to track an in progress call to zoomTo()
   _currentZoomId?: string;
 
+  // True is areaDownloading() was called and the map is currently selecting area to download
+  @observable isAreaDownloading = false;
+
+  // An internal id to track an in progress call to areaDwonloading()
+  _currentAriaDownloadingId?: string;
+
   // This is updated by Leaflet and Cesium objects.
   // Avoid duplicate mousemove events.  Why would we get duplicate mousemove events?  I'm glad you asked:
   // http://stackoverflow.com/questions/17818493/mousemove-event-repeating-every-second/17819113
@@ -69,6 +78,71 @@ export default abstract class GlobeOrMap {
 
   constructor() {
     makeObservable(this);
+  }
+
+  abstract doDisableZoom(): Promise<void>;
+  abstract prepareAreaDownloading(dataSource: DataSource, downloadProperty: string): Promise<void>;
+  abstract doEnableZoom(): Promise<void>;
+  abstract removeAreaDownloading(): Promise<void>;
+  onDownloadEndAction: (() => void) | undefined;
+
+  /**
+   * do area download
+   */
+  doAreaDownloading(hrefs: string[]) {
+    if (hrefs.length === 0) {
+      return;
+    }
+    const confirmAction = () => {
+      async function doDownload(url: string) {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const blob = await response.blob();
+          const a = document.createElement('a');
+          a.href = window.URL.createObjectURL(blob);
+          a.download = url.split('/').pop() as string;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(a.href);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+      hrefs.forEach(url => {
+        doDownload(url);
+      });
+    }
+    this.terria.notificationState.addNotificationToQueue({
+      title: i18next.t('downloadDialog.title'),
+      message: i18next.t('downloadDialog.message', {count: hrefs.length}),
+      confirmText: i18next.t('downloadDialog.confirmText'),
+      confirmAction: confirmAction,
+      denyText: i18next.t('downloadDialog.denyText'),
+    });
+    if (this.onDownloadEndAction !== undefined) {
+      this.onDownloadEndAction();
+      this.onDownloadEndAction = undefined;
+    }
+  }
+
+
+  /**
+   * Turn on area Downliading function
+   *
+   */
+  startAreaDownloading(dataSource: DataSource, downloadProperty: string, onEndAction: () => void): Promise<void> {
+    // cancel previous download
+    if (this.isAreaDownloading) {
+      this.removeAreaDownloading();
+    }
+    this.onDownloadEndAction = onEndAction;
+    this.isAreaDownloading = true;
+    this.doDisableZoom();
+    return this.prepareAreaDownloading(dataSource, downloadProperty);
   }
 
   /**

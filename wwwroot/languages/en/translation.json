@@ -2150,5 +2150,15 @@
     "colorAdd": "Add",
     "colorRemove": "Remove",
     "invalid": "Invalid"
+  },
+  "downloadControls": {
+    "ariaDownloadUnselected": "Download a selection",
+    "ariaDownloadSelected": "Shift+click to select a range"
+  },
+  "downloadDialog": {
+    "title": "Download",
+    "message": "There are {{count}} downloads available",
+    "confirmText": "Download",
+    "denyText": "Cancel"
   }
 }

@@ -91,6 +91,9 @@ import GlobeOrMap from "./GlobeOrMap";
 import Terria from "./Terria";
 import UserDrawing from "./UserDrawing";
 import { setViewerMode } from "./ViewerMode";
+import bboxPolygon from "@turf/bbox-polygon";
+import booleanIntersects from "@turf/boolean-intersects";
+import { polygon } from "@turf/helpers";
 
 //import Cesium3DTilesInspector from "terriajs-cesium/Source/Widgets/Cesium3DTilesInspector/Cesium3DTilesInspector";
 
@@ -135,6 +138,9 @@ export default class Cesium extends GlobeOrMap {
   // disabling feature picking when some other interaction mode wants to take
   // over the LEFT_CLICK behavior.
   isFeaturePickingPaused = false;
+
+  downloadingDataSource: DataSource | undefined;
+  downloadProperty: string | undefined;
 
   /* Disposers */
   private readonly _selectionIndicator: CesiumSelectionIndicator;
@@ -280,11 +286,13 @@ export default class Cesium extends GlobeOrMap {
     }, ScreenSpaceEventType.LEFT_CLICK);
 
     let zoomUserDrawing: UserDrawing | undefined;
+    let downloadingUserDrawing: UserDrawing | undefined;
 
     // Handle zooming on SHIFT + MOUSE DOWN
     inputHandler.setInputAction(
       (e) => {
-        if (!this.isFeaturePickingPaused && !isDefined(zoomUserDrawing)) {
+        // Normal handle
+        if (!this.isFeaturePickingPaused && !isDefined(zoomUserDrawing) && !this.isAreaDownloading && !isDefined(downloadingUserDrawing)) {
           this.pauseMapInteraction();
 
           const exitZoom = () => {
@@ -338,6 +346,105 @@ export default class Cesium extends GlobeOrMap {
 
           // Pick first point of rectangle on start
           this.pickFromScreenPosition(e.position, false);
+        } else if (this.isAreaDownloading && !isDefined(downloadingUserDrawing)) {
+          // area downloading
+          this.pauseMapInteraction();
+
+          const exitDownloading = () => {
+            document.removeEventListener("keyup", onKeyUp);
+            runInAction(() => {
+              this.terria.mapInteractionModeStack.pop();
+              downloadingUserDrawing && downloadingUserDrawing.cleanUp();
+            });
+            this.resumeMapInteraction();
+            downloadingUserDrawing = undefined;
+            this.onDownloadEndAction && this.onDownloadEndAction();
+            this.removeAreaDownloading();
+          };
+
+          // If the shift key is released -> exit zoom
+          const onKeyUp = (e: KeyboardEvent) =>
+            e.key === "Shift" && downloadingUserDrawing && exitDownloading();
+
+          document.addEventListener("keyup", onKeyUp);
+
+          let pointClickCount = 0;
+
+          downloadingUserDrawing = new UserDrawing({
+            terria: this.terria,
+            messageHeader: i18next.t("map.drawExtentHelper.drawExtent"),
+            onPointClicked: () => {
+              pointClickCount++;
+              if (
+                downloadingUserDrawing &&
+                downloadingUserDrawing.pointEntities.entities.values.length >= 2
+              ) {
+                const rectangle = downloadingUserDrawing.otherEntities.entities
+                  .getById("rectangle")
+                  ?.rectangle?.coordinates?.getValue(
+                    this.terria.timelineClock.currentTime
+                  );
+
+                if (rectangle) {
+                  const minx = CesiumMath.toDegrees(rectangle.west);
+                  const miny = CesiumMath.toDegrees(rectangle.south);
+                  const maxx = CesiumMath.toDegrees(rectangle.east);
+                  const maxy = CesiumMath.toDegrees(rectangle.north);
+                  const bboxPoly = bboxPolygon([minx, miny, maxx, maxy])
+                  const rets: Entity[] = []
+
+                  // get data
+                  let target: DataSource | undefined = undefined;
+                  for(let i = 0; i < this.dataSourceDisplay.dataSources.length; i++) {
+                    const dataSource = this.dataSourceDisplay.dataSources.get(i);
+                    if (dataSource === this.downloadingDataSource) {
+                      target = dataSource;
+                    }
+                  }
+                  const ellipsoid = Ellipsoid.WGS84;
+                  target?.entities.values.forEach((value) => {
+                    if(isDefined(value.polygon) && isDefined(value.polygon.hierarchy)) {
+                      const positions = value.polygon.hierarchy.getValue(this.terria.timelineClock.currentTime).positions;
+                      if (isDefined(positions)) {
+                        const cartographicCoords = positions.map((position: Cartesian3) => {
+                          return ellipsoid.cartesianToCartographic(position);
+                        });
+                        const wgs84Coords = cartographicCoords.map((cartographic: { longitude: number; latitude: number; height: any; }) => {
+                          return [
+                            CesiumMath.toDegrees(cartographic.longitude),
+                            CesiumMath.toDegrees(cartographic.latitude)
+                          ];
+                        });
+                        const _polygon = polygon([wgs84Coords])
+                        if (booleanIntersects(bboxPoly, _polygon)) {
+                          rets.push(value)
+                        }
+                      }
+                    }
+                  })
+                  const values: string[] = [];
+                  rets.forEach((entity: Entity) => {
+                    values.push(entity.properties?.getValue(this.terria.timelineClock.currentTime)[this.downloadProperty as string]);
+                  })
+                  this.doAreaDownloading(values)
+                }
+
+                exitDownloading();
+
+                // If more than two points are clicked but a rectangle hasn't been drawn -> exit zoom
+              } else if (pointClickCount >= 2) {
+                exitDownloading();
+              }
+            },
+            allowPolygon: false,
+            drawRectangle: true,
+            invisible: true
+          });
+
+          downloadingUserDrawing.enterDrawMode();
+
+          // Pick first point of rectangle on start
+          this.pickFromScreenPosition(e.position, false);
         }
       },
       ScreenSpaceEventType.LEFT_DOWN,
@@ -348,7 +455,7 @@ export default class Cesium extends GlobeOrMap {
 
     inputHandler.setInputAction(
       (e) => {
-        if (isDefined(zoomUserDrawing)) {
+        if (isDefined(zoomUserDrawing) || isDefined(downloadingUserDrawing)) {
           this.pickFromScreenPosition(e.position, false);
         }
       },
@@ -839,6 +946,27 @@ export default class Cesium extends GlobeOrMap {
     if (this._disposeWorkbenchMapItemsSubscription !== undefined) {
       this._disposeWorkbenchMapItemsSubscription();
     }
+  }
+
+  doDisableZoom(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  prepareAreaDownloading(dataSource: DataSource, downloadProperty: string): Promise<void> {
+    this.downloadingDataSource = dataSource;
+    this.downloadProperty = downloadProperty;
+    return Promise.resolve();
+  }
+
+  doEnableZoom(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  removeAreaDownloading(): Promise<void> {
+    this.downloadingDataSource = undefined;
+    this.downloadProperty = undefined;
+    this.isAreaDownloading = false;
+    return Promise.resolve();
   }
 
   doZoomTo(target: any, flightDurationSeconds = 3.0): Promise<void> {
