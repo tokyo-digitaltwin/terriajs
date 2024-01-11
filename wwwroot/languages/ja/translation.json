@@ -651,6 +651,8 @@
       "socrata-group": "Socrata サーバー",
       "assimp-remote-description": "**警告:** 3D ファイルコンバータは試験的機能です。  \n[サポートされる形式のリスト](https://github.com/assimp/assimp/blob/master/doc/Fileformats.md).  \nファイルは必ずZIPしてください",
       "ifc": "IFC",
+      "cog": "Cloud Optimised Geotiff",
+      "cog-composite": "Cloud Optimised Geotiff Composite",
       "assimp-local": "3Dファイルコンバーター (zip) (試験的機能)",
       "assimp-local-description": "**警告:** 3D ファイルコンバータは試験的機能です。  \n[サポートされる形式のリスト](https://github.com/assimp/assimp/blob/master/doc/Fileformats.md).  \nファイルは必ずZIPしてください。",
       "assimp-remote": "3Dファイルコンバータ（試験的機能）"
