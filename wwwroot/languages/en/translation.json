@@ -2153,7 +2153,8 @@
   },
   "downloadControls": {
     "ariaDownloadUnselected": "Download a selection",
-    "ariaDownloadSelected": "Shift+click to select a range"
+    "ariaDownloadSelected": "Shift+click to select a range",
+    "downloadProgress": "{{size}} items remaining, {{progress}} % downloaded"
   },
   "downloadDialog": {
     "title": "Download",

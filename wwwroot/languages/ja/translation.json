@@ -2222,7 +2222,8 @@
   },
   "downloadControls": {
     "ariaDownloadUnselected": "選択範囲をダウンロード",
-    "ariaDownloadSelected": "Shift+クリックで範囲選択"
+    "ariaDownloadSelected": "Shift+クリックで範囲選択",
+    "downloadProgress": "残り {{size}} 件, {{progress}} % ダウンロード済み"
   },
   "downloadDialog": {
     "title": "ダウンロード",

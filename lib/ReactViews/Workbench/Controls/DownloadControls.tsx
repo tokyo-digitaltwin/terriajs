@@ -76,9 +76,27 @@ class DownloadControlls extends React.Component<
   startDownload(downloadProperty: string) {
     const viewState = this.props.viewState;
     const item = this.props.item;
-    viewState.terria.currentViewer.startAreaDownloading((item as any)._dataSource, downloadProperty, this.onEndDownload.bind(this))
+    viewState.terria.currentViewer.startAreaDownloading((item as any)._dataSource, downloadProperty, this.onStartDownload.bind(this), this.onDownloadProgress.bind(this), this.onEndDownload.bind(this))
     runInAction(() => {
       this.props.viewState.workbenchItemWithDownloading = item.uniqueId;
+    })
+  }
+
+  @action
+  onStartDownload() {
+    const item = this.props.item;
+    runInAction(() => {
+      this.props.viewState.workbenchItemInDownloadProgress = 0;
+      this.props.viewState.workbenchItemInDownloadSize = 0;
+      this.props.viewState.workbenchItemWithDownloadProgress = item.uniqueId;
+    })
+  }
+
+  @action
+  onDownloadProgress(size: number, progress: number) {
+    runInAction(() => {
+      this.props.viewState.workbenchItemInDownloadSize = size;
+      this.props.viewState.workbenchItemInDownloadProgress = progress;
     })
   }
 
@@ -86,6 +104,8 @@ class DownloadControlls extends React.Component<
   onEndDownload() {
     runInAction(() => {
       this.props.viewState.workbenchItemWithDownloading = undefined;
+      this.props.viewState.workbenchItemWithDownloadProgress = undefined;
+      this.props.viewState.workbenchItemInDownloadSize = undefined;
     })
   }
 
@@ -120,7 +140,17 @@ class DownloadControlls extends React.Component<
     const { t } = this.props;
     const isDownloading = item.uniqueId === viewState.workbenchItemWithDownloading;
     const visibleDownloadMenu = getMultipleDownload(item as CatalogMemberMixin.Instance);
-    const areaDownloadTitle = isDownloading ? t('downloadControls.ariaDownloadSelected') : t('downloadControls.ariaDownloadUnselected');
+    let areaDownloadTitle = isDownloading ? t('downloadControls.ariaDownloadSelected') : t('downloadControls.ariaDownloadUnselected');
+    const isDownloadProgress = item.uniqueId === viewState.workbenchItemWithDownloadProgress;
+    const progress = viewState.workbenchItemInDownloadProgress as number;
+    const size = viewState.workbenchItemInDownloadSize as number;
+    if (isDownloadProgress) {
+      areaDownloadTitle = t('downloadControls.downloadProgress', {size: size, progress: progress});
+    }
+    let disabledDownloadButton = false;
+    if (!isDownloadProgress && viewState.workbenchItemWithDownloadProgress !== undefined) {
+      disabledDownloadButton = true;
+    }
     return (
       <>
         {visibleDownloadMenu ? (
@@ -129,9 +159,14 @@ class DownloadControlls extends React.Component<
           `}>
             <Box justifySpaceBetween>
               <DownloadButton
-                onClick={() => this.downloadButton()}
+                onClick={() => {
+                  if (!isDownloadProgress) {
+                    this.downloadButton()
+                  }
+                }}
                 title={areaDownloadTitle}
                 btnText={areaDownloadTitle}
+                disabled={disabledDownloadButton}
                 css={`
                   flex: 1;
                   border-radius: 0;

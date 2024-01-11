@@ -84,7 +84,9 @@ export default abstract class GlobeOrMap {
   abstract prepareAreaDownloading(dataSource: DataSource, downloadProperty: string): Promise<void>;
   abstract doEnableZoom(): Promise<void>;
   abstract removeAreaDownloading(): Promise<void>;
+  onStartDownloadAction: (() => void) | undefined;
   onDownloadEndAction: (() => void) | undefined;
+  onDownloadProgress: ((size: number, progress: number) => void) | undefined;
 
   /**
    * do area download
@@ -94,27 +96,99 @@ export default abstract class GlobeOrMap {
       return;
     }
     const confirmAction = () => {
+      const self = this;
+      const downloads = new Map<string, any>();
       async function doDownload(url: string) {
+        let download = 'dummy';
         try {
+          download = url.split('/').pop() as string;
           const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+          const reader = response.body?.getReader();
+          if (!reader) {
+            throw new Error("Body reader is not available");
           }
-          const blob = await response.blob();
+          const contentLength = +response.headers.get('Content-Length')!;
+          downloads.set(download, { receivedLength: 0, contentLength: contentLength})
+          let receivedLength = 0;
+          let chunks: Uint8Array[] = [];
+
+          // read data
+          while (true) {
+            const { done, value } = await reader.read();
+
+            if (done) {
+              break;
+            }
+
+            if (value) {
+              chunks.push(value);
+              receivedLength += value.length;
+              downloads.set(download, { receivedLength: receivedLength, contentLength: contentLength});
+              let progress = 0;
+              let totalContentLength = 0;
+              let totalReceivedLength = 0;
+              downloads.forEach((value, key) => {
+                totalContentLength += value.contentLength;
+                totalReceivedLength += value.receivedLength;
+              })
+              if (totalContentLength <= 0) {
+                progress = 0;
+              } else {
+                progress = Math.round((totalReceivedLength / totalContentLength) * 100);
+              }
+              // notify progress
+              if (self.onDownloadProgress) {
+                self.onDownloadProgress(downloads.size, progress);
+              }
+            }
+          }
+
+          // combine all chank
+          let chunksAll = new Uint8Array(receivedLength);
+          let position = 0;
+          for (let chunk of chunks) {
+            chunksAll.set(chunk, position);
+            position += chunk.length;
+          }
+
+          // convert to blob
+          const blob = new Blob([chunksAll]);
+
           const a = document.createElement('a');
           a.href = window.URL.createObjectURL(blob);
-          a.download = url.split('/').pop() as string;
+          a.download = download;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
           window.URL.revokeObjectURL(a.href);
+          downloads.delete(download);
+          if (downloads.size === 0 && self.onDownloadEndAction) {
+            self.onDownloadProgress = undefined;
+            self.onDownloadEndAction();
+            self.onDownloadEndAction = undefined;
+          }
         } catch (error) {
           console.error(error);
+          downloads.delete(download);
+          if (downloads.size === 0 && self.onDownloadEndAction) {
+            self.onDownloadProgress = undefined;
+            self.onDownloadEndAction();
+            self.onDownloadEndAction = undefined;
+          }
         }
+      }
+      if (this.onStartDownloadAction !== undefined) {
+        this.onStartDownloadAction();
       }
       hrefs.forEach(url => {
         doDownload(url);
       });
+    }
+    const denyAction = () => {
+      if (this.onDownloadEndAction !== undefined) {
+        this.onDownloadEndAction();
+        this.onDownloadEndAction = undefined;
+      }
     }
     this.terria.notificationState.addNotificationToQueue({
       title: i18next.t('downloadDialog.title'),
@@ -122,11 +196,8 @@ export default abstract class GlobeOrMap {
       confirmText: i18next.t('downloadDialog.confirmText'),
       confirmAction: confirmAction,
       denyText: i18next.t('downloadDialog.denyText'),
+      denyAction: denyAction,
     });
-    if (this.onDownloadEndAction !== undefined) {
-      this.onDownloadEndAction();
-      this.onDownloadEndAction = undefined;
-    }
   }
 
 
@@ -134,12 +205,14 @@ export default abstract class GlobeOrMap {
    * Turn on area Downliading function
    *
    */
-  startAreaDownloading(dataSource: DataSource, downloadProperty: string, onEndAction: () => void): Promise<void> {
+  startAreaDownloading(dataSource: DataSource, downloadProperty: string, onStartAction: () => void, onDownloadProgress: (size: number, progress: number) => void, onEndAction: () => void): Promise<void> {
     // cancel previous download
     if (this.isAreaDownloading) {
       this.removeAreaDownloading();
     }
+    this.onStartDownloadAction = onStartAction;
     this.onDownloadEndAction = onEndAction;
+    this.onDownloadProgress = onDownloadProgress;
     this.isAreaDownloading = true;
     this.doDisableZoom();
     return this.prepareAreaDownloading(dataSource, downloadProperty);
