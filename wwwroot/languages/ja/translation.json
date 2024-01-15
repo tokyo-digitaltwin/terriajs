@@ -2229,7 +2229,8 @@
   },
   "downloadDialog": {
     "title": "ダウンロード",
-    "message": "{{count}}件のダウンロードがあります",
+    "message": "{{count}}件のダウンロードがあります。",
+    "targets": "対象は {{targets}} です。",
     "confirmText": "ダウンロード",
     "denyText": "キャンセル"
   }

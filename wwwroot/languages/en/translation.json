@@ -2160,7 +2160,8 @@
   },
   "downloadDialog": {
     "title": "Download",
-    "message": "There are {{count}} downloads available",
+    "message": "There are {{count}} downloads available. ",
+    "targets": "Subjects are {{targets}} .",
     "confirmText": "Download",
     "denyText": "Cancel"
   }

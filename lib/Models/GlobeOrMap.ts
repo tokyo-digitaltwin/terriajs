@@ -91,10 +91,7 @@ export default abstract class GlobeOrMap {
   /**
    * do area download
    */
-  doAreaDownloading(hrefs: string[]) {
-    if (hrefs.length === 0) {
-      return;
-    }
+  doAreaDownloading(hrefs: string[], targets: string[]) {
     const confirmAction = () => {
       const self = this;
       const downloads = new Map<string, any>();
@@ -190,9 +187,13 @@ export default abstract class GlobeOrMap {
         this.onDownloadEndAction = undefined;
       }
     }
+    if (hrefs.length === 0) {
+      denyAction();
+      return;
+    }
     this.terria.notificationState.addNotificationToQueue({
       title: i18next.t('downloadDialog.title'),
-      message: i18next.t('downloadDialog.message', {count: hrefs.length}),
+      message: i18next.t('downloadDialog.message', {count: hrefs.length}) + i18next.t('downloadDialog.targets', {targets: targets.join(',\n')}),
       confirmText: i18next.t('downloadDialog.confirmText'),
       confirmAction: confirmAction,
       denyText: i18next.t('downloadDialog.denyText'),

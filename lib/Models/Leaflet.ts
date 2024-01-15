@@ -640,7 +640,11 @@ export default class Leaflet extends GlobeOrMap {
         rets.forEach((entity: Entity) => {
           values.push(entity.properties?.getValue(this.terria.timelineClock.currentTime)[downloadProperty]);
         })
-        this.doAreaDownloading(values);
+        const targets: string[] = [];
+        rets.forEach((entity: Entity) => {
+          targets.push(entity.properties?.getValue(this.terria.timelineClock.currentTime)['図郭名']);
+        })
+        this.doAreaDownloading(values, targets);
         this.map.fire("boxzoomend");
         this.doEnableZoom();
         this.removeAreaDownloading();
@@ -674,7 +678,7 @@ export default class Leaflet extends GlobeOrMap {
     setTimeout(() => {
       this.scene.featureClicked.addEventListener(this.pickFeature);
       this.map.on("click", this._pickLocation);
-    }, 1000);
+    }, 5000);
     return Promise.resolve();
   }
 

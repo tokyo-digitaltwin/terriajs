@@ -426,7 +426,11 @@ export default class Cesium extends GlobeOrMap {
                   rets.forEach((entity: Entity) => {
                     values.push(entity.properties?.getValue(this.terria.timelineClock.currentTime)[this.downloadProperty as string]);
                   })
-                  this.doAreaDownloading(values)
+                  const targets: string[] = [];
+                  rets.forEach((entity: Entity) => {
+                    targets.push(entity.properties?.getValue(this.terria.timelineClock.currentTime)['図郭名']);
+                  })
+                  this.doAreaDownloading(values, targets)
                 }
 
                 exitDownloading();
