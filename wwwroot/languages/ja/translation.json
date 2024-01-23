@@ -2223,15 +2223,17 @@
     "invalid": "無効"
   },
   "downloadControls": {
-    "ariaDownloadUnselected": "選択範囲をダウンロード",
-    "ariaDownloadSelected": "Shift+クリックで範囲選択",
+    "ariaDownloadUnselected": "複数範囲をダウンロード",
+    "ariaDownloadSelected": "Shift+ドラッグで範囲選択",
     "downloadProgress": "残り {{size}} 件, {{progress}} % ダウンロード済み"
   },
   "downloadDialog": {
     "title": "ダウンロード",
-    "message": "{{count}}件のダウンロードがあります。",
-    "targets": "対象は {{targets}} です。",
-    "confirmText": "ダウンロード",
+    "message": "{{count}}件のメッシュを選択しています",
+    "targets": "{{targets}}",
+    "notice1": "ファイルサイズが大きく、ダウンロードに時間を要します。",
+    "notice2": "数ファイルでのダウンロードでお試しください。",
+    "confirmText": "ダウンロードする",
     "denyText": "キャンセル"
   }
 }

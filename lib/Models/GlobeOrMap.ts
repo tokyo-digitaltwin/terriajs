@@ -193,7 +193,7 @@ export default abstract class GlobeOrMap {
     }
     this.terria.notificationState.addNotificationToQueue({
       title: i18next.t('downloadDialog.title'),
-      message: i18next.t('downloadDialog.message', {count: hrefs.length}) + i18next.t('downloadDialog.targets', {targets: targets.join(',\n')}),
+      message: i18next.t('downloadDialog.message', {count: hrefs.length}) + "<br>" + i18next.t('downloadDialog.targets', {targets: targets.join(',\n')}) + "<br><br>" + i18next.t('downloadDialog.notice1') + "<br>" + i18next.t('downloadDialog.notice2'),
       confirmText: i18next.t('downloadDialog.confirmText'),
       confirmAction: confirmAction,
       denyText: i18next.t('downloadDialog.denyText'),

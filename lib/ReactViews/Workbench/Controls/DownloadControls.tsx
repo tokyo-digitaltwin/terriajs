@@ -40,7 +40,7 @@ const DownloadButton = React.forwardRef<
       ref={ref}
       renderIcon={props.children && (() => props.children)}
       textProps={{
-        large: true
+        large: false
       }}
       {...rest}
     >
@@ -170,6 +170,8 @@ class DownloadControlls extends React.Component<
                 css={`
                   flex: 1;
                   border-radius: 0;
+                  height: 32px;
+                  min-height: 32px;
                 `}
               >
                 <StyledIcon glyph={Icon.GLYPHS.download} light styledWidth={"20px"} />

@@ -2154,15 +2154,17 @@
     "invalid": "Invalid"
   },
   "downloadControls": {
-    "ariaDownloadUnselected": "Download a selection",
-    "ariaDownloadSelected": "Shift+click to select a range",
+    "ariaDownloadUnselected": "Download multiple ranges",
+    "ariaDownloadSelected": "Shift+drag to select a range",
     "downloadProgress": "{{size}} items remaining, {{progress}} % downloaded"
   },
   "downloadDialog": {
     "title": "Download",
     "message": "There are {{count}} downloads available. ",
-    "targets": "Subjects are {{targets}} .",
-    "confirmText": "Download",
+    "targets": "{{targets}}",
+    "notice1": "The file size is large and downloading will take some time.",
+    "notice2": "Please try downloading in a few files.",
+    "confirmText": "Do download",
     "denyText": "Cancel"
   }
 }
