@@ -1,5 +1,5 @@
 import i18next from "i18next";
-import { action, autorun, computed, runInAction } from "mobx";
+import { action, autorun, computed, runInAction, makeObservable } from "mobx";
 import DeveloperError from "terriajs-cesium/Source/Core/DeveloperError";
 import filterOutUndefined from "../../../Core/filterOutUndefined";
 import isDefined from "../../../Core/isDefined";
@@ -10,6 +10,7 @@ import ModelReference from "../../../Traits/ModelReference";
 import CompositeCatalogItemTraits from "../../../Traits/TraitsClasses/CompositeCatalogItemTraits";
 import CommonStrata from "../../Definition/CommonStrata";
 import CreateModel from "../../Definition/CreateModel";
+import { ModelConstructorParameters } from "../../Definition/Model";
 import { BaseModel } from "../../Definition/Model";
 
 export default class CompositeCatalogItem extends MappableMixin(
@@ -20,6 +21,11 @@ export default class CompositeCatalogItem extends MappableMixin(
   private _visibilityDisposer = autorun(() => {
     this.syncVisibilityToMembers();
   });
+
+  constructor(...args: ModelConstructorParameters) {
+    super(...args);
+    makeObservable(this);
+  }
 
   get type() {
     return CompositeCatalogItem.type;
@@ -67,6 +73,8 @@ export default class CompositeCatalogItem extends MappableMixin(
     ).throwIfError();
   }
 
+  // Todo: これで共有URL長すぎ問題は修正されているか？
+  // 修正されていなければ、下のコメントアウトした関数syncVisibilityToMembersを試す
   syncVisibilityToMembers() {
     const { show } = this;
     this.memberModels.forEach((model) => {
@@ -75,6 +83,15 @@ export default class CompositeCatalogItem extends MappableMixin(
       });
     });
   }
+
+  // syncVisibilityToMembers() {
+  //   this.strata.forEach((stratum, stratumId) => {
+  //     const show = this.getTrait(stratumId, "show");
+  //     this.memberModels.forEach(model => {
+  //       model.setTrait(stratumId, "show", show);
+  //     });
+  //   });
+  // }
 
   @computed get mapItems() {
     const result: MapItem[] = [];

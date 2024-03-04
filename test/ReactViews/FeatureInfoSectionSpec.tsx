@@ -1,5 +1,5 @@
 import i18next from "i18next";
-import { observable } from "mobx";
+import { observable, makeObservable } from "mobx";
 import React from "react";
 import { ReactTestRenderer } from "react-test-renderer";
 import Cartographic from "terriajs-cesium/Source/Core/Cartographic";
@@ -20,14 +20,17 @@ import CzmlCatalogItem from "../../lib/Models/Catalog/CatalogItems/CzmlCatalogIt
 import CatalogMemberFactory from "../../lib/Models/Catalog/CatalogMemberFactory";
 import CommonStrata from "../../lib/Models/Definition/CommonStrata";
 import CreateModel from "../../lib/Models/Definition/CreateModel";
+import { ModelConstructorParameters } from "../../lib/Models/Definition/Model";
 import upsertModelFromJson from "../../lib/Models/Definition/upsertModelFromJson";
 import TerriaFeature from "../../lib/Models/Feature/Feature";
 import Terria from "../../lib/Models/Terria";
+import ViewState from "../../lib/ReactViewModels/ViewState";
 import { FeatureInfoSection } from "../../lib/ReactViews/FeatureInfo/FeatureInfoSection";
 import mixTraits from "../../lib/Traits/mixTraits";
 import DiscretelyTimeVaryingTraits from "../../lib/Traits/TraitsClasses/DiscretelyTimeVaryingTraits";
 import FeatureInfoUrlTemplateTraits from "../../lib/Traits/TraitsClasses/FeatureInfoTraits";
 import MappableTraits from "../../lib/Traits/TraitsClasses/MappableTraits";
+import * as FeatureInfoPanel from "../../lib/ViewModels/FeatureInfoPanel";
 import { createWithContexts } from "./withContext";
 
 let separator = ",";
@@ -61,7 +64,11 @@ describe("FeatureInfoSection", function () {
     });
     catalogItem = new TestModel("test", terria);
 
-    viewState = {}; // Not important for tests, but is a required prop.
+    viewState = new ViewState({
+      terria,
+      catalogSearchProvider: undefined,
+      locationSearchProviders: []
+    });
     const properties = {
       name: "Kay",
       foo: "bar",
@@ -299,6 +306,7 @@ describe("FeatureInfoSection", function () {
     feature = new Entity({
       name: "Vapid"
     });
+
     const section = (
       <FeatureInfoSection
         catalogItem={catalogItem}
@@ -319,6 +327,27 @@ describe("FeatureInfoSection", function () {
       result.root.findAll((node) => (node as any)._fiber.key === "no-info")
         .length
     ).toEqual(1);
+  });
+
+  it("does not break when a template name needs to be rendered but no properties are set", function () {
+    catalogItem.featureInfoTemplate.setTrait(
+      CommonStrata.user,
+      "name",
+      "Title {{name}}"
+    );
+
+    feature = new Entity();
+    const section = (
+      <FeatureInfoSection
+        catalogItem={catalogItem}
+        feature={feature}
+        isOpen={true}
+        viewState={viewState}
+        t={() => {}}
+      />
+    );
+    const result = createWithContexts(viewState, section);
+    expect(findWithText(result, "Title ").length).toEqual(1);
   });
 
   it("shows properties if no description", function () {
@@ -1312,6 +1341,38 @@ describe("FeatureInfoSection", function () {
       expect(findWithText(result, "DEF").length).toEqual(1);
     });
   });
+
+  describe("feature info panel buttons", function () {
+    it("renders buttons added using FeatureInfoPanel.addFeatureButton", function () {
+      FeatureInfoPanel.addFeatureButton(viewState, ({ feature, item }) => {
+        if (!(item instanceof TestModel)) {
+          return;
+        }
+
+        const materialUsed = feature.properties?.getValue(JulianDate.now())[
+          "material"
+        ];
+        return materialUsed
+          ? {
+              text: `More info on ${materialUsed}`,
+              title: "Show more info on material used",
+              onClick() {}
+            }
+          : undefined;
+      });
+      const result = createWithContexts(
+        viewState,
+        <FeatureInfoSection
+          catalogItem={catalogItem}
+          feature={feature}
+          isOpen={true}
+          viewState={viewState}
+          t={() => {}}
+        />
+      );
+      expect(findWithText(result, "More info on steel").length).toEqual(1);
+    });
+  });
 });
 
 // Test time varying item
@@ -1327,6 +1388,11 @@ class TestModelTraits extends mixTraits(
 class TestModel extends MappableMixin(
   DiscretelyTimeVaryingMixin(CatalogMemberMixin(CreateModel(TestModelTraits)))
 ) {
+  constructor(...args: ModelConstructorParameters) {
+    super(...args);
+    makeObservable(this);
+  }
+
   get mapItems(): MapItem[] {
     throw new Error("Method not implemented.");
   }

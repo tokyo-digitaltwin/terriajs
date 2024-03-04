@@ -288,7 +288,7 @@ const HamburgerButton = styled(RawButton)`
   &:hover,
   &:focus,
   & {
-    border: 1px solid ${(p) => p.theme.textLightTranslucent};
+    border: 1px solid ${(p) => p.theme.textDark};
   }
 `;
 

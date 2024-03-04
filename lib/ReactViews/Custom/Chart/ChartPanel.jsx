@@ -1,6 +1,6 @@
 "use strict";
 
-import { computed } from "mobx";
+import { computed, makeObservable } from "mobx";
 import { observer } from "mobx-react";
 import PropTypes from "prop-types";
 import React from "react";
@@ -13,7 +13,6 @@ import Icon from "../../../Styled/Icon";
 import Loader from "../../Loader";
 import Chart from "./BottomDockChart";
 import Styles from "./chart-panel.scss";
-import { ChartPanelDownloadButton } from "./ChartPanelDownloadButton";
 
 const height = 300;
 
@@ -28,6 +27,11 @@ class ChartPanel extends React.Component {
     animationDuration: PropTypes.number,
     t: PropTypes.func.isRequired
   };
+
+  constructor(props) {
+    super(props);
+    makeObservable(this);
+  }
 
   @computed
   get chartView() {

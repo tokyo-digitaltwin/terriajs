@@ -27,8 +27,8 @@ export const SelectableDimensionCheckbox: React.FC<{
       <Text>
         {dim.options?.find((opt) => opt.id === dim.selectedId)?.name ??
           (dim.selectedId === "true"
-            ? t("workbench.dimensionsSelector.enabled")
-            : t("workbench.dimensionsSelector.disabled"))}
+            ? t("selectableDimensions.enabled")
+            : t("selectableDimensions.disabled"))}
       </Text>
     </Checkbox>
   );

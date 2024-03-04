@@ -61,6 +61,21 @@
   opacity: 0.3;
 }
 
+.sidePanel {
+  position: relative;
+  font-family: $font-pop;
+  width: $work-bench-width;
+  flex-basis: $work-bench-width;
+  max-width: $work-bench-width;
+  box-sizing: border-box;
+  h1 {
+    margin: 0;
+  }
+  & > div + div {
+    margin-top: 16px;
+  }
+}
+
 .map {
   @include transition(left $animation-fast ease-in);
   position: absolute;

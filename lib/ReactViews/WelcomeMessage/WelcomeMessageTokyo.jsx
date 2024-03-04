@@ -13,10 +13,10 @@ import { useKeyPress } from "../Hooks/useKeyPress.js";
 import { TourPortalDisplayName } from "../Tour/TourPortal";
 import FadeIn from "../Transitions/FadeIn/FadeIn";
 import SlideUpFadeIn from "../Transitions/SlideUpFadeIn/SlideUpFadeIn";
-import { withViewState } from "../StandardUserInterface/ViewStateContext";
 
 export const WELCOME_MESSAGE_NAME = "welcomeMessage";
 export const LOCAL_PROPERTY_KEY = `${WELCOME_MESSAGE_NAME}Prompted`;
+import { withViewState } from "../StandardUserInterface/ViewStateContext";
 
 const WelcomeModalWrapper = styled(Box)`
   z-index: 99999;

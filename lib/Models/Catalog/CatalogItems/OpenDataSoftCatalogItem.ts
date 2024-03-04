@@ -1,33 +1,31 @@
 import { ApiClient, fromCatalog } from "@opendatasoft/api-client";
 import { Dataset } from "@opendatasoft/api-client/dist/client/types";
 import i18next from "i18next";
-import { computed, runInAction } from "mobx";
-import Cartesian2 from "terriajs-cesium/Source/Core/Cartesian2";
+import { computed, makeObservable, override, runInAction } from "mobx";
+import ms from "ms";
+import Mustache from "mustache";
 import JulianDate from "terriajs-cesium/Source/Core/JulianDate";
 import TimeInterval from "terriajs-cesium/Source/Core/TimeInterval";
-import Entity from "terriajs-cesium/Source/DataSources/Entity";
 import filterOutUndefined from "../../../Core/filterOutUndefined";
 import flatten from "../../../Core/flatten";
 import isDefined from "../../../Core/isDefined";
-import { isJsonObject } from "../../../Core/Json";
-import CatalogMemberMixin from "../../../ModelMixins/CatalogMemberMixin";
-import FeatureInfoUrlTemplateMixin from "../../../ModelMixins/FeatureInfoUrlTemplateMixin";
+import { isJsonObject, isJsonString } from "../../../Core/Json";
+import TerriaError from "../../../Core/TerriaError";
+import AutoRefreshingMixin from "../../../ModelMixins/AutoRefreshingMixin";
 import TableMixin from "../../../ModelMixins/TableMixin";
 import UrlMixin from "../../../ModelMixins/UrlMixin";
 import TableAutomaticStylesStratum from "../../../Table/TableAutomaticStylesStratum";
 import { MetadataUrlTraits } from "../../../Traits/TraitsClasses/CatalogMemberTraits";
 import EnumDimensionTraits from "../../../Traits/TraitsClasses/DimensionTraits";
-import { FeatureInfoTemplateTraits } from "../../../Traits/TraitsClasses/FeatureInfoTraits";
 import OpenDataSoftCatalogItemTraits from "../../../Traits/TraitsClasses/OpenDataSoftCatalogItemTraits";
-import TableColumnTraits from "../../../Traits/TraitsClasses/TableColumnTraits";
-import TableStyleTraits from "../../../Traits/TraitsClasses/TableStyleTraits";
-import TableTimeStyleTraits from "../../../Traits/TraitsClasses/TableTimeStyleTraits";
+import TableColumnTraits from "../../../Traits/TraitsClasses/Table/ColumnTraits";
+import TableStyleTraits from "../../../Traits/TraitsClasses/Table/StyleTraits";
+import TableTimeStyleTraits from "../../../Traits/TraitsClasses/Table/TimeStyleTraits";
 import CreateModel from "../../Definition/CreateModel";
 import createStratumInstance from "../../Definition/createStratumInstance";
 import LoadableStratum from "../../Definition/LoadableStratum";
 import { BaseModel } from "../../Definition/Model";
 import StratumOrder from "../../Definition/StratumOrder";
-import TerriaFeature from "../../Feature/Feature";
 import SelectableDimensions, {
   SelectableDimension
 } from "../../SelectableDimensions/SelectableDimensions";
@@ -144,6 +142,7 @@ export class OpenDataSoftDatasetStratum extends LoadableStratum(
     private readonly pointTimeSeries?: PointTimeSeries[]
   ) {
     super();
+    makeObservable(this);
   }
 
   @computed get name() {
@@ -447,6 +446,29 @@ export class OpenDataSoftDatasetStratum extends LoadableStratum(
     return lastDate.toString();
   }
 
+  @computed get refreshInterval() {
+    if (!this.catalogItem.refreshIntervalTemplate) return;
+
+    try {
+      const string = Mustache.render(
+        this.catalogItem.refreshIntervalTemplate,
+        this.dataset
+      );
+      if (isJsonString(string)) {
+        const timeInSeconds = (ms(string) || 0) / 1000;
+        // Only return refreshInterval if less than an hour
+        if (timeInSeconds < 60 * 60) {
+          return timeInSeconds;
+        }
+      }
+    } catch (e) {
+      TerriaError.from(
+        e,
+        `Failed to parse refreshInterval from template ${this.catalogItem.refreshIntervalTemplate}`
+      ).log();
+    }
+  }
+
   /** Get fields with useful information (for visualisation). Eg numbers, text, not IDs, not region... */
   @computed get usefulFields() {
     return (
@@ -511,8 +533,8 @@ function getTimeField(dataset: Dataset) {
 StratumOrder.addLoadStratum(OpenDataSoftDatasetStratum.stratumName);
 
 export default class OpenDataSoftCatalogItem
-  extends TableMixin(
-    UrlMixin(CatalogMemberMixin(CreateModel(OpenDataSoftCatalogItemTraits)))
+  extends AutoRefreshingMixin(
+    TableMixin(UrlMixin(CreateModel(OpenDataSoftCatalogItemTraits)))
   )
   implements SelectableDimensions
 {
@@ -524,6 +546,7 @@ export default class OpenDataSoftCatalogItem
     sourceReference: BaseModel | undefined
   ) {
     super(id, terria, sourceReference);
+    makeObservable(this);
     this.strata.set(
       TableAutomaticStylesStratum.stratumName,
       new TableAutomaticStylesStratum(this)
@@ -628,6 +651,10 @@ export default class OpenDataSoftCatalogItem
     return data;
   }
 
+  refreshData(): void {
+    this.forceLoadMapItems();
+  }
+
   // Convert availableFields DimensionTraits to SelectableDimension
   @computed get availableFieldsDimension(): SelectableDimension | undefined {
     if (this.availableFields?.options?.length ?? 0 > 0) {
@@ -647,7 +674,7 @@ export default class OpenDataSoftCatalogItem
     }
   }
 
-  @computed
+  @override
   get selectableDimensions() {
     return filterOutUndefined([
       this.availableFieldsDimension,
