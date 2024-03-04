@@ -1,5 +1,5 @@
 import i18next from "i18next";
-import { computed } from "mobx";
+import { computed, makeObservable } from "mobx";
 import filterOutUndefined from "../../../Core/filterOutUndefined";
 import isDefined from "../../../Core/isDefined";
 import { networkRequestError } from "../../../Core/TerriaError";
@@ -19,13 +19,13 @@ import {
 } from "../../../Traits/TraitsClasses/SdmxCommonTraits";
 import TableChartStyleTraits, {
   TableChartLineStyleTraits
-} from "../../../Traits/TraitsClasses/TableChartStyleTraits";
-import TableColorStyleTraits from "../../../Traits/TraitsClasses/TableColorStyleTraits";
+} from "../../../Traits/TraitsClasses/Table/ChartStyleTraits";
+import TableColorStyleTraits from "../../../Traits/TraitsClasses/Table/ColorStyleTraits";
 import TableColumnTraits, {
   ColumnTransformationTraits
-} from "../../../Traits/TraitsClasses/TableColumnTraits";
-import TableStyleTraits from "../../../Traits/TraitsClasses/TableStyleTraits";
-import TableTimeStyleTraits from "../../../Traits/TraitsClasses/TableTimeStyleTraits";
+} from "../../../Traits/TraitsClasses/Table/ColumnTraits";
+import TableStyleTraits from "../../../Traits/TraitsClasses/Table/StyleTraits";
+import TableTimeStyleTraits from "../../../Traits/TraitsClasses/Table/TimeStyleTraits";
 import createCombinedModel from "../../Definition/createCombinedModel";
 import createStratumInstance from "../../Definition/createStratumInstance";
 import LoadableStratum from "../../Definition/LoadableStratum";
@@ -135,6 +135,7 @@ export class SdmxJsonDataflowStratum extends LoadableStratum(
     private readonly sdmxJsonDataflow: SdmxJsonDataflow
   ) {
     super();
+    makeObservable(this);
   }
 
   @computed

@@ -1,17 +1,27 @@
 import classNames from "classnames";
 import { TFunction } from "i18next";
-import { merge } from "lodash-es";
-import { action, computed, observable, reaction, runInAction } from "mobx";
+import { isEmpty, merge } from "lodash-es";
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  reaction,
+  runInAction
+} from "mobx";
 import { observer } from "mobx-react";
 import { IDisposer } from "mobx-utils";
 import Mustache from "mustache";
 import React from "react";
 import { withTranslation } from "react-i18next";
+import styled from "styled-components";
 import Cartesian3 from "terriajs-cesium/Source/Core/Cartesian3";
 import Ellipsoid from "terriajs-cesium/Source/Core/Ellipsoid";
 import JulianDate from "terriajs-cesium/Source/Core/JulianDate";
 import CesiumMath from "terriajs-cesium/Source/Core/Math";
+import filterOutUndefined from "../../Core/filterOutUndefined";
 import isDefined from "../../Core/isDefined";
+import TerriaError from "../../Core/TerriaError";
 import { getName } from "../../ModelMixins/CatalogMemberMixin";
 import DiscretelyTimeVaryingMixin from "../../ModelMixins/DiscretelyTimeVaryingMixin";
 import MappableMixin from "../../ModelMixins/MappableMixin";
@@ -19,6 +29,7 @@ import TimeVarying from "../../ModelMixins/TimeVarying";
 import TerriaFeature from "../../Models/Feature/Feature";
 import FeatureInfoContext from "../../Models/Feature/FeatureInfoContext";
 import Icon from "../../Styled/Icon";
+import { FeatureInfoPanelButton as FeatureInfoPanelButtonModel } from "../../ViewModels/FeatureInfoPanel";
 import parseCustomMarkdownToReact from "../Custom/parseCustomMarkdownToReact";
 import {
   withViewState,
@@ -26,6 +37,7 @@ import {
 } from "../StandardUserInterface/ViewStateContext";
 import Styles from "./feature-info-section.scss";
 import FeatureInfoDownload from "./FeatureInfoDownload";
+import FeatureInfoPanelButton from "./FeatureInfoPanelButton";
 import { generateCesiumInfoHTMLFromProperties } from "./generateCesiumInfoHTMLFromProperties";
 import getFeatureProperties from "./getFeatureProperties";
 import {
@@ -63,7 +75,7 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
    * - A CsvChartCustomComponent will create a new CsvCatalogItem and set traits
    * See `rawDataReactNode` for rendered raw data
    */
-  @observable private templatedFeatureInfoReactNode:
+  @observable.ref private templatedFeatureInfoReactNode:
     | React.ReactNode
     | undefined = undefined;
 
@@ -72,6 +84,11 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
 
   /** See `setFeatureChangedCounter` */
   @observable featureChangedCounter = 0;
+
+  constructor(props: FeatureInfoProps) {
+    super(props);
+    makeObservable(this);
+  }
 
   componentDidMount() {
     this.templateReactionDisposer = reaction(
@@ -285,7 +302,7 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
 
     if (isDefined(feature.properties)) {
       return generateCesiumInfoHTMLFromProperties(
-        feature.properties,
+        parseBuildingsProperties(feature.properties),
         currentTime,
         MappableMixin.isMixedInto(this.props.catalogItem)
           ? this.props.catalogItem.showStringIfPropertyValueIsNull
@@ -338,11 +355,49 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
 
     return {
       data:
-        this.featureProperties && this.featureProperties !== {}
+        this.featureProperties && !isEmpty(this.featureProperties)
           ? this.featureProperties
           : undefined,
       fileName
     };
+  }
+
+  @computed
+  get generatedButtons(): FeatureInfoPanelButtonModel[] {
+    const { feature, catalogItem } = this.props;
+    const buttons = filterOutUndefined(
+      this.props.viewState.featureInfoPanelButtonGenerators.map((generator) => {
+        try {
+          const dim = generator({ feature, item: catalogItem });
+          return dim;
+        } catch (error) {
+          TerriaError.from(error).log();
+        }
+      })
+    );
+    return buttons;
+  }
+
+  renderButtons() {
+    const { t } = this.props;
+    return this.generatedButtons.length ? (
+      <ButtonsContainer>
+        {/* If we have templated feature info (and not in print mode) - render "show raw data" button */}
+        {/* {!this.props.printView && this.templatedFeatureInfoReactNode && (
+          <FeatureInfoPanelButton
+            onClick={this.toggleRawData.bind(this)}
+            text={
+              this.showRawData
+                ? t("featureInfo.showCuratedData")
+                : t("featureInfo.showRawData")
+            }
+          />
+        )} */}
+        {this.generatedButtons.map((button, i) => (
+          <FeatureInfoPanelButton key={i} {...button} />
+        ))}
+      </ButtonsContainer>
+    ) : null;
   }
 
   render() {
@@ -353,7 +408,8 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
     if (this.props.catalogItem.featureInfoTemplate.name) {
       title = Mustache.render(
         this.props.catalogItem.featureInfoTemplate.name,
-        this.featureProperties
+        this.mustacheContextData,
+        this.props.catalogItem.featureInfoTemplate.partials
       );
     } else
       title =
@@ -408,18 +464,7 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
         {titleElement}
         {this.props.isOpen ? (
           <section className={Styles.content}>
-            {/* If we have templated feature info (and not in print mode) - render "show raw data" button */}
-            {false ? (
-              <button
-                type="button"
-                className={Styles.rawDataButton}
-                onClick={this.toggleRawData.bind(this)}
-              >
-                {this.showRawData
-                  ? t("featureInfo.showCuratedData")
-                  : t("featureInfo.showRawData")}
-              </button>
-            ) : null}
+            {this.renderButtons()}
             <div>
               {this.props.feature.loadingFeatureInfoUrl ? (
                 "Loading"
@@ -437,7 +482,7 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
                 // Show templated feature info
                 this.templatedFeatureInfoReactNode
               )}
-              {
+              {/* {
                 // Show FeatureInfoDownload
                 !this.props.printView &&
                 showFeatureInfoDownload &&
@@ -448,7 +493,7 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
                     name={this.downloadableData.fileName}
                   />
                 ) : null
-              }
+              } */}
             </div>
           </section>
         ) : null}
@@ -469,5 +514,54 @@ function contains(text: string, number: number, precision: number) {
     text.indexOf(fixed(Math.ceil, number)) !== -1
   );
 }
+
+/**
+ * Customization for Tokyo Digital Twin
+ * take PropertyBag object and parse building specific "building_attributes", "disaster_risk_flood" and "disaster_risk_sediment" properties into simple key and value properties.
+ * and remove other properties.
+ * @param {*} properties
+ * @returns  Object or PropertyBag
+ * @private
+ */
+interface stringKeyObject {
+  [key: string]: string
+}
+
+function parseBuildingsProperties(properties:any) {
+  const jsonKeys = [
+    "building_attributes",
+    "disaster_risk_flood",
+    "disaster_risk_sediment",
+    "desaster_risk_flood",
+    "desaster_risk_sediment"
+  ];
+  const existingKeys = [...new Set(jsonKeys)].filter(value =>
+    Object.keys(properties).includes(value)
+  );
+  if (!existingKeys.length) {
+    return properties;
+  }
+  const jsonProperties = [];
+  for (const jk of jsonKeys) {
+    if (properties.hasOwnProperty(jk) && properties[jk]) {
+      jsonProperties.push(properties[jk]);
+    }
+  }
+
+  const p:stringKeyObject = {};
+  for (const jp of jsonProperties) {
+    for (const kv of jp) {
+      p[kv.key] = kv.value;
+    }
+  }
+  return p;
+}
+
+
+const ButtonsContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 7px 0 10px 0;
+`;
 
 export default withTranslation()(withViewState(FeatureInfoSection));

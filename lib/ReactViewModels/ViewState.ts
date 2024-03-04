@@ -4,7 +4,8 @@ import {
   IReactionDisposer,
   observable,
   reaction,
-  runInAction
+  runInAction,
+  makeObservable
 } from "mobx";
 import { Ref } from "react";
 import defined from "terriajs-cesium/Source/Core/defined";
@@ -24,10 +25,12 @@ import ReferenceMixin from "../ModelMixins/ReferenceMixin";
 import CommonStrata from "../Models/Definition/CommonStrata";
 import { BaseModel } from "../Models/Definition/Model";
 import getAncestors from "../Models/getAncestors";
+import { SelectableDimension } from "../Models/SelectableDimensions/SelectableDimensions";
 import Terria from "../Models/Terria";
 import { ViewingControl } from "../Models/ViewingControls";
 import { SATELLITE_HELP_PROMPT_KEY } from "../ReactViews/HelpScreens/SatelliteHelpPrompt";
 import { animationDuration } from "../ReactViews/StandardUserInterface/StandardUserInterface";
+import { FeatureInfoPanelButtonGenerator } from "../ViewModels/FeatureInfoPanel";
 import {
   defaultTourPoints,
   RelativePosition,
@@ -81,7 +84,7 @@ export default class ViewState {
   @observable mobileMenuVisible: boolean = false;
   @observable explorerPanelAnimating: boolean = false;
   @observable topElement: string = "FeatureInfo";
-  // Map for storing react portal containers created by <PortalContainer> component.
+  // Map for storing react portal containers created by <Portal> component.
   @observable portals: Map<string, HTMLElement | null> = new Map();
   @observable lastUploadedFiles: any[] = [];
   @observable storyBuilderShown: boolean = false;
@@ -106,6 +109,12 @@ export default class ViewState {
   @observable printWindow: Window | null = null;
 
   /**
+   * Toggles ActionBar visibility. Do not set manually, it is
+   * automatically set when rendering <ActionBar>
+   */
+  @observable isActionBarVisible = false;
+
+  /**
    * A global list of functions that generate a {@link ViewingControl} option
    * for the given catalog item instance.  This is useful for plugins to extend
    * the viewing control menu across catalog items.
@@ -116,6 +125,26 @@ export default class ViewState {
   readonly globalViewingControlOptions: ((
     item: CatalogMemberMixin.Instance
   ) => ViewingControl | undefined)[] = [];
+
+  /**
+   * A global list of hooks for generating input controls for items in the workbench.
+   * The hooks in this list gets called once for each item in shown in the workbench.
+   * This is a mechanism for plugins to extend workbench input controls by adding new ones.
+   *
+   * Use {@link WorkbenchItem.Inputs.addInput} instead of updating directly.
+   */
+  @observable
+  readonly workbenchItemInputGenerators: ((
+    item: BaseModel
+  ) => SelectableDimension | undefined)[] = [];
+
+  /**
+   * A global list of generator functions for showing buttons in feature info panel.
+   * Use {@link FeatureInfoPanelButton.addButton} instead of updating directly.
+   */
+  @observable
+  readonly featureInfoPanelButtonGenerators: FeatureInfoPanelButtonGenerator[] =
+    [];
 
   @action
   setSelectedTrainerItem(trainerItem: string) {
@@ -145,6 +174,11 @@ export default class ViewState {
   @action
   setCurrentTrainerStepIndex(index: number) {
     this.currentTrainerStepIndex = index;
+  }
+
+  @action
+  setActionBarVisible(visible: boolean) {
+    this.isActionBarVisible = visible;
   }
 
   /**
@@ -211,6 +245,7 @@ export default class ViewState {
   @observable currentTourIndex: number = -1;
   @observable showCollapsedNavigation: boolean = false;
 
+  @computed
   get tourPointsWithValidRefs() {
     // should viewstate.ts reach into document? seems unavoidable if we want
     // this to be the true source of tourPoints.
@@ -218,6 +253,7 @@ export default class ViewState {
     // properly clean up your refs - so we'll leave that up to the UI to
     // provide valid refs
     return this.tourPoints
+      .slice()
       .sort((a, b) => {
         return a.priority - b.priority;
       })
@@ -337,6 +373,7 @@ export default class ViewState {
   private _disclaimerHandler: DisclaimerHandler;
 
   constructor(options: ViewStateOptions) {
+    makeObservable(this);
     const terria = options.terria;
     this.searchState = new SearchState({
       terria: terria,
@@ -367,11 +404,10 @@ export default class ViewState {
     this._disclaimerVisibleSubscription = reaction(
       () => this.disclaimerVisible,
       (disclaimerVisible) => {
-        if (disclaimerVisible) {
-          this.isMapFullScreen = true;
-        } else if (!disclaimerVisible && this.isMapFullScreen) {
-          this.isMapFullScreen = false;
-        }
+        this.isMapFullScreen =
+          disclaimerVisible ||
+          terria.userProperties.get("hideWorkbench") === "1" ||
+          terria.userProperties.get("hideExplorerPanel") === "1";
       }
     );
 

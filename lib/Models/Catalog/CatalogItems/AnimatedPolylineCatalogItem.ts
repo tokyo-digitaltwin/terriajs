@@ -395,16 +395,8 @@ class AnimatedPolylineCatalogItem extends MappableMixin(
 
   @computed
   get mapItems() {
-    const cesium3dtilesLikePrimitive = Object.assign(this.getPrimitive(), {
-      allTilesLoaded: undefined
-      // ^ Trick terria.js into thinking this is a 3D tiles dataset.
-      // This depends on the behaviour of isCesium3DTileset() defined at MappableMixin.ts.
-      //
-      // Primitive and Cesium3DTileset are both implementations of cesium's
-      // Primitive interface and can be used almost interchangeably.
-    });
-    cesium3dtilesLikePrimitive.show = this.show;
-    return [cesium3dtilesLikePrimitive as unknown as Cesium3DTileset];
+    if (this.show) return [this.getPrimitive()];
+    return [];
   }
 
   protected forceLoadMetadata(): Promise<void> {

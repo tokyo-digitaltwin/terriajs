@@ -6,7 +6,8 @@ import {
   IReactionDisposer,
   observable,
   reaction,
-  runInAction
+  runInAction,
+  makeObservable
 } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
@@ -44,6 +45,12 @@ const StyledMapNavigation = styled.div<StyledMapNavigationProps>`
   right: 5px;
   z-index: 1;
   bottom: 25px;
+
+  @supports (-webkit-touch-callout: none) {
+    // Shift map navigation on iOS browsers so it won't get hidden by the browser UI.
+    bottom: 120px;
+  }
+
   @media (min-width: ${(props) => props.theme.sm}px) {
     top: 80px;
     bottom: 50px;
@@ -101,6 +108,7 @@ class MapNavigation extends React.Component<PropTypes> {
 
   constructor(props: PropTypes) {
     super(props);
+    makeObservable(this);
     registerMapNavigations(props.viewState);
     this.viewState = props.viewState;
     this.model = props.viewState.terria.mapNavigationModel;

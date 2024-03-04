@@ -1,5 +1,5 @@
 import { sortBy, uniqBy } from "lodash";
-import { action, computed, runInAction } from "mobx";
+import { action, computed, runInAction, makeObservable } from "mobx";
 import { observer } from "mobx-react";
 import React from "react";
 import { withTranslation, WithTranslation } from "react-i18next";
@@ -47,6 +47,8 @@ import SplitterTraits from "../../../Traits/TraitsClasses/SplitterTraits";
 import { exportData } from "../../Preview/ExportData";
 import LazyItemSearchTool from "../../Tools/ItemSearchTool/LazyItemSearchTool";
 import WorkbenchButton from "../WorkbenchButton";
+import { JsonObject } from "protomaps";
+
 
 const BoxViewingControl = styled(Box).attrs({
   centered: true,
@@ -96,6 +98,14 @@ interface PropsType extends WithTranslation {
   item: BaseModel;
 }
 
+const getInitialCameraInfo = (item:CatalogMemberMixin.Instance) => {
+  if (!item.customProperties || !item.customProperties.initialCamera) {
+    return null;
+  }
+  return item.customProperties.initialCamera;
+};
+
+
 @observer
 class ViewingControls extends React.Component<
   PropsType,
@@ -104,6 +114,8 @@ class ViewingControls extends React.Component<
   constructor(props: any) {
     // Required step: always call the parent class' constructor
     super(props);
+
+    makeObservable(this);
 
     // Set the state directly. Use props if necessary.
     this.state = {
@@ -143,6 +155,16 @@ class ViewingControls extends React.Component<
   zoomTo() {
     const viewer = this.props.viewState.terria.currentViewer;
     const item = this.props.item;
+
+    const initialCameraInfo = getInitialCameraInfo(item as CatalogMemberMixin.Instance);
+    if (initialCameraInfo) {
+      this.setState({ isMapZoomingToCatalogItem: true });
+      const intitialView = CameraView.fromJson(initialCameraInfo as JsonObject)
+      viewer.zoomTo(intitialView).finally(() => {
+        this.setState({ isMapZoomingToCatalogItem: false });
+      });
+      return;
+    }
 
     if (!MappableMixin.isMixedInto(item)) return;
 

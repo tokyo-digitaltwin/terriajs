@@ -1,8 +1,9 @@
 import i18next from "i18next";
 import {
   computed,
-  IReactionDisposer,
+  makeObservable,
   observable,
+  override,
   reaction,
   runInAction
 } from "mobx";
@@ -77,10 +78,11 @@ export default class UserDrawing extends MappableMixin(
   private drawRectangle: boolean;
 
   private mousePointEntity?: Entity;
-  private mouseMoveDispose?: IReactionDisposer;
 
   constructor(options: Options) {
     super(createGuid(), options.terria);
+
+    makeObservable(this);
 
     /**
      * Text that appears at the top of the dialog when drawmode is active.
@@ -189,7 +191,8 @@ export default class UserDrawing extends MappableMixin(
     return svgDataDeclare + svgString;
   }
 
-  @computed get cesiumRectangle(): Rectangle | undefined {
+  @override
+  get cesiumRectangle(): Rectangle | undefined {
     return this.getRectangleForShape();
   }
 
@@ -303,7 +306,7 @@ export default class UserDrawing extends MappableMixin(
     const pickPointMode = this.addMapInteractionMode();
     this.disposePickedFeatureSubscription = reaction(
       () => pickPointMode.pickedFeatures,
-      async (pickedFeatures, reaction) => {
+      async (pickedFeatures, _previousValue, reaction) => {
         if (isDefined(pickedFeatures)) {
           if (isDefined(pickedFeatures.allFeaturesAvailablePromise)) {
             await pickedFeatures.allFeaturesAvailablePromise;
@@ -381,21 +384,21 @@ export default class UserDrawing extends MappableMixin(
       onEnable: (viewState: ViewState) => {
         runInAction(() => (viewState.explorerPanelIsVisible = false));
 
-        if (this.drawRectangle) {
-          this.mouseMoveDispose = reaction(
-            () => this.terria.currentViewer.mouseCoords.cartographic,
-            (mouseCoordsCartographic) => {
-              if (!isDefined(mouseCoordsCartographic)) return;
-
-              if (isDefined(this.mousePointEntity)) {
-                this.mousePointEntity.position = new ConstantPositionProperty(
-                  Ellipsoid.WGS84.cartographicToCartesian(
-                    mouseCoordsCartographic
-                  )
-                );
-              }
+        if (this.drawRectangle && this.mousePointEntity) {
+          const scratchPosition = new Cartesian3();
+          this.mousePointEntity.position = new CallbackProperty(() => {
+            const cartographicMouseCoords =
+              this.terria.currentViewer.terria.currentViewer.mouseCoords
+                .cartographic;
+            let mousePosition = undefined;
+            if (cartographicMouseCoords) {
+              mousePosition = Ellipsoid.WGS84.cartographicToCartesian(
+                cartographicMouseCoords,
+                scratchPosition
+              );
             }
-          );
+            return mousePosition;
+          }, false) as any;
         }
       },
       invisible: this.invisible
@@ -417,7 +420,7 @@ export default class UserDrawing extends MappableMixin(
     const pickPointMode = this.addMapInteractionMode();
     this.disposePickedFeatureSubscription = reaction(
       () => pickPointMode.pickedFeatures,
-      async (pickedFeatures, reaction) => {
+      async (pickedFeatures, _previousValue, reaction) => {
         if (isDefined(pickedFeatures)) {
           if (isDefined(pickedFeatures.allFeaturesAvailablePromise)) {
             await pickedFeatures.allFeaturesAvailablePromise;
@@ -537,10 +540,6 @@ export default class UserDrawing extends MappableMixin(
       if (container !== null) {
         container.setAttribute("style", "cursor: auto");
       }
-    }
-
-    if (isDefined(this.mouseMoveDispose)) {
-      this.mouseMoveDispose();
     }
 
     // Allow client to clean up too

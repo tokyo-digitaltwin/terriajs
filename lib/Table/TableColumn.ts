@@ -1,6 +1,6 @@
 import countBy from "lodash-es/countBy";
 import Mexp from "math-expression-evaluator";
-import { computed } from "mobx";
+import { computed, makeObservable } from "mobx";
 import JulianDate from "terriajs-cesium/Source/Core/JulianDate";
 import filterOutUndefined from "../Core/filterOutUndefined";
 import isDefined from "../Core/isDefined";
@@ -11,9 +11,8 @@ import createCombinedModel from "../Models/Definition/createCombinedModel";
 import Model from "../Models/Definition/Model";
 import TableColumnTraits, {
   THIS_COLUMN_EXPRESSION_TOKEN
-} from "../Traits/TraitsClasses/TableColumnTraits";
+} from "../Traits/TraitsClasses/Table/ColumnTraits";
 import TableColumnType, { stringToTableColumnType } from "./TableColumnType";
-import flatten from "../Core/flatten";
 const naturalSort = require("javascript-natural-sort");
 naturalSort.insensitive = true;
 
@@ -82,6 +81,7 @@ export default class TableColumn {
   readonly tableModel: TableMixin.Instance;
 
   constructor(tableModel: TableMixin.Instance, columnNumber: number) {
+    makeObservable(this);
     this.columnNumber = columnNumber;
     this.tableModel = tableModel;
   }

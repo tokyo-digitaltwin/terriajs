@@ -74,7 +74,7 @@ function getProcessingInstructions(context: ParseCustomHtmlToReactContext) {
   }
 
   /** Process anchor elements:
-   * - Make sure any <a href> tags open in a new window
+   * - Make sure any <a href> tags open in a new window unless it is a hash link
    * - Add ExternalLinkIcon
    * - Replace anchor with ExternalLinkWithWarning if `context.showExternalLinkWarning`
    */
@@ -85,7 +85,7 @@ function getProcessingInstructions(context: ParseCustomHtmlToReactContext) {
       // eslint-disable-line react/display-name
       const elementProps = {
         key: "anchor-" + keyIndex++,
-        target: "_blank",
+        target: node.attribs?.href?.startsWith("#") ? "_self" : "_blank",
         rel: "noreferrer noopener"
       };
       node.attribs = combine(node.attribs, elementProps);

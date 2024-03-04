@@ -1,4 +1,4 @@
-import { autorun, runInAction } from "mobx";
+import { autorun, runInAction, when } from "mobx";
 import AnimatedPolylineCatalogItem from "../../../../lib/Models/Catalog/CatalogItems/AnimatedPolylineCatalogItem";
 import Terria from "../../../../lib/Models/Terria";
 import { isCesium3DTileset } from "../../../../lib/ModelMixins/MappableMixin";
@@ -14,7 +14,8 @@ describe("AnimatedPolylineCatalogItem", function () {
     terria.mainViewer.attach(container);
     await (terria.mainViewer as any)._cesiumPromise;
   });
-  it("prevents cesium render loop from being paused", function () {
+  it("prevents cesium render loop from being paused", async function () {
+    await when(() => terria.currentViewer.type === "Cesium");
     if (terria.cesium) {
       const initialTweenCount = terria.cesium.scene.tweens.length;
       const dispose = autorun(() => {
@@ -37,15 +38,12 @@ describe("AnimatedPolylineCatalogItem", function () {
     it("can load data by url", async function () {
       expect(item.trajectories.length).toEqual(1);
     });
-    it("disguises its outputs as Cesium3DTileSets", function () {
-      expect(isCesium3DTileset(item.mapItems[0])).toBeTruthy();
-    });
     it("sets show", function () {
-      expect(item.mapItems[0].show).toBeTruthy();
+      expect(item.mapItems.length).toBe(1);
       runInAction(() => {
         item.setTrait("definition", "show", false);
       });
-      expect(item.mapItems[0].show).toBeFalsy();
+      expect(item.mapItems.length).toEqual(0);
     });
   });
 });
