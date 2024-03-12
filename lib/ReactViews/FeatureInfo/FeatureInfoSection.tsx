@@ -400,6 +400,11 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
     ) : null;
   }
 
+  roundFixFloat(value:number, digit:number){
+    const rounded = Math.round( value * Math.pow( 10, digit )) / Math.pow( 10, digit );
+    return rounded.toFixed(digit);
+  }
+
   render() {
     const { t } = this.props;
 
@@ -459,19 +464,72 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
       );
     }
 
+    let elevationCheck = "";
+    let elevationFixed = "";
+    let red = "";
+    let green = "";
+    let blue = "";
+    let rgbFixed = "";
+    let rgb = false;
+    let template = String(this.props.catalogItem.featureInfoTemplate.template);
+
+    
+
+    let json = JSON.parse(JSON.stringify(this.parseMarkdownContextData.feature.data));
+
+    let elevNumber = "";
+
+    if (json[2]) {
+      red = json[0];
+      green = json[1];
+      blue = json[2];
+      rgbFixed = ["Red= " + red, "Green= " + green, "Blue= " + blue].join("\r\n");
+      rgb = true;
+      
+    }
+    else { 
+      elevationCheck = json[0];
+      elevationFixed =  elevationCheck == "-9999.0" ? "No data" : ["Elevation:", this.roundFixFloat(parseFloat(elevationCheck), 3), "(m)"].join(' ');
+      elevNumber = elevationFixed;
+      rgb = false;
+    }
+
+    let isElevation = false;
+    if (template.includes("{{terria.rawDataTable}}") && 
+      template.includes("'標高:"))
+      {
+        isElevation = true;
+        elevationFixed =  elevationCheck == "-9999.0" ? "No data" : ["標高:", this.roundFixFloat(parseFloat(elevationCheck), 3) , "(m)"].join(' ');
+        elevNumber = elevationFixed;
+      }
+
+    let currentCatalogType = this.props.catalogItem.type;
+
+    let stringForReplacing = String(this.props.catalogItem.featureInfoTemplate.template);
+
+    let newstr = "";
+    let newHtml = "";
+
+    if (isElevation) {
+      newstr = stringForReplacing.replace("{{terria.rawDataTable}}", elevNumber); 
+
+      newHtml = parseCustomMarkdownToReact(newstr,
+            this.parseMarkdownContextData);
+    }
+
     return (
       <li className={classNames(Styles.section)}>
         {titleElement}
         {this.props.isOpen ? (
           <section className={Styles.content}>
             {this.renderButtons()}
-            <div>
+            <div id="testResult">
               {this.props.feature.loadingFeatureInfoUrl ? (
                 "Loading"
               ) : this.showRawData || !this.templatedFeatureInfoReactNode ? (
                 <>
                   {this.rawFeatureInfoReactNode ? (
-                    this.rawFeatureInfoReactNode
+                    currentCatalogType == "cog" ? (rgb == true ? rgbFixed : elevationFixed) : this.rawFeatureInfoReactNode
                   ) : (
                     <div ref="no-info" key="no-info">
                       {t("featureInfo.noInfoAvailable")}
@@ -480,9 +538,9 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
                 </>
               ) : (
                 // Show templated feature info
-                this.templatedFeatureInfoReactNode
-              )}
-              {/* {
+                (currentCatalogType == "cog" && isElevation) ? newHtml : this.templatedFeatureInfoReactNode
+               )}
+              {
                 // Show FeatureInfoDownload
                 !this.props.printView &&
                 showFeatureInfoDownload &&
@@ -493,7 +551,7 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
                     name={this.downloadableData.fileName}
                   />
                 ) : null
-              } */}
+              }
             </div>
           </section>
         ) : null}
