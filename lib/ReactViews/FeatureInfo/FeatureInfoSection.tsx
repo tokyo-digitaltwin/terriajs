@@ -473,9 +473,7 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
     let rgb = false;
     let template = String(this.props.catalogItem.featureInfoTemplate.template);
 
-    
-
-    let json = JSON.parse(JSON.stringify(this.parseMarkdownContextData.feature.data));
+    let json = JSON.parse(JSON.stringify(this.parseMarkdownContextData.feature.data || {}));
 
     let elevNumber = "";
 
