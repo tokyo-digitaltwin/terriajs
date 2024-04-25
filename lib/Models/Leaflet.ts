@@ -1,4 +1,5 @@
-import { GridLayer } from "leaflet";
+import { Bounds, DomUtil, GridLayer, LeafletMouseEvent, Point } from "leaflet";
+import i18next from "i18next";
 import {
   action,
   autorun,
@@ -61,12 +62,19 @@ import TerriaFeature from "./Feature/Feature";
 import GlobeOrMap from "./GlobeOrMap";
 import { LeafletAttribution } from "./LeafletAttribution";
 import Terria from "./Terria";
+import { isUndefined } from "lodash-es";
+import GeorasterTerriaLayer from "../Map/Leaflet/GeorasterTerriaLayer";
 
 // We want TS to look at the type declared in lib/ThirdParty/terriajs-cesium-extra/index.d.ts
 // and import doesn't allows us to do that, so instead we use require + type casting to ensure
 // we still maintain the type checking, without TS screaming with errors
 const FeatureDetection: FeatureDetection =
   require("terriajs-cesium/Source/Core/FeatureDetection").default;
+
+export type TerriaLeafletLayer =
+  | GeorasterTerriaLayer
+  | ImageryProviderLeafletGridLayer
+  | ImageryProviderLeafletTileLayer;  
 
 // This class is an observer. It probably won't contain any observables itself
 
@@ -87,6 +95,8 @@ export default class Leaflet extends GlobeOrMap {
   private _cesiumReqAnimFrameId: number | undefined;
   private _pickedFeatures: PickedFeatures | undefined = undefined;
   private _pauseMapInteractionCount = 0;
+  private pickFeature: any;
+  private _pickLocation: any;
 
   /* Disposers */
   private readonly _disposeWorkbenchMapItemsSubscription: () => void;
@@ -99,6 +109,10 @@ export default class Leaflet extends GlobeOrMap {
   @observable nw: L.Point | undefined;
   @observable se: L.Point | undefined;
 
+  // For area downloading function
+  private _areaDownlaodDocumentEvents: ((e: KeyboardEvent) => void)[] = [];
+  private _areaDownloadLeafletEvents: ((e: L.LeafletMouseEvent) => void)[] = [];
+
   @action
   private updateMapObservables() {
     this.size = this.map.getSize();
@@ -108,21 +122,28 @@ export default class Leaflet extends GlobeOrMap {
 
   private _createImageryLayer: (
     ip: ImageryProvider,
-    clippingRectangle: Rectangle | undefined
-  ) => GridLayer = computedFn((ip, clippingRectangle) => {
-    const layerOptions = {
-      bounds: clippingRectangle && rectangleToLatLngBounds(clippingRectangle)
-    };
-    // We have two different kinds of ImageryProviderLeaflet layers
-    // - Grid layer will use the ImageryProvider in the more traditional way - calling `requestImage` to draw the image on to a canvas
-    // - Tile layer will pass tile URLs to leaflet objects - which is a bit more "Leaflety" than Grid layer
-    // Tile layer is preferred. Grid layer mainly exists for custom Imagery Providers which aren't just a tile of image URLs
-    if (supportsImageryProviderGridLayer(ip)) {
-      return new ImageryProviderLeafletGridLayer(this, ip, layerOptions);
-    } else {
-      return new ImageryProviderLeafletTileLayer(this, ip, layerOptions);
-    }
-  });
+    clippingRectangle: Rectangle | undefined,
+    overrideCreateLeafletLayerFn: ImageryParts["overrideCreateLeafletLayer"]
+  ) => TerriaLeafletLayer | undefined = computedFn(
+    (ip, clippingRectangle, overrideCreateLeafletLayerFn) => {
+      const layerOptions = {
+        bounds: clippingRectangle && rectangleToLatLngBounds(clippingRectangle)
+      };
+      // We have two different kinds of ImageryProviderLeaflet layers
+      // - Grid layer will use the ImageryProvider in the more traditional way - calling `requestImage` to draw the image on to a canvas
+      // - Tile layer will pass tile URLs to leaflet objects - which is a bit more "Leaflety" than Grid layer
+      // Tile layer is preferred. Grid layer mainly exists for custom Imagery Providers which aren't just a tile of image URLs
+      // Also, some kinds of Imagery Providers cannot create Leaflet layers appropriately, e.g. the COG Imagery Provider.
+      // In this case, the Catalog Item should specify an `overrideCreateLeafletLayer` property.
+      // If the Catalog Item defines `overrideCreateLeafletLayer` then use that, otherwise follow the logic below.
+      if (overrideCreateLeafletLayerFn) {
+        return overrideCreateLeafletLayerFn(ip, layerOptions.bounds);
+      } else if (supportsImageryProviderGridLayer(ip)) {
+        return new ImageryProviderLeafletGridLayer(this, ip, layerOptions);
+      } else {
+        return new ImageryProviderLeafletTileLayer(this, ip, layerOptions);
+      }
+    });
 
   private _makeImageryLayerFromParts(
     parts: ImageryParts,
@@ -142,7 +163,8 @@ export default class Leaflet extends GlobeOrMap {
     }
     return this._createImageryLayer(
       parts.imageryProvider,
-      parts.clippingRectangle
+      parts.clippingRectangle,
+      parts.overrideCreateLeafletLayer
     );
   }
 
@@ -156,9 +178,11 @@ export default class Leaflet extends GlobeOrMap {
       attributionControl: false,
       zoomSnap: 1, // Change to  0.2 for incremental zoom when Chrome fixes canvas scaling gaps
       preferCanvas: true,
-      worldCopyJump: false
+      worldCopyJump: false,
+      maxZoom: 22
     }).setView([-28.5, 135], 5);
 
+    (window as any).map = this.map;
     this.map.on("move", () => this.updateMapObservables());
     this.map.on("zoom", () => this.updateMapObservables());
 
@@ -208,8 +232,8 @@ export default class Leaflet extends GlobeOrMap {
         map.dragging,
         map.tap
       ]);
-      const pickLocation = this.pickLocation.bind(this);
-      const pickFeature = (entity: Entity, event: L.LeafletMouseEvent) => {
+      this._pickLocation = this.pickLocation.bind(this);
+      this.pickFeature = (entity: Entity, event: L.LeafletMouseEvent) => {
         this._featurePicked(entity, event);
       };
 
@@ -224,14 +248,14 @@ export default class Leaflet extends GlobeOrMap {
 
       if (this.terriaViewer.disableInteraction) {
         interactions.forEach((handler) => handler.disable());
-        this.map.off("click", pickLocation);
-        this.scene.featureClicked.removeEventListener(pickFeature);
+        this.map.off("click", this._pickLocation);
+        this.scene.featureClicked.removeEventListener(this.pickFeature);
         this._disposeSelectedFeatureSubscription &&
           this._disposeSelectedFeatureSubscription();
       } else {
         interactions.forEach((handler) => handler.enable());
-        this.map.on("click", pickLocation);
-        this.scene.featureClicked.addEventListener(pickFeature);
+        this.map.on("click", this._pickLocation);
+        this.scene.featureClicked.addEventListener(this.pickFeature);
         this._disposeSelectedFeatureSubscription = autorun(() => {
           const feature = this.terria.selectedFeature;
           this._selectFeature(feature);
@@ -411,17 +435,25 @@ export default class Leaflet extends GlobeOrMap {
           )
       );
 
-      const allImagery = allImageryMapItems.map(({ item, parts }) => {
-        if (hasTraits(item, ImageryProviderTraits, "leafletUpdateInterval")) {
-          (parts.imageryProvider as any)._leafletUpdateInterval =
-            item.leafletUpdateInterval;
-        }
-        return {
-          parts: parts,
-          layer: this._makeImageryLayerFromParts(parts, item)
-        };
-      });
+      const allImagery = filterOutUndefined(
+        allImageryMapItems.map(({ item, parts }) => {
+          if (hasTraits(item, ImageryProviderTraits, "leafletUpdateInterval")) {
+            (parts.imageryProvider as any)._leafletUpdateInterval =
+              item.leafletUpdateInterval;
+          }
 
+          const layer = this._makeImageryLayerFromParts(parts, item);
+          if (isDefined(layer)) {
+            return {
+              parts: parts,
+              layer: layer
+            };
+          } else {
+            return undefined;
+          }
+        })
+      );
+        
       // Delete imagery layers no longer in the model
       this.map.eachLayer((mapLayer) => {
         if (
@@ -438,15 +470,27 @@ export default class Leaflet extends GlobeOrMap {
       // Add layer and update its zIndex
       let zIndex = 100; // Start at an arbitrary value
       allImagery.reverse().forEach(({ parts, layer }) => {
+        if (!isDefined(layer)) {
+          // TODO: Should we filter out undefined layers before this point in the code?
+          console.log(
+            `Layer is undefined, and will fail when trying to set Opacity. Skipping layer ${parts}`
+          );
+          debugger;
+          return;
+        }
+          
         if (parts.show) {
           layer.setOpacity(parts.alpha);
           layer.setZIndex(zIndex);
           zIndex++;
 
+          // @ts-ignore
           if (!this.map.hasLayer(layer)) {
+            // @ts-ignore
             this.map.addLayer(layer);
           }
         } else {
+          // @ts-ignore
           this.map.removeLayer(layer);
         }
       });
@@ -497,6 +541,149 @@ export default class Leaflet extends GlobeOrMap {
     );
   }
 
+  doDisableZoom(): Promise<void> {
+    const map = this.map;
+    map.boxZoom.disable();
+    return Promise.resolve();
+  }
+
+  prepareAreaDownloading(dataSource: DataSource, downloadProperty: string): Promise<void> {
+    let shiftKeyPressed = false;
+    let privClickEvent: any;
+    const keydown = (event: KeyboardEvent) => {
+      if (event.shiftKey) {
+        shiftKeyPressed = true;
+        // remove click function
+        this.scene.featureClicked.removeEventListener(this.pickFeature);
+        this.map.off("click", this._pickLocation);
+      }
+    };
+    document.addEventListener('keydown', keydown);
+    this._areaDownlaodDocumentEvents.push(keydown)
+    const keyup = (event: KeyboardEvent) => {
+      if (!event.shiftKey) {
+        shiftKeyPressed = false;
+        if (isMoved) {
+          box.remove();
+          this.map.getContainer().classList.remove('leaflet-crosshair');
+          isMoved = false;
+        }
+        this.doEnableZoom();
+        this.removeAreaDownloading();
+      }
+    };
+    document.addEventListener('keyup', keyup);
+    this._areaDownlaodDocumentEvents.push(keyup);
+
+    let isDragging = false;
+    let startPoint: L.LatLng;
+    let startPosition: L.Point;
+    let endPoint: L.LatLng;
+    let isMoved = false;
+    let box: HTMLElement;
+    let resetStateTimeout: number | any = 0;
+    const resetState = () => {
+      resetStateTimeout = 0;
+      isMoved = false;
+    }
+    const clearDefferedResetState = () => {
+      if (resetStateTimeout !== 0) {
+        clearTimeout(resetStateTimeout);
+        resetStateTimeout = 0;
+      }
+    }
+    const mousedown = (e: L.LeafletMouseEvent) => {
+      if (shiftKeyPressed) {
+        clearDefferedResetState();
+        resetState();
+        isDragging = true;
+        startPoint = e.latlng;
+        startPosition = this.map.mouseEventToContainerPoint(e.originalEvent);
+        DomUtil.disableImageDrag();
+        DomUtil.disableTextSelection();
+      }
+    }
+    this.map.on('mousedown', mousedown);
+    this._areaDownloadLeafletEvents.push(mousedown);
+    const mousemove = (e: L.LeafletMouseEvent) => {
+      if (shiftKeyPressed && isDragging) {
+        if (!isMoved) {
+          isMoved = true;
+          box = DomUtil.create('div', 'leaflet-zoom-box', this.map.getContainer());
+          this.map.getContainer().classList.add('leaflet-crosshair');
+          this.map.fire("boxzoomstart");
+        }
+        const position = this.map.mouseEventToContainerPoint(e.originalEvent);
+        const bounds = new Bounds(position, startPosition);
+        const size = bounds.getSize();
+        DomUtil.setPosition(box, bounds.min as Point);
+        box.style.width = `${size.x}px`;
+        box.style.height = `${size.y}px`;
+      }
+    }
+    this.map.on('mousemove', mousemove);
+    this._areaDownloadLeafletEvents.push(mousemove)
+    const mouseup = (e: LeafletMouseEvent) => {
+      if (shiftKeyPressed && isDragging) {
+        isDragging = false;
+        if (isMoved) {
+          box.remove();
+          this.map.getContainer().classList.remove('leaflet-crosshair');
+        }
+        DomUtil.enableTextSelection();
+        DomUtil.enableImageDrag();
+        // Postpone to next JS tick so internal click event handling
+        // still see it as "moved".
+        clearDefferedResetState();
+        resetStateTimeout = setTimeout(resetState.bind(this), 0);
+        endPoint = e.latlng;
+        const rets: Entity[] = this.dataSourceDisplay.getItemsByBboxAndDatasource(dataSource, startPoint, endPoint);
+        const values: string[] = [];
+        rets.forEach((entity: Entity) => {
+          values.push(entity.properties?.getValue(this.terria.timelineClock.currentTime)[downloadProperty]);
+        })
+        const targets: string[] = [];
+        rets.forEach((entity: Entity) => {
+          targets.push(entity.properties?.getValue(this.terria.timelineClock.currentTime)['図郭名']);
+        })
+        this.doAreaDownloading(values, targets);
+        this.map.fire("boxzoomend");
+        this.doEnableZoom();
+        this.removeAreaDownloading();
+      }
+    }
+    this.map.on('mouseup', mouseup);
+    this._areaDownloadLeafletEvents.push(mouseup);
+
+    return Promise.resolve();
+  }
+
+  doEnableZoom(): Promise<void> {
+    const map = this.map;
+    map.boxZoom.enable();
+    return Promise.resolve();
+  }
+
+  removeAreaDownloading(): Promise<void> {
+    const keydown = this._areaDownlaodDocumentEvents.shift();
+    document.removeEventListener('keydown', keydown as any);
+    const keyup = this._areaDownlaodDocumentEvents.shift();
+    document.removeEventListener('keyup', keyup as any);
+    const mousedown = this._areaDownloadLeafletEvents.shift();
+    this.map.off('mousedown', mousedown);
+    const mousemove = this._areaDownloadLeafletEvents.shift();
+    this.map.off('mousemove', mousemove);
+    const mouseup = this._areaDownloadLeafletEvents.shift();
+    this.map.off('mouseup', mouseup);
+    this.isAreaDownloading = false;
+    // enable click feature
+    setTimeout(() => {
+      this.scene.featureClicked.addEventListener(this.pickFeature);
+      this.map.on("click", this._pickLocation);
+    }, 5000);
+    return Promise.resolve();
+  }
+
   doZoomTo(
     target: CameraView | Rectangle | DataSource | MappableMixin.Instance | any,
     flightDurationSeconds: number = 3.0
@@ -528,7 +715,15 @@ export default class Leaflet extends GlobeOrMap {
           return this.doZoomTo(target.mapItems[0], flightDurationSeconds);
         }
       } else {
-        extent = target.rectangle;
+        /** TODO: THIS PATH IS FOLLOWED FOR COGS. Need to define target.rectangle...
+         * Needed to get the layer extent. Now storing this in clippingRectangle property of target, for COGs.
+         * TODO: Is that appropriate? **/
+
+        // Changed from:
+        // extent = target.rectangle;
+        extent = isDefined(target.rectangle)
+          ? target.rectangle
+          : target.clippingRectangle;
       }
 
       // Account for a bounding box crossing the date line.
@@ -726,7 +921,7 @@ export default class Leaflet extends GlobeOrMap {
       Ellipsoid.WGS84.cartographicToCartesian(pickedLocation);
 
     const imageryFeaturePromises = imageryLayers.map(async (imageryLayer) => {
-      const imageryLayerUrl = (<any>imageryLayer.imageryProvider).url;
+      const imageryLayerUrl = (<any>imageryLayer.imageryProvider)?.url;
       const longRadians = CesiumMath.toRadians(latlng.lng);
       const latRadians = CesiumMath.toRadians(latlng.lat);
 
@@ -881,15 +1076,16 @@ export default class Leaflet extends GlobeOrMap {
 
   getImageryLayersForItem(
     item: MappableMixin.Instance
-  ): (ImageryProviderLeafletTileLayer | ImageryProviderLeafletGridLayer)[] {
+  ): (
+    | ImageryProviderLeafletTileLayer
+    | ImageryProviderLeafletGridLayer
+    | GeorasterTerriaLayer
+  )[] {      
     return filterOutUndefined(
       item.mapItems.map((m) => {
         if (ImageryParts.is(m)) {
           const layer = this._makeImageryLayerFromParts(m, item);
-          return layer instanceof ImageryProviderLeafletTileLayer ||
-            layer instanceof ImageryProviderLeafletGridLayer
-            ? layer
-            : undefined;
+          return layer ?? undefined;
         }
       })
     );
@@ -1093,7 +1289,7 @@ export default class Leaflet extends GlobeOrMap {
 function isImageryLayer(
   someLayer: L.Layer
 ): someLayer is ImageryProviderLeafletTileLayer {
-  return "imageryProvider" in someLayer;
+  return "pickFeatures" in someLayer;
 }
 
 function isDataSource(object: MapItem): object is DataSource {

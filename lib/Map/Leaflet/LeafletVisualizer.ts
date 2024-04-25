@@ -18,6 +18,8 @@ import PolylineDashMaterialProperty from "terriajs-cesium/Source/DataSources/Pol
 import Property from "terriajs-cesium/Source/DataSources/Property";
 import Rectangle from "terriajs-cesium/Source/Core/Rectangle";
 import { getLineStyleLeaflet } from "../../Models/Catalog/Esri/esriLineStyle";
+import bboxPolygon from '@turf/bbox-polygon'
+import booleanIntersects from "@turf/boolean-intersects";
 
 const destroyObject =
   require("terriajs-cesium/Source/Core/destroyObject").default;
@@ -1095,6 +1097,44 @@ class LeafletGeomVisualizer {
     });
 
     return result;
+  }
+
+  public getItemsByBbox(latlng1: L.LatLng, latlng2: L.LatLng): Entity[] {
+    let minx;
+    let miny;
+    let maxx;
+    let maxy;
+    if (latlng1.lng < latlng2.lng) {
+      minx = latlng1.lng;
+      maxx = latlng2.lng;
+    } else {
+      minx = latlng2.lng;
+      maxx = latlng1.lng;
+    }
+    if (latlng1.lat < latlng2.lat) {
+      miny = latlng1.lat;
+      maxy = latlng2.lat;
+    } else {
+      miny = latlng2.lat;
+      maxy = latlng1.lat;
+    }
+    const bboxPoly = bboxPolygon([minx, miny, maxx, maxy])
+    const entityHash = this._entityHash;
+    const containsHash: string[] = []
+    Object.entries(entityHash).forEach(([key, value]) => {
+      if (isDefined(value.polygon) && isDefined(value.polygon.layer)) {
+        const geojson = value.polygon.layer.toGeoJSON();
+        if (booleanIntersects(bboxPoly, geojson)) {
+          containsHash.push(key)
+        }
+      }
+    })
+    const targets: Entity[] = []
+    containsHash.forEach((key) => {
+      targets.push(this._entitiesToVisualize.get(key))
+    })
+    console.log(targets);
+    return targets;
   }
 }
 

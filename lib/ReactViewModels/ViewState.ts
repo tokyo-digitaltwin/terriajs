@@ -198,6 +198,26 @@ export default class ViewState {
   @observable
   workbenchItemWithOpenControls: string | undefined = undefined;
 
+  /**
+   * ID of the workbench item whose DownloadControls run download
+   */
+  @observable
+  workbenchItemWithDownloading: string | undefined = undefined;
+
+  /**
+   * ID of the workbench item whose DownloadControls in progress
+   */
+  @observable
+  workbenchItemWithDownloadProgress: string | undefined = undefined;
+
+  /**
+   * number of the download progress
+   */
+  @observable
+  workbenchItemInDownloadProgress: number | undefined = undefined;
+  @observable
+  workbenchItemInDownloadSize: number | undefined = undefined;
+
   errorProvider: any | null = null;
 
   // default value is null, because user has not made decision to show or

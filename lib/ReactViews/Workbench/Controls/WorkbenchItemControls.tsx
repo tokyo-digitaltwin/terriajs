@@ -32,9 +32,11 @@ import MappableMixin from "../../../ModelMixins/MappableMixin";
 import UrlMixin from "../../../ModelMixins/UrlMixin";
 import StorySection from "./StorySection";
 import UrlTraits from "../../../Traits/TraitsClasses/UrlTraits";
+import DownloadControls from "./DownloadControls";
 
 type WorkbenchControls = {
   viewingControls?: boolean;
+  downloadControls?: boolean;
   opacity?: boolean;
   scaleWorkbench?: boolean;
   splitter?: boolean;
@@ -59,6 +61,7 @@ type WorkbenchItemControlsProps = {
 
 export const defaultControls: Complete<WorkbenchControls> = {
   viewingControls: true,
+  downloadControls: true,
   opacity: true,
   scaleWorkbench: true,
   splitter: true,
@@ -76,6 +79,7 @@ export const defaultControls: Complete<WorkbenchControls> = {
 
 export const hideAllControls: Complete<WorkbenchControls> = {
   viewingControls: false,
+  downloadControls: false,
   opacity: false,
   scaleWorkbench: false,
   splitter: false,
@@ -144,6 +148,9 @@ const WorkbenchItemControls: React.FC<WorkbenchItemControlsProps> = observer(
       <>
         {controls?.viewingControls ? (
           <ViewingControls item={item} viewState={viewState} />
+        ) : null}
+        {controls?.downloadControls ? (
+          <DownloadControls item={item} viewState={viewState} />
         ) : null}
         {controls?.story ? <StorySection item={item} /> : null}
         {controls?.opacity ? <OpacitySection item={item} /> : null}
