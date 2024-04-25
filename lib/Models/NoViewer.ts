@@ -9,6 +9,7 @@ import CameraView from "./CameraView";
 import TerriaFeature from "./Feature/Feature";
 import GlobeOrMap from "./GlobeOrMap";
 import Terria from "./Terria";
+import DataSource from "terriajs-cesium/Source/DataSources/DataSource";
 
 class NoViewer extends GlobeOrMap {
   static readonly type = "none";
@@ -24,6 +25,19 @@ class NoViewer extends GlobeOrMap {
   }
 
   destroy() {}
+
+  doDisableZoom(): Promise<void> {
+    return Promise.resolve();
+  }
+  prepareAreaDownloading(dataSource: DataSource, downloadProperty: string): Promise<void> {
+    return Promise.resolve();
+  }
+  doEnableZoom(): Promise<void> {
+    return Promise.resolve();
+  }
+  removeAreaDownloading(): Promise<void> {
+    return Promise.resolve();
+  }
 
   doZoomTo(
     v: CameraView | Rectangle | MappableMixin.Instance,

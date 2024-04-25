@@ -24,6 +24,7 @@ interface Visualizer {
     entity: Entity,
     tmp: BoundingSphere
   ) => BoundingSphereState;
+  getItemsByBbox(latlng1: L.LatLng, latlng2: L.LatLng): Entity[];
 }
 
 class LeafletDataSource extends DataSource {
@@ -118,6 +119,22 @@ export default class LeafletDataSourceDisplay {
     _dataSource: DataSource
   ) {
     return [];
+  }
+
+  /**
+   * get items in bbox with datasource
+   */
+  getItemsByBboxAndDatasource(_dataSource: DataSource, latlng1: L.LatLng, latlng2: L.LatLng): Entity[] {
+    const rets: Entity[] = [];
+    const dataSource = <LeafletDataSource>_dataSource;
+    const visualizers = this._getVisualizersForDataSource(dataSource);
+    if (isDefined(visualizers)) {
+      for (let i = 0; i < visualizers.length; i++) {
+        const targets = visualizers[i].getItemsByBbox(latlng1, latlng2);
+        targets.forEach(target => rets.push(target));
+      }
+    }
+    return rets;
   }
 
   /**
