@@ -76,7 +76,7 @@ class DownloadControlls extends React.Component<
   startDownload(downloadProperty: string) {
     const viewState = this.props.viewState;
     const item = this.props.item;
-    viewState.terria.currentViewer.startAreaDownloading((item as any)._dataSource, downloadProperty, this.onStartDownload.bind(this), this.onDownloadProgress.bind(this), this.onEndDownload.bind(this))
+    viewState.terria.currentViewer.startAreaDownloading(item.uniqueId || "", (item as any)._dataSource, downloadProperty, this.onStartDownload.bind(this), this.onDownloadProgress.bind(this), this.onEndDownload.bind(this))
     runInAction(() => {
       this.props.viewState.workbenchItemWithDownloading = item.uniqueId;
     })
