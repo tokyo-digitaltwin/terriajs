@@ -131,7 +131,7 @@ const builtinRemoteDataTypes: RemoteDataType[] = [
   },
   {
     value: "cog-composite",
-    name: "core.dataType.cog-composite"    
+    name: "core.dataType.cog-composite"
   }
   // Add next builtin remote upload type
 ];

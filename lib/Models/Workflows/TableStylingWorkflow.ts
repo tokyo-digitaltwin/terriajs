@@ -242,30 +242,28 @@ export default class TableStylingWorkflow
         }
       }
     } else if (colorMap instanceof DiscreteColorMap) {
-      {
-        if (
-          this.tableStyle.colorTraits.binColors &&
-          this.tableStyle.colorTraits.binColors.length > 0
-        ) {
-          this.colorSchemeType = "custom-discrete";
-        } else if (SEQUENTIAL_SCALES.includes(colorPaletteWithDefault)) {
-          this.colorSchemeType = "sequential-discrete";
-          if (!colorPalette) {
-            this.getTableStyleTraits(CommonStrata.user)?.color.setTrait(
-              CommonStrata.user,
-              "colorPalette",
-              DEFAULT_SEQUENTIAL
-            );
-          }
-        } else if (DIVERGING_SCALES.includes(colorPaletteWithDefault)) {
-          this.colorSchemeType = "diverging-discrete";
-          if (!colorPalette) {
-            this.getTableStyleTraits(CommonStrata.user)?.color.setTrait(
-              CommonStrata.user,
-              "colorPalette",
-              DEFAULT_DIVERGING
-            );
-          }
+      if (
+        this.tableStyle.colorTraits.binColors &&
+        this.tableStyle.colorTraits.binColors.length > 0
+      ) {
+        this.colorSchemeType = "custom-discrete";
+      } else if (SEQUENTIAL_SCALES.includes(colorPaletteWithDefault)) {
+        this.colorSchemeType = "sequential-discrete";
+        if (!colorPalette) {
+          this.getTableStyleTraits(CommonStrata.user)?.color.setTrait(
+            CommonStrata.user,
+            "colorPalette",
+            DEFAULT_SEQUENTIAL
+          );
+        }
+      } else if (DIVERGING_SCALES.includes(colorPaletteWithDefault)) {
+        this.colorSchemeType = "diverging-discrete";
+        if (!colorPalette) {
+          this.getTableStyleTraits(CommonStrata.user)?.color.setTrait(
+            CommonStrata.user,
+            "colorPalette",
+            DEFAULT_DIVERGING
+          );
         }
       }
     } else if (
@@ -521,7 +519,7 @@ export default class TableStylingWorkflow
           id: "table-style",
 
           name: i18next.t(
-            "models.tableStyling.data.selectableDimensions.tableStyle.dataset"
+            "models.tableStyling.data.selectableDimensions.tableStyle.name"
           ),
           selectedId: this.tableStyle.id,
           options: this.item.tableStyles.map((style) => ({
@@ -2287,7 +2285,7 @@ export default class TableStylingWorkflow
           id: `${id}-color`,
 
           name: i18next.t(
-            "models.tableStyling.outline.selectableDimensions.color"
+            "models.tableStyling.outline.selectableDimensions.color.name"
           ),
           allowUndefined: true,
           value: outlineTraits.color ?? nullValues.color,
@@ -2300,7 +2298,7 @@ export default class TableStylingWorkflow
           id: `${id}-width`,
 
           name: i18next.t(
-            "models.tableStyling.outline.selectableDimensions.width"
+            "models.tableStyling.outline.selectableDimensions.width.name"
           ),
           value: outlineTraits.width ?? nullValues.width,
           setDimensionValue: (stratumId, value) => {

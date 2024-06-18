@@ -22,27 +22,27 @@ export default class Polygon {
   // 多角形の座標値が正常であるか判定
   validatePolygon (points: PositionsArray) {
     if (!Array.isArray(points)) return false;
-    
+
     type PointsArray=Array<Point>;
     var pointsArray:PointsArray =[];
     for (let i = 0; i < points.length; i++) {
       const pointsCartographic = Ellipsoid.WGS84.cartesianToCartographic(points[i]);
       pointsArray.push([pointsCartographic.longitude,pointsCartographic.latitude]);
     }
-  
+
     if (!this.isNumberPointsLonLat(pointsArray)) return false;
-  
+
     if (pointsArray.length < MIN_POLYGON_POINTS) return false;
-  
+
     if (this.isPointsSamePosition(pointsArray)) return false;
-  
+
     if (this.isPointOnLine(pointsArray)) return false;
-  
+
     if (this.hasCrossingLines(pointsArray)) return false;
-  
+
     return true;
   }
-  
+
   // 緯度経度が数値か確認
   isNumberPointsLonLat (points: Array<Point>) {
     const isNotNumberLonLat = (point:Point) => {
@@ -51,7 +51,7 @@ export default class Polygon {
     }
     return !points.some(isNotNumberLonLat);
   }
-  
+
   // 複数の頂点が同一座標にあるか判定を行う
   isPointsSamePosition (points: Array<Point>) {
     for (let i = 0; i < points.length; i++) {
@@ -63,7 +63,7 @@ export default class Polygon {
     }
     return false;
   }
-  
+
   // 頂点が多角形の辺上にあるか判定
   isPointOnLine (points: Array<Point>) {
     const segments = this.extractLineSegments(points)
@@ -78,7 +78,7 @@ export default class Polygon {
     }
     return false;
   }
-  
+
   // 多角形の辺が交差しているか判定
   hasCrossingLines(points: Array<Point>) {
     // 交差している点を取得

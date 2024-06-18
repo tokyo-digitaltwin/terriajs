@@ -38,7 +38,7 @@ export interface LanguageConfiguration {
   enabled: boolean;
   debug: boolean;
   react: ReactOptions;
-  languages: Object;
+  languages: object;
   fallbackLanguage: string;
   changeLanguageOnStartWhen: string[];
 

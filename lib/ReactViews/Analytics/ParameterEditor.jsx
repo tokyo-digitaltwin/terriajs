@@ -8,11 +8,9 @@ import PropTypes from "prop-types";
 
 import PointParameterEditor from "./PointParameterEditor";
 import LineParameterEditor from "./LineParameterEditor";
-// import RectangleParameterEditor from "./RectangleParameterEditor";
 import PolygonParameterEditor from "./PolygonParameterEditor";
 import RegionParameterEditor from "./RegionParameterEditor";
 import RegionTypeParameterEditor from "./RegionTypeParameterEditor";
-import RegionDataParameterEditor from "./RegionDataParameterEditor";
 import BooleanParameterEditor from "./BooleanParameterEditor";
 import BooleanParameterGroupEditor from "./BooleanParameterGroupEditor";
 import DateParameterEditor from "./DateParameterEditor";
@@ -265,37 +263,20 @@ ParameterEditor.parameterTypeConverters = [
         )[0];
         return (
           <div>
-            <If condition={regionParam === undefined}>
-              {parameterEditor.renderLabel()}
-              <RegionTypeParameterEditor
-                previewed={parameterEditor.props.previewed}
-                parameter={parameterEditor.props.parameter}
-                parameterViewModel={parameterEditor.props.parameterViewModel}
-              />
-            </If>
-            <If condition={!parameterEditor.props.parameter.showInUi}>
+            {regionParam === undefined && (
+              <>
+                {parameterEditor.renderLabel()}
+                <RegionTypeParameterEditor
+                  previewed={parameterEditor.props.previewed}
+                  parameter={parameterEditor.props.parameter}
+                  parameterViewModel={parameterEditor.props.parameterViewModel}
+                />
+              </>
+            )}
+
+            {!parameterEditor.props.parameter.showInUi && (
               <div className="Placeholder for regionType" />
-            </If>
-          </div>
-        );
-      }
-    }
-  },
-  {
-    id: "regionData",
-    parameterTypeToDiv: function RegionDataParameterToDiv(
-      type,
-      parameterEditor
-    ) {
-      if (type === this.id) {
-        return (
-          <div>
-            {parameterEditor.renderLabel()}
-            <RegionDataParameterEditor
-              previewed={parameterEditor.props.previewed}
-              parameter={parameterEditor.props.parameter}
-              parameterViewModel={parameterEditor.props.parameterViewModel}
-            />
+            )}
           </div>
         );
       }

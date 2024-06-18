@@ -51,7 +51,7 @@ import { GLYPHS, StyledIcon } from "../../../Styled/Icon";
 import Loader from "../../Loader";
 import DatePicker from "./DatePicker";
 import LocationPicker from "./LocationPicker";
-import { CLOSE_TOOL_ID } from "../../Map/Navigation/registerMapNavigations";
+import { CLOSE_TOOL_ID } from "../../Map/MapNavigation/registerMapNavigations";
 
 const dateFormat = require("dateformat");
 
@@ -100,7 +100,9 @@ class DiffTool extends React.Component<PropsType> {
         this.leftItem = leftItem;
         this.rightItem = rightItem;
       });
-    } catch {}
+    } catch {
+      /* eslint-disable-line no-empty */
+    }
   }
 
   @action
@@ -821,7 +823,9 @@ const DiffAccordionWrapper = styled(Box).attrs({
   min-height: 220px;
   // background: ${(p) => p.theme.dark};
   margin-left: ${(props) =>
-    props.isMapFullScreen ? 16 : parseInt(props.theme.workbenchWidth) + 40}px;
+    props.isMapFullScreen
+      ? 16
+      : parseInt(props.theme.workbenchWidth, 10) + 40}px;
   transition: margin-left 0.25s;
 `;
 
@@ -843,7 +847,6 @@ const CloseDifferenceButton = styled(Button)`
   left: 50%;
   transform: translateX(-50%);
   top: 18px;
-
   padding: 0 20px;
 `;
 
@@ -1040,7 +1043,7 @@ function removeSplitItem(item: DiffableItem) {
 function doesFeatureBelongToItem(
   feature: TerriaFeature,
   item: DiffableItem
-): Boolean {
+): boolean {
   if (!MappableMixin.isMixedInto(item)) return false;
   const imageryProvider = feature.imageryLayer?.imageryProvider;
   if (imageryProvider === undefined) return false;
