@@ -35,6 +35,11 @@ import TerriaFeature from "./Feature/Feature";
 import Terria from "./Terria";
 import Camera from "terriajs-cesium/Source/Scene/Camera";
 import DataSource from "terriajs-cesium/Source/DataSources/DataSource";
+import {
+  Category,
+  DataSourceAction
+} from "../Core/AnalyticEvents/analyticEvents";
+
 
 require("./Feature/ImageryLayerFeatureInfo"); // overrides Cesium's prototype.configureDescriptionFromProperties
 
@@ -62,6 +67,8 @@ export default abstract class GlobeOrMap {
 
   // An internal id to track an in progress call to areaDwonloading()
   _currentAriaDownloadingId?: string;
+
+  _downloadingCatalogItemId: string | undefined;
 
   // This is updated by Leaflet and Cesium objects.
   // Avoid duplicate mousemove events.  Why would we get duplicate mousemove events?  I'm glad you asked:
@@ -180,6 +187,13 @@ export default abstract class GlobeOrMap {
       hrefs.forEach(url => {
         doDownload(url);
       });
+      targets.forEach(target=>{
+        this.terria.analytics?.logEvent(
+          "Download Mesh",
+          "Download from mesh",
+          `${this._downloadingCatalogItemId}_${target}`
+        );
+      });
     }
     const denyAction = () => {
       if (this.onDownloadEndAction !== undefined) {
@@ -206,7 +220,8 @@ export default abstract class GlobeOrMap {
    * Turn on area Downliading function
    *
    */
-  startAreaDownloading(dataSource: DataSource, downloadProperty: string, onStartAction: () => void, onDownloadProgress: (size: number, progress: number) => void, onEndAction: () => void): Promise<void> {
+  startAreaDownloading(catalogItemId: string, dataSource: DataSource, downloadProperty: string, onStartAction: () => void, onDownloadProgress: (size: number, progress: number) => void, onEndAction: () => void): Promise<void> {
+    this._downloadingCatalogItemId = catalogItemId;
     // cancel previous download
     if (this.isAreaDownloading) {
       this.removeAreaDownloading();
