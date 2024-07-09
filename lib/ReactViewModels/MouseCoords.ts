@@ -11,6 +11,7 @@ import Ray from "terriajs-cesium/Source/Core/Ray";
 import TerrainProvider from "terriajs-cesium/Source/Core/TerrainProvider";
 import isDefined from "../Core/isDefined";
 import JSEarthGravityModel1996 from "../Map/Vector/EarthGravityModel1996";
+import pickTriangle, { PickTriangleResult } from "../Map/Cesium/pickTriangle";
 import prettifyCoordinates from "../Map/Vector/prettifyCoordinates";
 import prettifyProjection from "../Map/Vector/prettifyProjection";
 import Terria from "../Models/Terria";
@@ -34,6 +35,13 @@ const scratchV2 = new Cartographic();
 const scratchIntersection = new Cartographic();
 const scratchBarycentric = new Cartesian3();
 const scratchCartographic = new Cartographic();
+const pickedTriangleScratch: PickTriangleResult = {
+  tile: undefined,
+  intersection: new Cartesian3(),
+  v0: new Cartesian3(),
+  v1: new Cartesian3(),
+  v2: new Cartesian3()
+};
 
 export default class MouseCoords {
   readonly geoidModel: EarthGravityModel1996;
@@ -79,12 +87,13 @@ export default class MouseCoords {
     );
   }
 
-  @action
+  @action.bound
   toggleUseProjection() {
     this.useProjection = !this.useProjection;
     this.updateEvent.raiseEvent();
   }
 
+  @action
   updateCoordinatesFromCesium(terria: Terria, position: Cartesian2) {
     if (!terria.cesium) {
       return;
@@ -95,7 +104,7 @@ export default class MouseCoords {
     const pickRay = camera.getPickRay(position, scratchRay);
     const globe = scene.globe;
     const pickedTriangle = isDefined(pickRay)
-      ? (<any>globe).pickTriangle(pickRay, scene)
+      ? pickTriangle(pickRay, scene, true, pickedTriangleScratch)
       : undefined;
     if (isDefined(pickedTriangle)) {
       // Get a fast, accurate-ish height every time the mouse moves.
@@ -120,7 +129,7 @@ export default class MouseCoords {
       let errorBar;
 
       if (globe.terrainProvider instanceof EllipsoidTerrainProvider) {
-        intersection.height = <any>undefined;
+        intersection.height = 0;
       } else {
         const barycentric = Intersections2D.computeBarycentricCoordinates(
           intersection.longitude,
@@ -187,6 +196,7 @@ export default class MouseCoords {
     }
   }
 
+  @action
   updateCoordinatesFromLeaflet(terria: Terria, mouseMoveEvent: MouseEvent) {
     if (!terria.leaflet) {
       return;
@@ -196,10 +206,9 @@ export default class MouseCoords {
     const coordinates = Cartographic.fromDegrees(
       latLng.lng,
       latLng.lat,
-      undefined,
+      0,
       scratchCartographic
     );
-    coordinates.height = <any>undefined;
     this.cartographicToFields(coordinates);
   }
 

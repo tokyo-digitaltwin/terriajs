@@ -16,10 +16,7 @@ import Text from "../../Styled/Text";
 import parseCustomMarkdownToReact, {
   parseCustomMarkdownToReactWithOptions
 } from "../Custom/parseCustomMarkdownToReact";
-import {
-  WithViewState,
-  withViewState
-} from "../StandardUserInterface/ViewStateContext";
+import { WithViewState, withViewState } from "../Context";
 import { applyTranslationIfExists } from "./../../Language/languageHelpers";
 
 interface IProps extends WithTranslation, WithViewState {
@@ -140,7 +137,9 @@ class FeedbackForm extends React.Component<IProps, IState> {
       this.state.comment.length >=
       this.props.viewState.terria.configParameters.feedbackMinLength!
     ) {
-      this.state.isSending = true;
+      this.setState({
+        isSending: true
+      });
       sendFeedback({
         terria: this.props.viewState.terria,
         name: this.state.name,
@@ -256,7 +255,7 @@ const TextArea: React.FC<TextAreaProps> = (props: TextAreaProps) => {
         }
       }}
       invalidValue={!valueIsValid}
-    ></StyledTextArea>
+    />
   );
 };
 

@@ -57,4 +57,22 @@ function initializeGoogleAnalytics(that: GoogleAnalytics) {
     }
   });
   ReactGA.send({ hitType: "pageview" });
+
+  // クロスドメイン集計用
+  const gtag:any = (window as any).gtag;
+  gtag("js", new Date());
+  gtag("config", that.key);
+
+  gtag('config', 'UA-196433925-1');
+  gtag('config', 'G-R074JDNDN9');
+  gtag('config', 'UA-196433925-3', {
+    'linker': {
+    'accept_incoming': true,
+    'domains': ['3dview.tokyo-digitaltwin.metro.tokyo.lg.jp', 'info.tokyo-digitaltwin.metro.tokyo.lg.jp']
+    }
+  });
+  // クロスドメイン集計用 ここまで
+
+
+
 }

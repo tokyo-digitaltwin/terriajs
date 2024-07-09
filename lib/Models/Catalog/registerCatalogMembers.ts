@@ -242,7 +242,7 @@ export default function registerCatalogMembers() {
   CatalogMemberFactory.register(
     CogCompositeCatalogItem.type,
     CogCompositeCatalogItem
-  );  
+  );
   CatalogMemberFactory.register(
     AnimatedPolylineCatalogItem.type,
     AnimatedPolylineCatalogItem
@@ -296,17 +296,17 @@ export default function registerCatalogMembers() {
 
   // These items work by trying to match a URL, then loading the data. If it fails, they move on.
   UrlToCatalogMemberMapping.register(
-    matchesUrl(/\/wms|\=wms/i),
+    matchesUrl(/\/wms|=wms/i),
     WebMapServiceCatalogGroup.type,
     true
   );
   UrlToCatalogMemberMapping.register(
-    matchesUrl(/\/wfs|\=wfs/i),
+    matchesUrl(/\/wfs|=wfs/i),
     WebFeatureServiceCatalogGroup.type,
     true
   );
   UrlToCatalogMemberMapping.register(
-    matchesUrl(/\/wmts|\=wmts/i),
+    matchesUrl(/\/wmts|=wmts/i),
     WebMapTileServiceCatalogGroup.type,
     true
   );
@@ -409,7 +409,7 @@ function matchesUrl(regex: RegExp) {
 }
 
 export function matchesExtension(extension: string) {
-  var regex = new RegExp("\\." + extension + "$", "i");
+  const regex = new RegExp("\\." + extension + "$", "i");
   return function (url: string) {
     return Boolean(url.match(regex));
   };
