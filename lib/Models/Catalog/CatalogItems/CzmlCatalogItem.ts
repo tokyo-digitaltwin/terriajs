@@ -165,8 +165,8 @@ export default class CzmlCatalogItem
     this._dataSource.show = this.show;
     this._dataSource?.entities.values.forEach(entity => {
       if (entity.polygon)
-        entity.polygon.classificationType = this.cesiumClassificationType;      
-        
+        entity.polygon.classificationType = this.cesiumClassificationType;
+
       if (entity.polyline)
         entity.polyline.classificationType = this.cesiumClassificationType;
       if (entity.rectangle)
