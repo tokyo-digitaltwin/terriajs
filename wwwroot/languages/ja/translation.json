@@ -339,7 +339,10 @@
     "noPreviewAvailable": "プレビューが利用できません",
     "preview": "{{appName}} プレビュー",
     "loading": "プレビュー読み込み中...",
-    "selectToPreview": "<0>データセット名を選択してプレビューを表示<br /><br /><strong>Ctrl</strong> または <strong>Shift</strong> を押しながら + をクリックして複数のデータを読み込みます。</0><1>- 又は -</1><2>マップを開く</2>",
+    "selectToPreviewDataset": "データセット名を選択してプレビューを表示",
+    "selectMultipleDatasets": "<0><strong>Shift</strong> を押しながら</0><1 /><2>をクリックして複数のデータを読み込みます</2>",
+    "selectToPreviewSeparator": "または",
+    "goToTheMap": "マップを開く",
     "accessConstraints": "アクセス制限",
     "licence": "ライセンス",
     "resourceDescription": "リソースの説明",
@@ -542,7 +545,7 @@
   },
   "zoomCotrol": {
     "zoomOut": "ズームアウト",
-    "zoomReset": "拡大・縮小をリセット",
+    "zoomReset": "初期表示位置に戻る",
     "zoomIn": "ズームイン"
   },
   "location": {
@@ -1546,7 +1549,7 @@
             "name": "データセット"
           },
           "tableStyle": {
-            "dataset": "スタイル"
+            "name": "スタイル"
           },
           "tableStyleType": {
             "name": "シンボル設定",
@@ -1907,8 +1910,12 @@
       "outline": {
         "name": "線",
         "selectableDimensions": {
-          "color": "色",
-          "width": "太さ"
+          "color": {
+            "name": "色"
+          },
+          "width": {
+            "name": "太さ"
+          }
         }
       },
       "label": {
@@ -2095,7 +2102,7 @@
       "basemap": "背景地図",
       "disclaimer": "免責事項",
       "dataAttribution": "データの帰属",
-      "dataProvider": "データ出典:"
+      "dataProvider": "データの出典"
     }
   },
   "toast": {

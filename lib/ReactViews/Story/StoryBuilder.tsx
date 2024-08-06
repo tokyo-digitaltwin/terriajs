@@ -27,10 +27,7 @@ import measureElement, { MeasureElementProps } from "../HOCs/measureElement";
 import VideoGuide from "../Map/Panels/HelpPanel/VideoGuide";
 import { getShareData } from "../Map/Panels/SharePanel/BuildShareLink";
 import SharePanel from "../Map/Panels/SharePanel/SharePanel";
-import {
-  WithViewState,
-  withViewState
-} from "../StandardUserInterface/ViewStateContext";
+import { WithViewState, withViewState } from "../Context";
 import Story from "./Story";
 import Styles from "./story-builder.scss";
 import StoryEditor from "./StoryEditor.jsx";
@@ -286,7 +283,7 @@ class StoryBuilder extends React.Component<
         <CaptureScene
           disabled={this.state.isRemoving}
           onClickCapture={this.onClickCapture}
-        ></CaptureScene>
+        />
       </Box>
     );
   }
@@ -407,7 +404,7 @@ class StoryBuilder extends React.Component<
               <Sortable
                 onSort={this.onSort}
                 direction="vertical"
-                dynamic={true}
+                dynamic
                 css={`
                   position: static;
                   margin-right: 10px;
@@ -437,7 +434,7 @@ class StoryBuilder extends React.Component<
             <CaptureScene
               disabled={this.state.isRemoving}
               onClickCapture={this.onClickCapture}
-            ></CaptureScene>
+            />
           </Box>
           <Spacing bottom={2} />
         </Box>
@@ -490,7 +487,7 @@ class StoryBuilder extends React.Component<
             />
           </RawButton>
         </Box>
-        <Box centered={true} paddedHorizontally={2} displayInlineBlock>
+        <Box centered paddedHorizontally={2} displayInlineBlock>
           <Text bold extraExtraLarge textLight>
             {t("story.panelTitle")}
           </Text>

@@ -5,13 +5,12 @@ import classNames from "classnames";
 import Icon from "../../../../Styled/Icon";
 import Box from "../../../../Styled/Box";
 import PropTypes from "prop-types";
-
-import DataCatalog from "../../../DataCatalog/DataCatalog.jsx";
 import DataPreview from "../../../Preview/DataPreview.jsx";
 import AddData from "./AddData.jsx";
 import { withTranslation, Trans } from "react-i18next";
 
 import Styles from "./my-data-tab.scss";
+import DataCatalogMember from "../../../DataCatalog/DataCatalogMember";
 
 // My data tab include Add data section and preview section
 @observer
@@ -64,7 +63,7 @@ class MyDataTab extends React.Component {
     ];
     return (
       <ul className={Styles.tabList}>
-        <For each="tab" of={tabs}>
+        {tabs.map((tab) => (
           <li className={Styles.tabListItem} key={tab.id}>
             <button
               type="button"
@@ -88,7 +87,7 @@ class MyDataTab extends React.Component {
               {tab.caption}
             </button>
           </li>
-        </For>
+        ))}
       </ul>
     );
   }
@@ -123,7 +122,7 @@ class MyDataTab extends React.Component {
   }
 
   render() {
-    const showTwoColumn = this.hasUserAddedData() & !this.state.activeTab;
+    const showTwoColumn = !!(this.hasUserAddedData() && !this.state.activeTab);
     const { t, className } = this.props;
     return (
       <Box
@@ -137,37 +136,39 @@ class MyDataTab extends React.Component {
             [Styles.oneCol]: !showTwoColumn
           })}
         >
-          <If condition={this.state.activeTab}>
-            <button
-              type="button"
-              onClick={() => this.resetTab()}
-              className={Styles.btnBackToMyData}
-              css={`
-                color: ${(p) => p.theme.colorPrimary};
-                &:hover,
-                &:focus {
-                  border: 1px solid ${(p) => p.theme.colorPrimary};
-                }
-                svg {
-                  fill: ${(p) => p.theme.colorPrimary};
-                }
-              `}
-            >
-              <Icon glyph={Icon.GLYPHS.left} />
-              {t("addData.back")}
-            </button>
-            <AddData
-              terria={this.props.terria}
-              viewState={this.props.viewState}
-              activeTab={this.state.activeTab}
-              resetTab={() => this.resetTab()}
-              onFileAddFinished={this.props.onFileAddFinished}
-              onUrlAddFinished={this.props.onUrlAddFinished}
-              localDataTypes={this.props.localDataTypes}
-              remoteDataTypes={this.props.remoteDataTypes}
-            />
-          </If>
-          <If condition={showTwoColumn}>
+          {this.state.activeTab && (
+            <>
+              <button
+                type="button"
+                onClick={() => this.resetTab()}
+                className={Styles.btnBackToMyData}
+                css={`
+                  color: ${(p) => p.theme.colorPrimary};
+                  &:hover,
+                  &:focus {
+                    border: 1px solid ${(p) => p.theme.colorPrimary};
+                  }
+                  svg {
+                    fill: ${(p) => p.theme.colorPrimary};
+                  }
+                `}
+              >
+                <Icon glyph={Icon.GLYPHS.left} />
+                {t("addData.back")}
+              </button>
+              <AddData
+                terria={this.props.terria}
+                viewState={this.props.viewState}
+                activeTab={this.state.activeTab}
+                resetTab={() => this.resetTab()}
+                onFileAddFinished={this.props.onFileAddFinished}
+                onUrlAddFinished={this.props.onUrlAddFinished}
+                localDataTypes={this.props.localDataTypes}
+                remoteDataTypes={this.props.remoteDataTypes}
+              />
+            </>
+          )}
+          {showTwoColumn && (
             <Box flexShrinkZero column>
               <p className={Styles.explanation}>
                 <Trans i18nKey="addData.note">
@@ -178,20 +179,24 @@ class MyDataTab extends React.Component {
               <div className={Styles.tabLeft}>{this.renderTabs()}</div>
 
               <ul className={Styles.dataCatalog}>
-                <DataCatalog
-                  items={
-                    this.props.terria.catalog.userAddedDataGroup.memberModels
-                  }
-                  removable={true}
-                  viewState={this.props.viewState}
-                  terria={this.props.terria}
-                />
+                {this.props.terria.catalog.userAddedDataGroup.memberModels.map(
+                  (item) => (
+                    <DataCatalogMember
+                      viewState={this.props.viewState}
+                      member={item}
+                      key={item.uniqueId}
+                      removable
+                      terria={this.props.terria}
+                      isTopLevel
+                    />
+                  )
+                )}
               </ul>
             </Box>
-          </If>
-          <If condition={!this.state.activeTab}>{this.renderPromptBox()}</If>
+          )}
+          {!this.state.activeTab && this.renderPromptBox()}
         </div>
-        <If condition={showTwoColumn}>
+        {showTwoColumn && (
           <Box styledWidth="60%">
             <DataPreview
               terria={this.props.terria}
@@ -199,7 +204,7 @@ class MyDataTab extends React.Component {
               previewed={this.props.viewState.userDataPreviewedItem}
             />
           </Box>
-        </If>
+        )}
       </Box>
     );
   }

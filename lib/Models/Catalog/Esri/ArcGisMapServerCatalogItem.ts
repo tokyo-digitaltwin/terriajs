@@ -1,6 +1,8 @@
 import i18next from "i18next";
 import uniqWith from "lodash-es/uniqWith";
 import { computed, makeObservable, override, runInAction } from "mobx";
+import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
+import moment from "moment";
 import WebMercatorTilingScheme from "terriajs-cesium/Source/Core/WebMercatorTilingScheme";
 import ArcGisMapServerImageryProvider from "terriajs-cesium/Source/Scene/ArcGisMapServerImageryProvider";
 import URI from "urijs";
@@ -11,6 +13,7 @@ import isDefined from "../../../Core/isDefined";
 import loadJson from "../../../Core/loadJson";
 import replaceUnderscores from "../../../Core/replaceUnderscores";
 import { scaleDenominatorToLevel } from "../../../Core/scaleToDenominator";
+import { setsAreEqual } from "../../../Core/setsAreEqual";
 import TerriaError, { networkRequestError } from "../../../Core/TerriaError";
 import Proj4Definitions from "../../../Map/Vector/Proj4Definitions";
 import CatalogMemberMixin from "../../../ModelMixins/CatalogMemberMixin";
@@ -99,15 +102,8 @@ class MapServerStratum extends LoadableStratum(
       token = await getToken(item.terria, item.tokenUrl, item.url);
     }
 
-    let layerId;
-    const lastSegment = item.uri.segment(-1);
-    if (lastSegment && lastSegment.match(/\d+/)) {
-      // URL is a single REST layer, like .../arcgis/rest/services/Society/Society_SCRC/MapServer/16
-      layerId = lastSegment;
-    }
-
     let serviceUri = getBaseURI(item);
-    let layersUri = getBaseURI(item).segment(layerId || "layers"); // either 'layers' or a number
+    let layersUri = getBaseURI(item).segment("layers");
     let legendUri = getBaseURI(item).segment("legend");
 
     if (isDefined(token)) {
@@ -150,9 +146,6 @@ class MapServerStratum extends LoadableStratum(
 
       if (isDefined(layersMetadataResponse?.layers)) {
         layers = layersMetadataResponse.layers;
-        // If layersMetadata is only a single layer -> shove into an array
-      } else if (isDefined(layersMetadataResponse?.id)) {
-        layers = [layersMetadataResponse];
       }
 
       if (!isDefined(layers) || layers.length === 0) {
@@ -328,6 +321,13 @@ class MapServerStratum extends LoadableStratum(
 
 StratumOrder.addLoadStratum(MapServerStratum.stratumName);
 
+interface TimeParams {
+  currentTime: number | undefined;
+  timeWindowDuration: number | undefined;
+  timeWindowUnit: string | undefined;
+  isForwardTimeWindow: boolean;
+}
+
 export default class ArcGisMapServerCatalogItem extends UrlMixin(
   DiscretelyTimeVaryingMixin(
     MinMaxLevelMixin(
@@ -360,7 +360,10 @@ export default class ArcGisMapServerCatalogItem extends UrlMixin(
   }
 
   protected forceLoadMapItems(): Promise<void> {
-    return this.forceLoadMetadata();
+    return Promise.all([
+      this._currentImageryPromise,
+      this._nextImageryPromise
+    ]).then(() => {});
   }
 
   @override
@@ -393,68 +396,164 @@ export default class ArcGisMapServerCatalogItem extends UrlMixin(
     return result;
   }
 
-  @computed
-  private get _currentImageryParts(): ImageryParts | undefined {
-    const dateAsUnix: string | undefined =
+  private getCurrentTime() {
+    const dateAsUnix: number | undefined =
       this.currentDiscreteTimeTag === undefined
         ? undefined
-        : new Date(this.currentDiscreteTimeTag).getTime().toString();
-
-    const imageryProvider = this._createImageryProvider(dateAsUnix);
-    if (imageryProvider === undefined) {
-      return undefined;
-    }
-    return {
-      imageryProvider,
-      alpha: this.opacity,
-      show: this.show,
-      clippingRectangle: this.clipToRectangle ? this.cesiumRectangle : undefined
-    };
+        : new Date(this.currentDiscreteTimeTag).getTime();
+    return dateAsUnix;
   }
 
   @computed
-  private get _nextImageryParts(): ImageryParts | undefined {
+  private get timeParams(): TimeParams {
+    const currentTime = this.getCurrentTime();
+    const timeWindowDuration = this.timeWindowDuration;
+    const timeWindowUnit = this.timeWindowUnit;
+    const isForwardTimeWindow = this.isForwardTimeWindow;
+    const timeParams = {
+      currentTime,
+      timeWindowDuration,
+      timeWindowUnit,
+      isForwardTimeWindow
+    } as TimeParams;
+    return timeParams;
+  }
+
+  @computed
+  private get _currentImageryPromise() {
+    const timeParams = this.timeParams;
+    return this._createImageryProvider(timeParams);
+  }
+
+  private get _currentImageryParts(): ImageryParts | undefined {
+    const imageryProviderObservablePromise = this._currentImageryPromise;
+
+    // Return an ImageryPart when the the promise is fulfilled with a valid imageryProvider
+    const imageryPart =
+      imageryProviderObservablePromise.value instanceof
+      ArcGisMapServerImageryProvider
+        ? {
+            imageryProvider: imageryProviderObservablePromise.value,
+            alpha: this.opacity,
+            show: this.show,
+            clippingRectangle: this.clipToRectangle
+              ? this.cesiumRectangle
+              : undefined
+          }
+        : undefined;
+
+    return imageryPart;
+  }
+
+  @computed
+  private get _nextImageryPromise() {
     if (
       this.terria.timelineStack.contains(this) &&
       !this.isPaused &&
       this.nextDiscreteTimeTag
     ) {
-      const dateAsUnix: number = new Date(this.nextDiscreteTimeTag).getTime();
-      const imageryProvider = this._createImageryProvider(
-        dateAsUnix.toString()
-      );
-      if (imageryProvider === undefined) {
-        return undefined;
-      }
-
-      imageryProvider.enablePickFeatures = false;
-
-      return {
-        imageryProvider,
-        alpha: 0.0,
-        show: true,
-        clippingRectangle: this.clipToRectangle
-          ? this.cesiumRectangle
-          : undefined
-      };
+      const timeParams = this.timeParams;
+      return this._createImageryProvider(timeParams);
     } else {
       return undefined;
     }
   }
 
+  @computed
+  get _nextImageryParts(): ImageryParts | undefined {
+    const imageryProviderObservablePromise = this._nextImageryPromise;
+    if (isDefined(imageryProviderObservablePromise)) {
+      imageryProviderObservablePromise.case({
+        fulfilled: (imageryProvider) => {
+          // Disable feature picking for the next imagery layer
+          if (imageryProvider instanceof ArcGisMapServerImageryProvider)
+            imageryProvider.enablePickFeatures = false;
+        }
+      });
+      // Return an ImageryPart when the the promise is fulfilled with a valid imageryProvider
+      const imageryPart =
+        imageryProviderObservablePromise.value instanceof
+        ArcGisMapServerImageryProvider
+          ? {
+              imageryProvider: imageryProviderObservablePromise.value,
+              alpha: 0.0,
+              show: true,
+              clippingRectangle: this.clipToRectangle
+                ? this.cesiumRectangle
+                : undefined
+            }
+          : undefined;
+      return imageryPart;
+    } else {
+      return undefined;
+    }
+  }
+
+  private windowDurationInMs(
+    rawTimeWindowDuration: number | undefined,
+    timeWindowUnit: string | undefined
+  ): number | undefined {
+    if (
+      rawTimeWindowDuration === undefined ||
+      rawTimeWindowDuration === 0 ||
+      timeWindowUnit === undefined
+    ) {
+      return undefined;
+    }
+
+    const rawTimeWindowData: any = {};
+    rawTimeWindowData[timeWindowUnit] = rawTimeWindowDuration;
+    const duration = moment.duration(rawTimeWindowData).asMilliseconds();
+    if (duration === 0) {
+      return undefined;
+    } else {
+      return duration;
+    }
+  }
+
+  private getTimeWindowQueryString(
+    currentTime: number,
+    duration: number,
+    isForward: boolean = true
+  ) {
+    if (isForward) {
+      const toTime = Number(currentTime) + duration;
+      return currentTime + "," + toTime;
+    } else {
+      const fromTime = Number(currentTime) - duration;
+      return "" + fromTime + "," + currentTime;
+    }
+  }
+
   private _createImageryProvider = createTransformerAllowUndefined(
-    (time: string | undefined): ArcGisMapServerImageryProvider | undefined => {
-      const stratum = <MapServerStratum>(
-        this.strata.get(MapServerStratum.stratumName)
-      );
+    (
+      timeParams: TimeParams | undefined
+    ): IPromiseBasedObservable<ArcGisMapServerImageryProvider | undefined> => {
+      const stratum = this.strata.get(
+        MapServerStratum.stratumName
+      ) as MapServerStratum;
 
       if (!isDefined(this.url) || !isDefined(stratum)) {
-        return;
+        return fromPromise(Promise.resolve(undefined));
       }
 
       const params: any = Object.assign({}, this.parameters);
-      if (time !== undefined) {
-        params.time = time;
+      const currentTime = timeParams?.currentTime;
+      if (currentTime !== undefined) {
+        const windowDuration = this.windowDurationInMs(
+          timeParams?.timeWindowDuration,
+          timeParams?.timeWindowUnit
+        );
+
+        if (windowDuration !== undefined) {
+          params.time = this.getTimeWindowQueryString(
+            currentTime,
+            windowDuration,
+            timeParams?.isForwardTimeWindow
+          );
+        } else {
+          params.time = currentTime;
+        }
       }
 
       const maximumLevel = scaleDenominatorToLevel(
@@ -463,25 +562,35 @@ export default class ArcGisMapServerCatalogItem extends UrlMixin(
         false
       );
 
-      const imageryProvider = new ArcGisMapServerImageryProvider({
-        url: cleanAndProxyUrl(this, getBaseURI(this).toString()),
-        layers: this.layersArray.map((l) => l.id).join(","),
-        tilingScheme: new WebMercatorTilingScheme(),
-        maximumLevel: maximumLevel,
-        tileHeight: this.tileHeight,
-        tileWidth: this.tileWidth,
-        parameters: params,
-        enablePickFeatures: this.allowFeaturePicking,
-        /** Only used "pre-cached" tiles if we aren't requesting any specific layers
-         * If the `layersArray` property is specified, we request individual dynamic layers and ignore the fused map cache.
-         */
-        usePreCachedTilesIfAvailable: this.layersArray.length == 0,
-        mapServerData: stratum.mapServer,
-        token: stratum.token,
-        credit: this.attribution
-      });
+      const imageryProviderPromise = ArcGisMapServerImageryProvider.fromUrl(
+        cleanAndProxyUrl(this, getBaseURI(this).toString()),
+        {
+          layers: this.layersArray.map((l) => l.id).join(","),
+          tilingScheme: new WebMercatorTilingScheme(),
+          maximumLevel: maximumLevel,
+          tileHeight: this.tileHeight,
+          tileWidth: this.tileWidth,
+          parameters: params,
+          enablePickFeatures: this.allowFeaturePicking,
+          /** Only used "pre-cached" tiles if we aren't requesting any specific layers
+           * If the `layersArray` property is specified, we request individual dynamic layers and ignore the fused map cache.
+           */
+          usePreCachedTilesIfAvailable:
+            this.layersArray.length === 0 ||
+            !this.layers ||
+            setsAreEqual(
+              this.layersArray.map((l) => l.id),
+              stratum.allLayers.map((l) => l.id)
+            ),
+          mapServerData: stratum.mapServer,
+          token: stratum.token,
+          credit: this.attribution
+        }
+      );
 
-      return this.updateRequestImage(imageryProvider, false);
+      return fromPromise(
+        this.updateRequestImageAsync(imageryProviderPromise, false)
+      );
     }
   );
 
@@ -504,9 +613,9 @@ export default class ArcGisMapServerCatalogItem extends UrlMixin(
 
   /** Return array of MapServer layers from `layers` trait (which is CSV of layer IDs) - this will only return **valid** MapServer layers.*/
   @computed get layersArray() {
-    const stratum = <MapServerStratum | undefined>(
-      this.strata.get(MapServerStratum.stratumName)
-    );
+    const stratum = this.strata.get(MapServerStratum.stratumName) as
+      | MapServerStratum
+      | undefined;
     if (!stratum) return [];
 
     return filterOutUndefined(findLayers(stratum.allLayers, this.layers));
@@ -537,10 +646,10 @@ async function getJson(item: ArcGisMapServerCatalogItem, uri: any) {
 /* Given a comma-separated string of layer names, returns the layer objects corresponding to them. */
 function findLayers(layers: Layer[], names: string | undefined) {
   function findLayer(layers: Layer[], id: string) {
-    var idLowerCase = id.toLowerCase();
-    var foundByName;
-    for (var i = 0; i < layers.length; ++i) {
-      var layer = layers[i];
+    const idLowerCase = id.toLowerCase();
+    let foundByName;
+    for (let i = 0; i < layers.length; ++i) {
+      const layer = layers[i];
       if (layer.id.toString() === id) {
         return layer;
       } else if (
@@ -619,7 +728,7 @@ function cleanAndProxyUrl(
 
 function cleanUrl(url: string) {
   // Strip off the search portion of the URL
-  var uri = new URI(url);
+  const uri = new URI(url);
   uri.search("");
   return uri.toString();
 }

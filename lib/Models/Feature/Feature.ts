@@ -6,7 +6,7 @@ import Cesium3DTileFeature from "terriajs-cesium/Source/Scene/Cesium3DTileFeatur
 import Cesium3DTilePointFeature from "terriajs-cesium/Source/Scene/Cesium3DTilePointFeature";
 import ImageryLayer from "terriajs-cesium/Source/Scene/ImageryLayer";
 import ImageryLayerFeatureInfo from "terriajs-cesium/Source/Scene/ImageryLayerFeatureInfo";
-import { JsonObject } from "../../Core/Json";
+import JsonValue from "../../Core/Json";
 import { BaseModel } from "../Definition/Model";
 import { TerriaFeatureData } from "./FeatureData";
 
@@ -19,7 +19,7 @@ const customProperties = ["entityCollection", "properties", "data"];
 
 export default class TerriaFeature extends Entity {
   /** This object can be used to pass Terria-specific properties */
-  data?: TerriaFeatureData | JsonObject;
+  data?: TerriaFeatureData | JsonValue;
 
   cesiumEntity?: Entity;
   imageryLayer?: ImageryLayer | undefined;
@@ -51,7 +51,7 @@ export default class TerriaFeature extends Entity {
 
     for (let i = 0; i < customProperties.length; i++) {
       if (entity.propertyNames.indexOf(customProperties[i]) === -1) {
-        (<any>feature)[customProperties[i]] = (<any>entity)[
+        (feature as any)[customProperties[i]] = (entity as any)[
           customProperties[i]
         ]; // Assume no merging or cloning needed.
       }
@@ -99,7 +99,11 @@ export default class TerriaFeature extends Entity {
 // if they're not already there. (In case they are added in a future version of Cesium.)
 function addCustomFeatureProperties(entity: Entity) {
   for (let i = 0; i < customProperties.length; i++) {
-    if (entity.propertyNames.indexOf(customProperties[i]) === -1) {
+    const propertyName = customProperties[i];
+    if (
+      entity.propertyNames.indexOf(propertyName) === -1 &&
+      !(propertyName in entity)
+    ) {
       entity.addProperty(customProperties[i]);
     }
   }
