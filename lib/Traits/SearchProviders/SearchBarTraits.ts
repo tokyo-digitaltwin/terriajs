@@ -33,7 +33,7 @@ export class SearchBarTraits extends ModelTraits {
     name: "Minimum characters",
     description: "Minimum number of characters required for search to start"
   })
-  minCharacters: number = 3;
+  minCharacters: number = 0;
 
   @objectTrait({
     type: RectangleTraits,
