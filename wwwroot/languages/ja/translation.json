@@ -367,7 +367,7 @@
     "viewMore": "より {{name}} 結果を表示",
     "viewLess": "{{name}} 少なく結果を表示",
     "search": "データカタログで '{{searchText}}' を検索",
-    "searchInDataCatalog": "データカタログで <1>「{{locationSearchText}}」</1> を検索",
+    "searchInDataCatalog": "データカタログで 「{{locationSearchText}}」 を検索",
     "data": "データ",
     "done": "終了",
     "resultsLabel": "検索結果"
@@ -730,7 +730,9 @@
     "searchNoPlaceNames": "検索条件に合致する正式名称を持つ場所が見つかりませんでした。",
     "searchLocations": "場所",
     "searchAddresses": "住所",
-    "searchErrorOccurred": "検索中にエラーが発生しました。インターネット接続を確認するか後でやり直してください。"
+    "searchErrorOccurred": "検索中にエラーが発生しました。インターネット接続を確認するか後でやり直してください。",
+    "searchMinCharacters": " {{count}} 文字以上入力してください。",
+    "searchMinCharacters_plural": " {{count}} 文字以上入力してください。"
   },
   "chart": {
     "download": "ダウンロード",
