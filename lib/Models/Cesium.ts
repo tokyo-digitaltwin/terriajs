@@ -521,15 +521,15 @@ export default class Cesium extends GlobeOrMap {
     this._disposeTerrainReaction = autorun(() => {
       this.scene.globe.terrainProvider = this.terrainProvider;
       // TODO: bring over globe and atmosphere splitting support from terriajs-cesium
-      // this.scene.globe.splitDirection = this.terria.showSplitter
-      //   ? this.terria.terrainSplitDirection
-      //   : SplitDirection.NONE;
+      this.scene.globe.splitDirection = this.terria.showSplitter
+        ? this.terria.terrainSplitDirection
+        : SplitDirection.NONE;
       this.scene.globe.depthTestAgainstTerrain =
         this.terria.depthTestAgainstTerrainEnabled;
-      // if (this.scene.skyAtmosphere) {
-      //   this.scene.skyAtmosphere.splitDirection =
-      //     this.scene.globe.splitDirection;
-      // }
+      if (this.scene.skyAtmosphere) {
+        this.scene.skyAtmosphere.splitDirection =
+          this.scene.globe.splitDirection;
+      }
     });
     this._disposeSplitterReaction = this._reactToSplitterChanges();
 
@@ -1882,7 +1882,7 @@ export default class Cesium extends GlobeOrMap {
 
   _addVectorTileHighlight(
     imageryProvider: MapboxVectorTileImageryProvider | ProtomapsImageryProvider,
-    rectangle: Rectangle
+    _rectangle: Rectangle
   ): () => void {
     const result = new ImageryLayer(imageryProvider, {
       show: true,
