@@ -5,9 +5,11 @@ import { MapCredits } from "./Credits";
 import { DistanceLegend } from "./DistanceLegend";
 import { LocationBar } from "./LocationBar";
 import React from "react";
+import { useTheme } from "styled-components";
 
 export const BottomBar: VFC = () => {
   const viewState = useViewState();
+  const theme = useTheme();
   return (
     <Box
       fullWidth
@@ -23,7 +25,12 @@ export const BottomBar: VFC = () => {
         credits={viewState.terria.configParameters.extraCreditLinks?.slice()}
         currentViewer={viewState.terria.mainViewer.currentViewer}
       />
-      <Box paddedHorizontally={4} gap={2}>
+      <Box paddedHorizontally={4} gap={2} css={`
+          display: none;
+          @media (min-width: ${theme.sm}px) {
+            display: block;
+          }
+      `}>
         <LocationBar mouseCoords={viewState.terria.currentViewer.mouseCoords} />
         <DistanceLegend />
       </Box>

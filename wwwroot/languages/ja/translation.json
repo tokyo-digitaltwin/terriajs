@@ -367,7 +367,7 @@
     "viewMore": "より {{name}} 結果を表示",
     "viewLess": "{{name}} 少なく結果を表示",
     "search": "データカタログで '{{searchText}}' を検索",
-    "searchInDataCatalog": "データカタログで <1>「{{locationSearchText}}」</1> を検索",
+    "searchInDataCatalog": "データカタログで 「{{locationSearchText}}」 を検索",
     "data": "データ",
     "done": "終了",
     "resultsLabel": "検索結果"
@@ -730,7 +730,9 @@
     "searchNoPlaceNames": "検索条件に合致する正式名称を持つ場所が見つかりませんでした。",
     "searchLocations": "場所",
     "searchAddresses": "住所",
-    "searchErrorOccurred": "検索中にエラーが発生しました。インターネット接続を確認するか後でやり直してください。"
+    "searchErrorOccurred": "検索中にエラーが発生しました。インターネット接続を確認するか後でやり直してください。",
+    "searchMinCharacters": " {{count}} 文字以上入力してください。",
+    "searchMinCharacters_plural": " {{count}} 文字以上入力してください。"
   },
   "chart": {
     "download": "ダウンロード",
@@ -1487,7 +1489,7 @@
       "loadingInitSourceError2Message": "以下から初期化情報を読み込む際にエラー発生:  \n*`{{loadSource}}`*.",
       "loadingInitSourceErrorMessage": "`{{fragment}}` から初期化情報を読み込めませんでした。initFragmentPaths が定義されていません。",
       "loadingInitSourceErrorTitle": "初期化リソース読み込み時エラー",
-      "loadingInitSourcesErrorMessage": "{{appName}} 地図設定の読み込み時エラー &mdash; ただ指示表示されないかもしれません。地図を再読み込みしてください。もし問題が解決しない場合、 {{email}} にエラーを報告しするか、下のボタンを押してください。",
+      "loadingInitSourcesErrorMessage": "{{appName}} の地図設定の読み込み時にエラーが発生しました。地図を再度読み込んで下さい。問題が解決しない場合、「 {{email}} 」にエラーを報告するか、「ご意見・ご要望」ボタンをクリックしてください。",
       "loadingInitSourcesErrorTitle": "地図設定読み込み時のエラー",
       "loadingMagdaInitSourceErrorMessage": "Magda レコード `{{url}}` から初期化情報を読み込み時にエラー発生。",
       "loadingMagdaInitSourceErrorTitle": "Magdaの初期化ソース読み込み時のエラー",

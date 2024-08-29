@@ -105,6 +105,12 @@ export const terriaErrorNotification = (error: TerriaError) =>
             // Fix feedback button color
             button {
               color: ${(p: any) => p.theme.textLight};
+            }            
+            a {
+              color: ${(p: any) => p.theme.textLight};
+            }
+            a:visited {
+              color: ${(p: any) => p.theme.textLight};
             }
           `}
           textLight

@@ -139,10 +139,9 @@ function ClippingMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
         return;
       }
 
-      const clippingPlaneCollection = this._clippingPlaneCollection;
       if (!this.clippingBox.clipModel) {
-        clippingPlaneCollection.enabled = false;
-        return clippingPlaneCollection;
+        this._clippingPlaneCollection.enabled = false;
+        return this._clippingPlaneCollection;
       }
 
       const clipDirection =
@@ -159,13 +158,14 @@ function ClippingMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
         );
       });
 
-      updateClippingPlanesCollection(clippingPlaneCollection, {
-        modelMatrix: this.clippingPlaneModelMatrix,
+      const clippingPlaneCollection = new ClippingPlaneCollection({
         planes,
         unionClippingRegions: this.clippingBox.clipDirection === "outside",
         enabled: this.clippingBox.clipModel
       });
-
+      clippingPlaneCollection.modelMatrix = this.clippingPlaneModelMatrix
+      this._clippingPlaneCollection = clippingPlaneCollection;
+    
       return clippingPlaneCollection;
     }
 
@@ -454,9 +454,7 @@ function ClippingMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
             // and a box position is not already set.
             const triggerClippingBoxRepositioning = !this.isClippingBoxPlaced;
 
-            if (triggerClippingBoxRepositioning) {
-              this.repositionClippingBoxTrigger = true;
-            }
+            this.repositionClippingBoxTrigger = (clipModel && triggerClippingBoxRepositioning);
           }),
           selectableDimensions: checkboxGroupInputs
         }
