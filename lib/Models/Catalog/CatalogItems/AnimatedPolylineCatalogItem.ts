@@ -275,12 +275,15 @@ class AnimatedPolylineCatalogItem extends MappableMixin(
       .join("\n");
   }
 
-  private getVariableDeclarations() {
+  private getVariableDeclarations(isVertexShader: boolean) {
     const attributes = this.getSampleAttributes();
     return Object.entries(attributes)
       .map(([k, v]) => {
-        const type = v.length === 1 ? "float" : `vec${v.length}`;
-        return `varying ${type} ${PER_INSTANCE_VARIABLE_PREFIX}${k};`;
+        const type = v.length === 1 ? "float" : `vec${v.length}`;    
+        if (isVertexShader) {
+          return `out ${type} ${PER_INSTANCE_VARIABLE_PREFIX}${k};`;
+        }
+        return `in ${type} ${PER_INSTANCE_VARIABLE_PREFIX}${k};`;
       })
       .join("\n");
   }
@@ -290,26 +293,26 @@ class AnimatedPolylineCatalogItem extends MappableMixin(
   }
 
   private getVertexShader() {
-    const variableDeclarations = this.getVariableDeclarations();
+    const variableDeclarations = this.getVariableDeclarations(true);
     const variableAssignments = this.getVariableAssignments();
     // Modified version of the default vertex shader of PolylineMaterialAppearance
     return `
     ${PolylineCommon}
-    attribute vec3 position3DHigh;
-    attribute vec3 position3DLow;
-    attribute vec3 prevPosition3DHigh;
-    attribute vec3 prevPosition3DLow;
-    attribute vec3 nextPosition3DHigh;
-    attribute vec3 nextPosition3DLow;
-    attribute vec2 expandAndWidth;
-    attribute vec2 st;
-    attribute float batchId;
-    attribute float timeTable;
-    attribute vec4 startColor;
+    in vec3 position3DHigh;
+    in vec3 position3DLow;
+    in vec3 prevPosition3DHigh;
+    in vec3 prevPosition3DLow;
+    in vec3 nextPosition3DHigh;
+    in vec3 nextPosition3DLow;
+    in vec2 expandAndWidth;
+    in vec2 st;
+    in float batchId;
+    in float timeTable;
+    in vec4 startColor;
 
-    varying float v_width;
-    varying float v_polylineAngle;
-    varying float v_passageTime;
+    out float v_width;
+    out float v_polylineAngle;
+    out float v_passageTime;
     ${variableDeclarations}
 
     void main()
@@ -335,13 +338,14 @@ class AnimatedPolylineCatalogItem extends MappableMixin(
   }
 
   private getFragmentShader() {
-    const variableDeclarations = this.getVariableDeclarations();
+    const variableDeclarations = this.getVariableDeclarations(false);
     const colorExpression = this.getColorExpression();
     const interval = toGlslFloatLiteral(this.interval ?? 1);
     const framesPerLoop = toGlslFloatLiteral(this.framesPerLoop ?? 300);
 
     return `
-    varying float v_passageTime;
+    layout(location = 0) out vec4 fragColor;
+    in float v_passageTime;
     const float INTERVAL = ${interval};
     const float FRAMES_PER_LOOP = ${framesPerLoop};
     ${variableDeclarations}
@@ -361,12 +365,14 @@ class AnimatedPolylineCatalogItem extends MappableMixin(
       }
       return 0.0;
     }
+    
     vec4 getColor(float t) {
       return ${colorExpression};
     }
+    
     void main()
     {
-      gl_FragColor = getColor(getTimeSinceLastPassage());
+      fragColor = getColor(getTimeSinceLastPassage());
     }
     `;
   }
