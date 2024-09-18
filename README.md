@@ -16,3 +16,4 @@ TerriaJS
 - 東京都デジタルツイン 3D ビューア（β 版）<br>
   ※ 上記の専用情報発信サイトからリンクされております。<br>
   https://3dview.tokyo-digitaltwin.metro.tokyo.lg.jp/
+- TerriaJsの公式ドキュメントにはない東京デジタルツイン3Dビューア独自の設定項目については、[こちら](./CUSTOM_FEATURES.md)をご覧ください。
