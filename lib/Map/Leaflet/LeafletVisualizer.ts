@@ -18,6 +18,8 @@ import PolylineDashMaterialProperty from "terriajs-cesium/Source/DataSources/Pol
 import Property from "terriajs-cesium/Source/DataSources/Property";
 import Rectangle from "terriajs-cesium/Source/Core/Rectangle";
 import { getLineStyleLeaflet } from "../../Models/Catalog/Esri/esriLineStyle";
+import bboxPolygon from '@turf/bbox-polygon'
+import booleanIntersects from "@turf/boolean-intersects";
 
 const destroyObject =
   require("terriajs-cesium/Source/Core/destroyObject").default;
@@ -463,7 +465,7 @@ class LeafletGeomVisualizer {
       for (const prop in iconOptions) {
         if (
           isDefined(marker.options.icon) &&
-          iconOptions[prop] !== (<any>marker.options.icon.options)[prop]
+          iconOptions[prop] !== (marker.options.icon.options as any)[prop]
         ) {
           redrawIcon = true;
           break;
@@ -542,11 +544,11 @@ class LeafletGeomVisualizer {
       CesiumMath.toDegrees(cart.latitude),
       CesiumMath.toDegrees(cart.longitude)
     );
-    const text = getValue(labelGraphics.text, time);
-    const font = getValue(labelGraphics.font as unknown as Property, time);
+    const text = getValue<string>(labelGraphics.text, time);
+    const font = getValue<string>(labelGraphics.font, time);
     const scale = getValueOrDefault(labelGraphics.scale, time, 1.0);
     const fillColor = getValueOrDefault(
-      labelGraphics.fillColor as unknown as Property,
+      labelGraphics.fillColor,
       time,
       defaultColor
     );
@@ -592,7 +594,7 @@ class LeafletGeomVisualizer {
       for (const prop in iconOptions) {
         if (
           isDefined(marker.options.icon) &&
-          iconOptions[prop] !== (<any>marker.options.icon.options)[prop]
+          iconOptions[prop] !== (marker.options.icon.options as any)[prop]
         ) {
           redrawLabel = true;
           break;
@@ -600,7 +602,7 @@ class LeafletGeomVisualizer {
       }
     }
 
-    if (redrawLabel) {
+    if (redrawLabel && isDefined(text)) {
       const drawBillboard = function (
         image: HTMLImageElement,
         dataurl: string
@@ -621,13 +623,15 @@ class LeafletGeomVisualizer {
         fillColor: fillColor,
         font: font
       });
-      const imageUrl = canvas.toDataURL();
+      if (isDefined(canvas)) {
+        const imageUrl = canvas.toDataURL();
 
-      const img = new Image();
-      img.onload = function () {
-        drawBillboard(img, imageUrl);
-      };
-      img.src = imageUrl;
+        const img = new Image();
+        img.onload = function () {
+          drawBillboard(img, imageUrl);
+        };
+        img.src = imageUrl;
+      }
     }
   }
 
@@ -1022,8 +1026,10 @@ class LeafletGeomVisualizer {
         polyline.setLatLngs(latlngs);
       }
 
-      for (let prop in polylineOptions) {
-        if ((<any>polylineOptions)[prop] !== (<any>polyline.options)[prop]) {
+      for (const prop in polylineOptions) {
+        if (
+          (polylineOptions as any)[prop] !== (polyline.options as any)[prop]
+        ) {
           polyline.setStyle(polylineOptions);
           break;
         }
@@ -1095,6 +1101,44 @@ class LeafletGeomVisualizer {
     });
 
     return result;
+  }
+
+  public getItemsByBbox(latlng1: L.LatLng, latlng2: L.LatLng): Entity[] {
+    let minx;
+    let miny;
+    let maxx;
+    let maxy;
+    if (latlng1.lng < latlng2.lng) {
+      minx = latlng1.lng;
+      maxx = latlng2.lng;
+    } else {
+      minx = latlng2.lng;
+      maxx = latlng1.lng;
+    }
+    if (latlng1.lat < latlng2.lat) {
+      miny = latlng1.lat;
+      maxy = latlng2.lat;
+    } else {
+      miny = latlng2.lat;
+      maxy = latlng1.lat;
+    }
+    const bboxPoly = bboxPolygon([minx, miny, maxx, maxy])
+    const entityHash = this._entityHash;
+    const containsHash: string[] = []
+    Object.entries(entityHash).forEach(([key, value]) => {
+      if (isDefined(value.polygon) && isDefined(value.polygon.layer)) {
+        const geojson = value.polygon.layer.toGeoJSON();
+        if (booleanIntersects(bboxPoly, geojson)) {
+          containsHash.push(key)
+        }
+      }
+    })
+    const targets: Entity[] = []
+    containsHash.forEach((key) => {
+      targets.push(this._entitiesToVisualize.get(key))
+    })
+    console.log(targets);
+    return targets;
   }
 }
 
@@ -1215,7 +1259,7 @@ function positionToLatLng(
   position: Cartesian3,
   bounds: LatLngBounds | undefined
 ) {
-  var cartographic = Ellipsoid.WGS84.cartesianToCartographic(position);
+  const cartographic = Ellipsoid.WGS84.cartesianToCartographic(position);
   let lon = CesiumMath.toDegrees(cartographic.longitude);
   if (bounds !== undefined) {
     if (_isCloseToEasternAntiMeridian(bounds)) {
@@ -1232,7 +1276,7 @@ function positionToLatLng(
 }
 
 function hierarchyToLatLngs(hierarchy: PolygonHierarchy) {
-  let holes: L.LatLng[][] = [];
+  const holes: L.LatLng[][] = [];
   const positions = Array.isArray(hierarchy) ? hierarchy : hierarchy.positions;
   if (hierarchy.holes.length > 0) {
     hierarchy.holes.forEach((hole) => {
@@ -1320,10 +1364,10 @@ function getValueOrUndefined(property: Property | undefined, time: JulianDate) {
 }
 
 function convertEntityPositionsToLatLons(positions: Cartesian3[]): L.LatLng[] {
-  var carts = Ellipsoid.WGS84.cartesianArrayToCartographicArray(positions);
-  var latlngs: L.LatLng[] = [];
+  const carts = Ellipsoid.WGS84.cartesianArrayToCartographicArray(positions);
+  const latlngs: L.LatLng[] = [];
   let lastLongitude;
-  for (var p = 0; p < carts.length; p++) {
+  for (let p = 0; p < carts.length; p++) {
     let lon = CesiumMath.toDegrees(carts[p].longitude);
 
     if (lastLongitude !== undefined) {

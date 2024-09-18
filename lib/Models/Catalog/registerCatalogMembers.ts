@@ -11,6 +11,7 @@ import CartoMapV1CatalogItem from "./CatalogItems/CartoMapV1CatalogItem";
 import CartoMapV3CatalogItem from "./CatalogItems/CartoMapV3CatalogItem";
 import Cesium3DTilesCatalogItem from "./CatalogItems/Cesium3DTilesCatalogItem";
 import CesiumTerrainCatalogItem from "./CatalogItems/CesiumTerrainCatalogItem";
+import CogCatalogItem from "./CatalogItems/CogCatalogItem";
 import CompositeCatalogItem from "./CatalogItems/CompositeCatalogItem";
 import CsvCatalogItem from "./CatalogItems/CsvCatalogItem";
 import CzmlCatalogItem from "./CatalogItems/CzmlCatalogItem";
@@ -64,6 +65,7 @@ import WebProcessingServiceCatalogFunctionJob from "./Ows/WebProcessingServiceCa
 import WebProcessingServiceCatalogGroup from "./Ows/WebProcessingServiceCatalogGroup";
 import SdmxJsonCatalogGroup from "./SdmxJson/SdmxJsonCatalogGroup";
 import SdmxJsonCatalogItem from "./SdmxJson/SdmxJsonCatalogItem";
+import CogCompositeCatalogItem from "./CatalogItems/CogCompositeCatalogItem";
 
 export default function registerCatalogMembers() {
   CatalogMemberFactory.register(CatalogGroup.type, CatalogGroup);
@@ -236,6 +238,11 @@ export default function registerCatalogMembers() {
     UrlTemplateImageryCatalogItem
   );
   CatalogMemberFactory.register(AssImpCatalogItem.type, AssImpCatalogItem);
+  CatalogMemberFactory.register(CogCatalogItem.type, CogCatalogItem);
+  CatalogMemberFactory.register(
+    CogCompositeCatalogItem.type,
+    CogCompositeCatalogItem
+  );
   CatalogMemberFactory.register(
     AnimatedPolylineCatalogItem.type,
     AnimatedPolylineCatalogItem
@@ -289,17 +296,17 @@ export default function registerCatalogMembers() {
 
   // These items work by trying to match a URL, then loading the data. If it fails, they move on.
   UrlToCatalogMemberMapping.register(
-    matchesUrl(/\/wms|\=wms/i),
+    matchesUrl(/\/wms|=wms/i),
     WebMapServiceCatalogGroup.type,
     true
   );
   UrlToCatalogMemberMapping.register(
-    matchesUrl(/\/wfs|\=wfs/i),
+    matchesUrl(/\/wfs|=wfs/i),
     WebFeatureServiceCatalogGroup.type,
     true
   );
   UrlToCatalogMemberMapping.register(
-    matchesUrl(/\/wmts|\=wmts/i),
+    matchesUrl(/\/wmts|=wmts/i),
     WebMapTileServiceCatalogGroup.type,
     true
   );
@@ -402,7 +409,7 @@ function matchesUrl(regex: RegExp) {
 }
 
 export function matchesExtension(extension: string) {
-  var regex = new RegExp("\\." + extension + "$", "i");
+  const regex = new RegExp("\\." + extension + "$", "i");
   return function (url: string) {
     return Boolean(url.match(regex));
   };

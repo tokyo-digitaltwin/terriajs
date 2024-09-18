@@ -10,7 +10,7 @@ import styled from "styled-components";
 import { Button } from "../../../Styled/Button";
 import Cesium3DTilesCatalogItemTraits from "../../../Traits/TraitsClasses/Cesium3DTilesCatalogItemTraits";
 import { GLYPHS, StyledIcon } from "../../../Styled/Icon";
-import { useViewState } from "../../StandardUserInterface/ViewStateContext";
+import { useViewState } from "../../Context";
 import WorkbenchButton from "../WorkbenchButton";
 
 interface StoryCollection {

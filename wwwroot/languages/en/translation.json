@@ -71,7 +71,7 @@
     "browserCannotProvide": "Your browser cannot provide your location.",
     "myLocation": "My Location",
     "location": "Location",
-    "originError": "Your browser can only provide your location when using https. You may be able to use {{secureUrl}} instead.",
+    "originError": "Your browser can only provide your location when using HTTPS. You may be able to use {{secureUrl}} instead.",
     "centreMap": "Centre map at your current location"
   },
   "splitterTool": {
@@ -460,7 +460,7 @@
     "resultsLabel": "Search Results",
     "done": "Done",
     "data": "Data",
-    "searchInDataCatalog": "Search <1>'{{locationSearchText}}'</1> in the Data Catalogue",
+    "searchInDataCatalog": "Search '{{locationSearchText}}' in the Data Catalogue",
     "search": "Search '{{searchText}}' in the Data Catalogue",
     "viewLess": "View less {{name}} results",
     "viewMore": "View more {{name}} results",
@@ -474,7 +474,10 @@
   },
   "preview": {
     "doesNotContainGeospatialData": "This file does not contain geospatial data.",
-    "selectToPreview": "<0>Select a dataset to see a preview </0><1>- OR -</1><2>Go to the map</2>",
+    "selectToPreviewDataset": "Select a dataset to see a preview",
+    "selectMultipleDatasets": "<0>Press <strong>Shift</strong> and click</0><1 /><2>to add multiple datasets</2>",
+    "selectToPreviewSeparator": "OR",
+    "goToTheMap": "Go to the map",
     "loading": "PREVIEW LOADING...",
     "preview": "{{appName}} preview",
     "previewItemErrorTitle": "Catalog item could not be previewed.",
@@ -619,7 +622,6 @@
   "loader": {
     "loadingMessage": "Loading"
   },
-  "emptyWorkbenchMessage": "<0><0>Your workbench is empty</0><1><strong>Click '$t(addData.addDataBtnText)' above to </strong></1><2><0>Browse the Data Catalogue</0><1>Load your own data onto the map</1></2><3><0></0><strong>TIP.</strong><2>All your active data sets will be listed here</2></3></0>",
   "emptyWorkbench": {
     "emptyArea": "Your workbench is empty",
     "helpfulHints": "Helpful hints",
@@ -652,6 +654,8 @@
   "viewModels": {
     "searchNoLocations": "Sorry, no locations match your search query.",
     "searchErrorOccurred": "An error occurred while searching.  Please check your internet connection or try again later.",
+    "searchMinCharacters": "You need to enter minimum {{count}} character",
+    "searchMinCharacters_plural": "You need to enter minimum {{count}} characters",
     "searchAddresses": "Addresses",
     "searchPlaceNames": "Official Place Names",
     "searchNoPlaceNames": "Sorry, no official place names match your search query.",
@@ -725,7 +729,9 @@
       "assimp-local-description": "**Warning:** 3D file converter is experimental.  \nSee list of [supported formats](https://github.com/assimp/assimp/blob/master/doc/Fileformats.md).  \nFiles must be zipped.",
       "assimp-remote": "3D file converter (experimental)",
       "assimp-remote-description": "**Warning:** 3D file converter is experimental.  \nSee list of [supported formats](https://github.com/assimp/assimp/blob/master/doc/Fileformats.md).  \nZip files are also supported",
-      "ifc": "IFC"
+      "ifc": "IFC",
+      "cog": "Cloud Optimised Geotiff",
+      "cog-composite": "Cloud Optimised Geotiff Composite"
     },
     "printWindow": {
       "errorTitle": "Error printing",
@@ -1550,7 +1556,7 @@
             "name": "Dataset"
           },
           "tableStyle": {
-            "dataset": "Style"
+            "name": "Style"
           },
           "tableStyleType": {
             "name": "Symbology",
@@ -1911,8 +1917,12 @@
       "outline": {
         "name": "Outline style",
         "selectableDimensions": {
-          "color": "Color",
-          "width": "Width"
+          "color": {
+            "name": "Color"
+          },
+          "width": {
+            "name": "Width"
+          }
         }
       },
       "label": {
@@ -2035,6 +2045,15 @@
       }
     }
   },
+  "searchProvider": {
+    "noSearchProviders": "There is no configured search providers",
+    "models": {
+      "unsupportedTypeTitle": "Unknown type",
+      "unsupportedTypeMessage": "Could not create unknown model type {{type}}.",
+      "idForMatchingErrorTitle": "Missing property",
+      "idForMatchingErrorMessage": "Model objects must have an `id`, `localId`, or `name` property."
+    }
+  },
   "deltaTool": {
     "titlePrefix": "Change Detection",
     "description": "This tool visualizes the difference between imagery captured at two discrete points in time.",
@@ -2150,5 +2169,19 @@
     "colorAdd": "Add",
     "colorRemove": "Remove",
     "invalid": "Invalid"
+  },
+  "downloadControls": {
+    "ariaDownloadUnselected": "Download multiple ranges",
+    "ariaDownloadSelected": "Shift+drag to select a range",
+    "downloadProgress": "{{size}} items remaining, {{progress}} % downloaded"
+  },
+  "downloadDialog": {
+    "title": "Download",
+    "message": "There are {{count}} downloads available. ",
+    "targets": "{{targets}}",
+    "notice1": "The file size is large and downloading will take some time.",
+    "notice2": "Please try downloading in a few files.",
+    "confirmText": "Do download",
+    "denyText": "Cancel"
   }
 }

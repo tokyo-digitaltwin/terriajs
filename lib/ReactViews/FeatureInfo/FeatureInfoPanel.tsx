@@ -29,7 +29,7 @@ import Workbench from "../../Models/Workbench";
 import ViewState from "../../ReactViewModels/ViewState";
 import Icon from "../../Styled/Icon";
 import Loader from "../Loader";
-import { withViewState } from "../StandardUserInterface/ViewStateContext";
+import { withViewState } from "../Context";
 import Styles from "./feature-info-panel.scss";
 import FeatureInfoCatalogItem from "./FeatureInfoCatalogItem";
 
@@ -229,7 +229,7 @@ class FeatureInfoPanel extends React.Component<Props> {
     const cartographic =
       Ellipsoid.WGS84.cartesianToCartographic(cartesianPosition);
     if (cartographic === undefined) {
-      return <></>;
+      return null;
     }
     const latitude = CesiumMath.toDegrees(cartographic.latitude);
     const longitude = CesiumMath.toDegrees(cartographic.longitude);
