@@ -15,7 +15,7 @@
 | multipleDownload    | boolean  | カタログアイテムが複数ダウンロード機能の対象であるかどうかを示すプロパティ。trueで複数ダウンロード機能対象となる。                |
 | downloadUrlProperty | string   | 複数ダウンロード機能で、ダウンロードURLが記述されているデータの属性名を指定するプロパティ。                                       |
 | stories             | object[] | ワークベンチ内のボタンからストーリーを再生する機能を設定するプロパティ。 `{"name": string, "items": any[]}`形式の配列で記述する。 |
-| initialCamera       | object   | ワークベンチ内の「データ視点移動」ボタンクリックで移動する位置をオーバライドプロパティ。                                          |
+| initialCamera       | object   | ワークベンチ内の「データ視点移動」ボタンクリックで移動する位置をオーバライドするプロパティ。                                          |
 
 ## KmlCatalogItem に追加されたtraits
 | Trait         | Type    | Default | Description                                                                                                                                                                   |
