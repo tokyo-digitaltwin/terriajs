@@ -14,7 +14,7 @@
 | switchableUrls      | object[] | 3DTilesのurlをUIで切り替えるためのパラメータ。`{"name": string, "url": string }` 形式のobjectの配列で記述する。                   |
 | multipleDownload    | boolean  | カタログアイテムが複数ダウンロード機能の対象かを示すパラメータ。trueで複数ダウンロード機能対象となる。                            |
 | downloadUrlProperty | string   | 複数ダウンロード機能で、ダウンロードURLが記述されているデータの属性名を指定するパラメータ。                                       |
-| stories             | object[] | ワークベンチ内のボタンからストーリーを再生する機能を設定するパラメータ。 `{"name": string, "items": any[]}`形式の配列で記述する。 |
+| stories             | object[] | ワークベンチ内のボタンからストーリーを再生する機能を設定するパラメータ。 `{"name": string, "items": any[]}`形式のobjectの配列で記述する。 |
 | initialCamera       | object   | ワークベンチ内のボタンからストーリーを再生する機能を設定するパラメータ。 `{"name": string, "items": any[]}`形式のobjectの配列で記述する。                                   |
 
 ## KmlCatalogItem に追加されたtraits
