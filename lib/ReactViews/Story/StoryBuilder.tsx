@@ -295,13 +295,13 @@ class StoryBuilder extends React.Component<
     });
   };
 
-  renderPlayShare(hasStories: boolean | undefined) {
+  renderPlayShare() {
     const { t } = this.props;
     return (
       <Box justifySpaceBetween>
         <StoryButton
           fullWidth
-          disabled={this.state.editingMode || !hasStories}
+          disabled={this.state.editingMode}
           title={t("story.preview")}
           btnText={t("story.play")}
           onClick={this.runStories}
@@ -315,7 +315,7 @@ class StoryBuilder extends React.Component<
         <Spacing right={1} />
         <SharePanel
           storyShare
-          btnDisabled={this.state.editingMode || !hasStories}
+          btnDisabled={this.state.editingMode}
           terria={this.props.viewState.terria}
           viewState={this.props.viewState}
           modalWidth={(this.props.widthFromMeasureElementHOC ?? 100) - 22}
@@ -340,7 +340,7 @@ class StoryBuilder extends React.Component<
         : t("story.untitledScene")
       : "";
     return (
-      <Box displayInlineBlock>
+      <>
         <BadgeBar
           label={t("story.badgeBarLabel")}
           badge={this.props.viewState.terria.stories.length}
@@ -355,7 +355,7 @@ class StoryBuilder extends React.Component<
           </RawButton>
         </BadgeBar>
         <Spacing bottom={2} />
-        <Box column paddedHorizontally={2}>
+        <Box column paddedHorizontally={2} flex={1}>
           {this.state.isRemoving && (
             <RemoveDialog
               theme={this.props.theme}
@@ -438,7 +438,7 @@ class StoryBuilder extends React.Component<
           </Box>
           <Spacing bottom={2} />
         </Box>
-      </Box>
+      </>
     );
   }
 
@@ -467,8 +467,6 @@ class StoryBuilder extends React.Component<
         ref={(component: HTMLElement) => (this.refToMeasure = component)}
         isVisible={this.props.isVisible}
         isHidden={!this.props.isVisible}
-        styledWidth={"320px"}
-        styledMinWidth={"320px"}
         charcoalGreyBg
         column
       >
@@ -497,7 +495,7 @@ class StoryBuilder extends React.Component<
           </Text>
           <Spacing bottom={3} />
           {!hasStories && this.renderIntro()}
-          {hasStories && this.renderPlayShare(hasStories)}
+          {hasStories && this.renderPlayShare()}
         </Box>
         <Spacing bottom={2} />
         {hasStories && this.renderStories(this.state.editingMode)}
@@ -523,6 +521,9 @@ type PanelProps = React.ComponentPropsWithoutRef<typeof Box> & {
 const Panel = styled(Box)<PanelProps>`
   transition: all 0.25s;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  width: 320px;
+  min-width: 320px;
+  height: 100vh;
   ${(props) =>
     props.isVisible &&
     `
@@ -533,7 +534,7 @@ const Panel = styled(Box)<PanelProps>`
     props.isHidden &&
     `
     visibility: hidden;
-    margin-right: -${props.styledWidth ? props.styledWidth : "320px"};
+    margin-right: -100%;
   `}
 `;
 
