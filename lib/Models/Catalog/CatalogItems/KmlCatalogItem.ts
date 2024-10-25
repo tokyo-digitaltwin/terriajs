@@ -8,6 +8,7 @@ import PolygonHierarchy from "terriajs-cesium/Source/Core/PolygonHierarchy";
 import Resource from "terriajs-cesium/Source/Core/Resource";
 import sampleTerrain from "terriajs-cesium/Source/Core/sampleTerrain";
 import ConstantProperty from "terriajs-cesium/Source/DataSources/ConstantProperty";
+import PolylineGraphics from "terriajs-cesium/Source/DataSources/PolylineGraphics";
 import KmlDataSource from "terriajs-cesium/Source/DataSources/KmlDataSource";
 import Property from "terriajs-cesium/Source/DataSources/Property";
 import isDefined from "../../../Core/isDefined";
@@ -21,6 +22,9 @@ import CreateModel from "../../Definition/CreateModel";
 import HasLocalData from "../../HasLocalData";
 import { ModelConstructorParameters } from "../../Definition/Model";
 import proxyCatalogItemUrl from "../proxyCatalogItemUrl";
+import Color from "terriajs-cesium/Source/Core/Color";
+import Positions from "terriajs-cesium/Source/DataSources/PositionProperty";
+import PolylineEntity from "terriajs-cesium/Source/Scene/Polyline";
 
 const kmzRegex = /\.kmz$/i;
 
@@ -123,6 +127,7 @@ class KmlCatalogItem
       const correspondingCartesians: Cartesian3[] = [];
 
       const entities = kmlDataSource.entities.values;
+      console.log(entities);
       for (let i = 0; i < entities.length; ++i) {
         const entity = entities[i];
 
@@ -157,9 +162,23 @@ class KmlCatalogItem
 
         // Force the polygons to be rebuilt.
         for (let i = 0; i < entities.length; ++i) {
+
           const polygon = entities[i].polygon;
           if (!isDefined(polygon)) {
-            continue;
+            if(isDefined(PolylineGraphics)) {
+              const polylineEntity = entities[i].polyline;
+              let polylineFinal = kmlDataSource.entities.add({
+                polyline: {
+                  positions: getPropertyValue<Positions>(polylineEntity!.positions),
+                  clampToGround: true,
+                  width: polylineEntity!.width,
+                  material: polylineEntity!.material
+                }
+              });
+              kmlDataSource.entities.remove(entities[i]);
+            }
+            
+            break;
           }
 
           const existingHierarchy = getPropertyValue<PolygonHierarchy>(

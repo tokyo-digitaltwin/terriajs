@@ -8,8 +8,8 @@ import PositionRightOfWorkbench from "../../Workbench/PositionRightOfWorkbench";
 import DropPedestrianToGround from "./DropPedestrianToGround";
 import MiniMap, { getViewFromScene, MiniMapView } from "./MiniMap";
 import MovementControls from "./MovementControls";
-import MeasureTool from "../../Map/Navigation/Items/MeasureTool";
-import AreaMeasureTool from "../../Map/Navigation/Items/AreaMeasureTool";
+import { MeasureTool } from "../../Map/MapNavigation/Items";
+import AreaMeasureTool from "../../Map/MapNavigation/Items/AreaMeasureTool";
 
 
 // The desired camera height measured from the surface in metres

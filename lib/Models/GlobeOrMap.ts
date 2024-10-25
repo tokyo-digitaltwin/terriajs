@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import Cartesian2 from "terriajs-cesium/Source/Core/Cartesian2";
 import Cartesian3 from "terriajs-cesium/Source/Core/Cartesian3";
@@ -32,6 +33,13 @@ import CommonStrata from "./Definition/CommonStrata";
 import createStratumInstance from "./Definition/createStratumInstance";
 import TerriaFeature from "./Feature/Feature";
 import Terria from "./Terria";
+import Camera from "terriajs-cesium/Source/Scene/Camera";
+import DataSource from "terriajs-cesium/Source/DataSources/DataSource";
+import {
+  Category,
+  DataSourceAction
+} from "../Core/AnalyticEvents/analyticEvents";
+
 
 require("./Feature/ImageryLayerFeatureInfo"); // overrides Cesium's prototype.configureDescriptionFromProperties
 
@@ -54,6 +62,14 @@ export default abstract class GlobeOrMap {
   // An internal id to track an in progress call to zoomTo()
   _currentZoomId?: string;
 
+  // True is areaDownloading() was called and the map is currently selecting area to download
+  @observable isAreaDownloading = false;
+
+  // An internal id to track an in progress call to areaDwonloading()
+  _currentAriaDownloadingId?: string;
+
+  _downloadingCatalogItemId: string | undefined;
+
   // This is updated by Leaflet and Cesium objects.
   // Avoid duplicate mousemove events.  Why would we get duplicate mousemove events?  I'm glad you asked:
   // http://stackoverflow.com/questions/17818493/mousemove-event-repeating-every-second/17819113
@@ -69,6 +85,153 @@ export default abstract class GlobeOrMap {
 
   constructor() {
     makeObservable(this);
+  }
+
+  abstract doDisableZoom(): Promise<void>;
+  abstract prepareAreaDownloading(dataSource: DataSource, downloadProperty: string): Promise<void>;
+  abstract doEnableZoom(): Promise<void>;
+  abstract removeAreaDownloading(): Promise<void>;
+  onStartDownloadAction: (() => void) | undefined;
+  onDownloadEndAction: (() => void) | undefined;
+  onDownloadProgress: ((size: number, progress: number) => void) | undefined;
+
+  /**
+   * do area download
+   */
+  doAreaDownloading(hrefs: string[], targets: string[]) {
+    const confirmAction = () => {
+      const self = this;
+      const downloads = new Map<string, any>();
+      async function doDownload(url: string) {
+        let download = 'dummy';
+        try {
+          download = url.split('/').pop() as string;
+          const response = await fetch(url);
+          const reader = response.body?.getReader();
+          if (!reader) {
+            throw new Error("Body reader is not available");
+          }
+          const contentLength = +response.headers.get('Content-Length')!;
+          downloads.set(download, { receivedLength: 0, contentLength: contentLength})
+          let receivedLength = 0;
+          let chunks: Uint8Array[] = [];
+
+          // read data
+          while (true) {
+            const { done, value } = await reader.read();
+
+            if (done) {
+              break;
+            }
+
+            if (value) {
+              chunks.push(value);
+              receivedLength += value.length;
+              downloads.set(download, { receivedLength: receivedLength, contentLength: contentLength});
+              let progress = 0;
+              let totalContentLength = 0;
+              let totalReceivedLength = 0;
+              downloads.forEach((value, key) => {
+                totalContentLength += value.contentLength;
+                totalReceivedLength += value.receivedLength;
+              })
+              if (totalContentLength <= 0) {
+                progress = 0;
+              } else {
+                progress = Math.round((totalReceivedLength / totalContentLength) * 100);
+              }
+              // notify progress
+              if (self.onDownloadProgress) {
+                self.onDownloadProgress(downloads.size, progress);
+              }
+            }
+          }
+
+          // combine all chank
+          let chunksAll = new Uint8Array(receivedLength);
+          let position = 0;
+          for (let chunk of chunks) {
+            chunksAll.set(chunk, position);
+            position += chunk.length;
+          }
+
+          // convert to blob
+          const blob = new Blob([chunksAll]);
+
+          const a = document.createElement('a');
+          a.href = window.URL.createObjectURL(blob);
+          a.download = download;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(a.href);
+          downloads.delete(download);
+          if (downloads.size === 0 && self.onDownloadEndAction) {
+            self.onDownloadProgress = undefined;
+            self.onDownloadEndAction();
+            self.onDownloadEndAction = undefined;
+          }
+        } catch (error) {
+          console.error(error);
+          downloads.delete(download);
+          if (downloads.size === 0 && self.onDownloadEndAction) {
+            self.onDownloadProgress = undefined;
+            self.onDownloadEndAction();
+            self.onDownloadEndAction = undefined;
+          }
+        }
+      }
+      if (this.onStartDownloadAction !== undefined) {
+        this.onStartDownloadAction();
+      }
+      hrefs.forEach(url => {
+        doDownload(url);
+      });
+      targets.forEach(target=>{
+        this.terria.analytics?.logEvent(
+          "Download Mesh",
+          "Download from mesh",
+          `${this._downloadingCatalogItemId}_${target}`
+        );
+      });
+    }
+    const denyAction = () => {
+      if (this.onDownloadEndAction !== undefined) {
+        this.onDownloadEndAction();
+        this.onDownloadEndAction = undefined;
+      }
+    }
+    if (hrefs.length === 0) {
+      denyAction();
+      return;
+    }
+    this.terria.notificationState.addNotificationToQueue({
+      title: i18next.t('downloadDialog.title'),
+      message: i18next.t('downloadDialog.message', {count: hrefs.length}) + "<br>" + i18next.t('downloadDialog.targets', {targets: targets.join(',\n')}) + "<br><br>" + i18next.t('downloadDialog.notice1') + "<br>" + i18next.t('downloadDialog.notice2'),
+      confirmText: i18next.t('downloadDialog.confirmText'),
+      confirmAction: confirmAction,
+      denyText: i18next.t('downloadDialog.denyText'),
+      denyAction: denyAction,
+    });
+  }
+
+
+  /**
+   * Turn on area Downliading function
+   *
+   */
+  startAreaDownloading(catalogItemId: string, dataSource: DataSource, downloadProperty: string, onStartAction: () => void, onDownloadProgress: (size: number, progress: number) => void, onEndAction: () => void): Promise<void> {
+    this._downloadingCatalogItemId = catalogItemId;
+    // cancel previous download
+    if (this.isAreaDownloading) {
+      this.removeAreaDownloading();
+    }
+    this.onStartDownloadAction = onStartAction;
+    this.onDownloadEndAction = onEndAction;
+    this.onDownloadProgress = onDownloadProgress;
+    this.isAreaDownloading = true;
+    this.doDisableZoom();
+    return this.prepareAreaDownloading(dataSource, downloadProperty);
   }
 
   /**
@@ -158,7 +321,7 @@ export default abstract class GlobeOrMap {
       );
     }
 
-    (<any>feature).coords = (<any>imageryFeature).coords;
+    (feature as any).coords = (imageryFeature as any).coords;
 
     return feature;
   }
@@ -301,7 +464,7 @@ export default abstract class GlobeOrMap {
         const polylineMaterial = cesiumPolyline.polyline!.material;
         const polylineWidth = cesiumPolyline.polyline!.width;
 
-        (<any>cesiumPolyline).polyline.material =
+        (cesiumPolyline as any).polyline.material =
           Color.fromCssColorString(this.terria.baseMapContrastColor) ??
           Color.LIGHTGRAY;
         cesiumPolyline.polyline!.width = new ConstantProperty(2);
@@ -386,7 +549,7 @@ export default abstract class GlobeOrMap {
             catalogItem.setTrait(
               CommonStrata.user,
               "geoJsonData",
-              <any>geoJson
+              geoJson as any
             );
 
             catalogItem.setTrait(
