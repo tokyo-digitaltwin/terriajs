@@ -429,6 +429,13 @@ function GeoJsonMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
       _screenPosition: Cartesian2 | undefined,
       pickResult: any
     ): TerriaFeature | undefined {
+
+      pickResult.id.position._value = new Cartesian3(
+        pickResult.primitive._actualClampedPosition.x,
+        pickResult.primitive._actualClampedPosition.y,
+        pickResult.primitive._actualClampedPosition.z
+        );
+      
       if (pickResult instanceof Entity) {
         return TerriaFeature.fromEntityCollectionOrEntity(pickResult);
       } else if (isDefined(pickResult?.id)) {
@@ -1190,7 +1197,7 @@ function GeoJsonMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
                 ? new ConstantProperty(properties["marker-angle"])
                 : undefined,
             heightReference: styles.clampToGround
-              ? new ConstantProperty(HeightReference.RELATIVE_TO_GROUND)
+              ? new ConstantProperty(HeightReference.CLAMP_TO_GROUND)
               : undefined
           });
 
@@ -1221,7 +1228,7 @@ function GeoJsonMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
             ),
             heightReference: new ConstantProperty(
               styles.clampToGround
-                ? HeightReference.RELATIVE_TO_GROUND
+                ? HeightReference.CLAMP_TO_GROUND
                 : undefined
             )
           });
