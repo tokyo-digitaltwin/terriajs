@@ -730,7 +730,8 @@
       "assimp-remote": "3D file converter (experimental)",
       "assimp-remote-description": "**Warning:** 3D file converter is experimental.  \nSee list of [supported formats](https://github.com/assimp/assimp/blob/master/doc/Fileformats.md).  \nZip files are also supported",
       "ifc": "IFC",
-      "cog": "Cloud Optimised Geotiff"
+      "cog": "Cloud Optimised Geotiff",
+      "cog-composite": "Cloud Optimised Geotiff Composite"
     },
     "printWindow": {
       "errorTitle": "Error printing",
@@ -2042,9 +2043,6 @@
           }
         }
       }
-    },
-    "cogCatalogItem": {
-      "experimentalReprojectionWarning": "This COG is not in a native projection (EPSG:4326 or EPSG:3857). Reprojecting is experimental and may not work as expected. If you have control of the source data we recommend reprojecting to EPSG:4326 or EPSG:3857 using GDAL or similar."
     }
   },
   "searchProvider": {

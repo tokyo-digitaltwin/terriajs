@@ -65,6 +65,7 @@ import WebProcessingServiceCatalogFunctionJob from "./Ows/WebProcessingServiceCa
 import WebProcessingServiceCatalogGroup from "./Ows/WebProcessingServiceCatalogGroup";
 import SdmxJsonCatalogGroup from "./SdmxJson/SdmxJsonCatalogGroup";
 import SdmxJsonCatalogItem from "./SdmxJson/SdmxJsonCatalogItem";
+import CogCompositeCatalogItem from "./CatalogItems/CogCompositeCatalogItem";
 
 export default function registerCatalogMembers() {
   CatalogMemberFactory.register(CatalogGroup.type, CatalogGroup);
@@ -239,6 +240,10 @@ export default function registerCatalogMembers() {
   CatalogMemberFactory.register(AssImpCatalogItem.type, AssImpCatalogItem);
   CatalogMemberFactory.register(CogCatalogItem.type, CogCatalogItem);
   CatalogMemberFactory.register(
+    CogCompositeCatalogItem.type,
+    CogCompositeCatalogItem
+  );
+  CatalogMemberFactory.register(
     AnimatedPolylineCatalogItem.type,
     AnimatedPolylineCatalogItem
   );
@@ -287,10 +292,6 @@ export default function registerCatalogMembers() {
   UrlToCatalogMemberMapping.register(
     matchesExtension("zip"),
     ShapefileCatalogItem.type
-  );
-  UrlToCatalogMemberMapping.register(
-    matchesExtension("tif", "tiff", "geotiff"),
-    CogCatalogItem.type
   );
 
   // These items work by trying to match a URL, then loading the data. If it fails, they move on.
@@ -407,8 +408,8 @@ function matchesUrl(regex: RegExp) {
   return /./.test.bind(regex);
 }
 
-export function matchesExtension(...extensions: string[]) {
-  const regex = new RegExp("\\.(" + extensions.join("|") + ")$", "i");
+export function matchesExtension(extension: string) {
+  const regex = new RegExp("\\." + extension + "$", "i");
   return function (url: string) {
     return Boolean(url.match(regex));
   };
