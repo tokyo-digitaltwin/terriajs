@@ -430,11 +430,13 @@ function GeoJsonMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
       pickResult: any
     ): TerriaFeature | undefined {
 
-      pickResult.id.position._value = new Cartesian3(
-        pickResult.primitive._actualClampedPosition.x,
-        pickResult.primitive._actualClampedPosition.y,
-        pickResult.primitive._actualClampedPosition.z
-        );
+      try {
+        pickResult.id.position._value = new Cartesian3(
+          pickResult.primitive._actualClampedPosition.x,
+          pickResult.primitive._actualClampedPosition.y,
+          pickResult.primitive._actualClampedPosition.z
+          );
+      } catch {}
       
       if (pickResult instanceof Entity) {
         return TerriaFeature.fromEntityCollectionOrEntity(pickResult);
