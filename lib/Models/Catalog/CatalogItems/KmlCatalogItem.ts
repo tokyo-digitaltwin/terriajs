@@ -136,7 +136,8 @@ class KmlCatalogItem
                   clampToGround: this.clampToGround,
                   width: polylineEntity!.width,
                   material: polylineEntity!.material
-                }
+                },
+                description: entities[i].description
               });
               kmlDataSource.entities.remove(entities[i]);
             }    
