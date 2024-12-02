@@ -9,6 +9,7 @@ import Resource from "terriajs-cesium/Source/Core/Resource";
 import sampleTerrain from "terriajs-cesium/Source/Core/sampleTerrain";
 import ConstantProperty from "terriajs-cesium/Source/DataSources/ConstantProperty";
 import PolylineGraphics from "terriajs-cesium/Source/DataSources/PolylineGraphics";
+import PolygonGraphics from "terriajs-cesium/Source/DataSources/PolygonGraphics";
 import KmlDataSource from "terriajs-cesium/Source/DataSources/KmlDataSource";
 import Property from "terriajs-cesium/Source/DataSources/Property";
 import isDefined from "../../../Core/isDefined";
@@ -88,11 +89,11 @@ class KmlCatalogItem
       }
     })
       .then((kmlLoadInput) => {
-        return KmlDataSource.load(kmlLoadInput);
+        return KmlDataSource.load(kmlLoadInput, { clampToGround: this.clampToGround });
       })
       .then((dataSource) => {
         this._dataSource = dataSource;
-        this.doneLoading(dataSource); // Unsure if this is necessary
+        this.polylineClampToGround(dataSource); // To make work the polylines
       })
       .catch((e) => {
         throw networkRequestError(
@@ -115,54 +116,16 @@ class KmlCatalogItem
     this._dataSource.show = this.show;
     return [this._dataSource];
   }
-
   protected forceLoadMetadata(): Promise<void> {
     return Promise.resolve();
   }
 
-  private doneLoading(kmlDataSource: KmlDataSource) {
+  private polylineClampToGround(kmlDataSource: KmlDataSource) {
     // Clamp features to terrain.
     if (isDefined(this.terria.cesium)) {
-      const positionsToSample: Cartographic[] = [];
-      const correspondingCartesians: Cartesian3[] = [];
-
       const entities = kmlDataSource.entities.values;
-      console.log(entities);
       for (let i = 0; i < entities.length; ++i) {
-        const entity = entities[i];
-
-        const polygon = entity.polygon;
-        if (isDefined(polygon)) {
-          polygon.perPositionHeight = true as unknown as Property;
-          const polygonHierarchy = getPropertyValue<PolygonHierarchy>(
-            polygon.hierarchy
-          );
-          if (polygonHierarchy) {
-            samplePolygonHierarchyPositions(
-              polygonHierarchy,
-              positionsToSample,
-              correspondingCartesians
-            );
-          }
-        }
-      }
-      const terrainProvider = this.terria.cesium.scene.globe.terrainProvider;
-      sampleTerrain(terrainProvider, 11, positionsToSample).then(function () {
-        for (let i = 0; i < positionsToSample.length; ++i) {
-          const position = positionsToSample[i];
-          if (!isDefined(position.height)) {
-            continue;
-          }
-
-          Ellipsoid.WGS84.cartographicToCartesian(
-            position,
-            correspondingCartesians[i]
-          );
-        }
-
-        // Force the polygons to be rebuilt.
-        for (let i = 0; i < entities.length; ++i) {
-
+        try {
           const polygon = entities[i].polygon;
           if (!isDefined(polygon)) {
             if(isDefined(PolylineGraphics)) {
@@ -170,33 +133,22 @@ class KmlCatalogItem
               let polylineFinal = kmlDataSource.entities.add({
                 polyline: {
                   positions: getPropertyValue<Positions>(polylineEntity!.positions),
-                  clampToGround: true,
+                  clampToGround: this.clampToGround,
                   width: polylineEntity!.width,
                   material: polylineEntity!.material
-                }
+                },
+                description: entities[i].description
               });
               kmlDataSource.entities.remove(entities[i]);
-            }
-            
-            break;
+            }    
           }
-
-          const existingHierarchy = getPropertyValue<PolygonHierarchy>(
-            polygon.hierarchy
-          );
-          if (existingHierarchy) {
-            polygon.hierarchy = new ConstantProperty(
-              new PolygonHierarchy(
-                existingHierarchy.positions,
-                existingHierarchy.holes
-              )
-            );
-          }
-        }
-      });
-    }
+        } 
+        catch{}
+    
   }
+
 }
+}}
 
 export default KmlCatalogItem;
 
@@ -205,27 +157,4 @@ function getPropertyValue<T>(property: Property | undefined): T | undefined {
     return undefined;
   }
   return property.getValue(JulianDate.now());
-}
-
-function samplePolygonHierarchyPositions(
-  polygonHierarchy: PolygonHierarchy,
-  positionsToSample: Cartographic[],
-  correspondingCartesians: Cartesian3[]
-) {
-  const positions = polygonHierarchy.positions;
-
-  for (let i = 0; i < positions.length; ++i) {
-    const position = positions[i];
-    correspondingCartesians.push(position);
-    positionsToSample.push(Ellipsoid.WGS84.cartesianToCartographic(position));
-  }
-
-  const holes = polygonHierarchy.holes;
-  for (let i = 0; i < holes.length; ++i) {
-    samplePolygonHierarchyPositions(
-      holes[i],
-      positionsToSample,
-      correspondingCartesians
-    );
-  }
 }
