@@ -42,8 +42,7 @@ class CogLoadableStratum extends LoadableStratum(CogCatalogItemTraits) {
 
   @computed
   get shortReport(): string | undefined {
-    // We will not show models.commonModelErrors.3dTypeIn2dMode even in 2D mode.
-    return this.model.terria.currentViewer.type === "Leaflet" && false
+    return this.model.terria.currentViewer.type === "Leaflet"
       ? // Warn for 2D mode
         i18next.t("models.commonModelErrors.3dTypeIn2dMode", this)
       : this.model._imageryProvider?.tilingScheme &&
