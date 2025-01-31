@@ -1,5 +1,5 @@
 import { uniq } from "lodash-es";
-import { action, computed, makeObservable, runInAction } from "mobx";
+import { action, autorun, computed, makeObservable, runInAction } from "mobx";
 import DeveloperError from "terriajs-cesium/Source/Core/DeveloperError";
 import clone from "terriajs-cesium/Source/Core/clone";
 import AbstractConstructor from "../Core/AbstractConstructor";
@@ -30,6 +30,9 @@ type BaseType = Model<GroupTraits>;
 function GroupMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
   abstract class _GroupMixin extends Base implements Group {
     private _memberLoader = new AsyncLoader(this.forceLoadMembers.bind(this));
+    private _itemPropertiesDisposer = autorun(() => {
+      this.memberModels.forEach((model) => applyItemProperties(this, model));
+    });
 
     constructor(...args: any[]) {
       super(...args);
@@ -57,7 +60,11 @@ function GroupMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
 
       this.knownContainerUniqueIds.forEach((containerId) => {
         const container = this.terria.getModelById(BaseModel, containerId);
-        if (container && GroupMixin.isMixedInto(container)) {
+        if (
+          container &&
+          container !== this &&
+          GroupMixin.isMixedInto(container)
+        ) {
           container.mergedExcludeMembers.forEach((s) => blacklistSet.add(s));
         }
       });
@@ -149,7 +156,6 @@ function GroupMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
         this.mergeGroupMembersByName();
         this.refreshKnownContainerUniqueIds(this.uniqueId);
         this.addShareKeysToMembers();
-        this.addItemPropertiesToMembers();
       } catch (e) {
         return Result.error(e, `Failed to load group \`${getName(this)}\``);
       }
@@ -259,13 +265,6 @@ function GroupMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
         if (model.knownContainerUniqueIds.indexOf(uniqueId) < 0) {
           model.knownContainerUniqueIds.push(uniqueId);
         }
-      });
-    }
-
-    @action
-    addItemPropertiesToMembers(): void {
-      this.memberModels.forEach((model: BaseModel) => {
-        applyItemProperties(this, model);
       });
     }
 
@@ -418,6 +417,7 @@ function GroupMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
     dispose() {
       super.dispose();
       this._memberLoader.dispose();
+      this._itemPropertiesDisposer();
     }
   }
 
@@ -472,23 +472,24 @@ export function applyItemProperties(
     BaseModel,
   target: BaseModel
 ) {
+  const { itemProperties, itemPropertiesByType, itemPropertiesByIds } = model;
   runInAction(() => {
     if (!target.uniqueId) return;
 
     // Apply itemProperties to non GroupMixin targets
     if (!GroupMixin.isMixedInto(target))
-      setItemPropertyTraits(target, model.itemProperties);
+      setItemPropertyTraits(target, itemProperties);
 
     // Apply itemPropertiesByType
     setItemPropertyTraits(
       target,
-      model.itemPropertiesByType.find(
+      itemPropertiesByType.find(
         (itemProps) => itemProps.type && itemProps.type === target.type
       )?.itemProperties
     );
 
     // Apply itemPropertiesByIds
-    model.itemPropertiesByIds.forEach((itemPropsById) => {
+    itemPropertiesByIds.forEach((itemPropsById) => {
       if (itemPropsById.ids.includes(target.uniqueId!)) {
         setItemPropertyTraits(target, itemPropsById.itemProperties);
       }
@@ -500,21 +501,21 @@ export function applyItemProperties(
       target.setTrait(
         CommonStrata.underride,
         "itemProperties",
-        model.traits.itemProperties.toJson(model.itemProperties)
+        model.traits.itemProperties.toJson(itemProperties)
       );
 
     if (hasTraits(target, ItemPropertiesTraits, "itemPropertiesByType"))
       target.setTrait(
         CommonStrata.underride,
         "itemPropertiesByType",
-        model.traits.itemPropertiesByType.toJson(model.itemPropertiesByType)
+        model.traits.itemPropertiesByType.toJson(itemPropertiesByType)
       );
 
     if (hasTraits(target, ItemPropertiesTraits, "itemPropertiesByIds"))
       target.setTrait(
         CommonStrata.underride,
         "itemPropertiesByIds",
-        model.traits.itemPropertiesByIds.toJson(model.itemPropertiesByIds)
+        model.traits.itemPropertiesByIds.toJson(itemPropertiesByIds)
       );
   });
 }

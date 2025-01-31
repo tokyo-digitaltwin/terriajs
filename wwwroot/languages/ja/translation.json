@@ -2123,6 +2123,11 @@
     "errorParsingIndexRoot": "indexRoot ファイル: {{indexRootUrl}} パースエラー。",
     "missingOptionIndexRootUrl": "オプション `indexRootUrl` が検索設定に不足しています。"
   },
+  "dataSourceItemSearchProvider": {
+    "all": "検索キーワード",
+    "entityName": "名称",
+    "entityDescription": "説明"
+  },
   "itemSearchTool": {
     "actions": {
       "showMatchingOnly": "一致のみ表示",

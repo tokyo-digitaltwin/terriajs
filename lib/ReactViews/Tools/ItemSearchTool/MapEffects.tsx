@@ -41,7 +41,7 @@ export type HideAllResultsProps = {
 export const HideAllResults: React.FC<HideAllResultsProps> = (props) => {
   const { item, results } = props;
   useEffect(() => {
-    const disposer = item.hideFeaturesNotInItemSearchResults(results);
+    const disposer = item.hideFeaturesNotInItemSearchResults?.(results);
     return disposer;
   }, [item, results]);
   return null;
@@ -59,7 +59,7 @@ export const HighlightResults: React.FC<HighlightResultsProps> = (props) => {
       ? props.results
       : [props.results];
     if (results.length === 1) zoomToResult(item, results[0]);
-    const disposer = item.highlightFeaturesFromItemSearchResults(results);
+    const disposer = item.highlightFeaturesFromItemSearchResults?.(results);
     return disposer;
   }, [props.item, props.results]);
 

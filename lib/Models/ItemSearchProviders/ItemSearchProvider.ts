@@ -1,6 +1,7 @@
 import BoundingSphere from "terriajs-cesium/Source/Core/BoundingSphere";
 import Cartographic from "terriajs-cesium/Source/Core/Cartographic";
 import { SearchParameterTraits } from "../../Traits/TraitsClasses/SearchableItemTraits";
+import { BaseModel } from "../Definition/Model";
 
 export type ItemSearchParameter =
   | NumericItemSearchParameter
@@ -37,7 +38,7 @@ export type ItemSearchResult = {
     longitudeDegrees: number;
     featureHeight: number;
   };
-  properties: Record<string, string | number>;
+  properties: Record<string, unknown>;
 };
 
 /**
@@ -47,7 +48,8 @@ export type ItemSearchResult = {
 export default abstract class ItemSearchProvider {
   constructor(
     readonly options: any,
-    readonly parameterOptions: SearchParameterTraits[]
+    readonly parameterOptions: SearchParameterTraits[],
+    readonly item: BaseModel
   ) {}
 
   /**

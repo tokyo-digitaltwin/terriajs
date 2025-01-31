@@ -47,18 +47,22 @@ const SearchResults: React.FC<SearchResultsProps> = (props) => {
     <Wrapper>
       <ResultsCount count={results.length} />
       <ActionMenu>
-        <ActionButton
-          selected={currentMapEffect.is === "highlightAll"}
-          onClick={() => toggleSelection({ is: "highlightAll" })}
-        >
-          {t("itemSearchTool.actions.highlightAll")}
-        </ActionButton>
-        <ActionButton
-          selected={currentMapEffect.is === "showMatchingOnly"}
-          onClick={() => toggleSelection({ is: "showMatchingOnly" })}
-        >
-          {t("itemSearchTool.actions.showMatchingOnly")}
-        </ActionButton>
+        {item.highlightFeaturesFromItemSearchResults && (
+          <ActionButton
+            selected={currentMapEffect.is === "highlightAll"}
+            onClick={() => toggleSelection({ is: "highlightAll" })}
+          >
+            {t("itemSearchTool.actions.highlightAll")}
+          </ActionButton>
+        )}
+        {item.hideFeaturesNotInItemSearchResults && (
+          <ActionButton
+            selected={currentMapEffect.is === "showMatchingOnly"}
+            onClick={() => toggleSelection({ is: "showMatchingOnly" })}
+          >
+            {t("itemSearchTool.actions.showMatchingOnly")}
+          </ActionButton>
+        )}
       </ActionMenu>
       <List ref={parentRef} height={`250px`}>
         <ListInner height={`${list.totalSize}px`}>

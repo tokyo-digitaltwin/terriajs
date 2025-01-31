@@ -9,6 +9,7 @@ import ItemSearchProvider, {
 } from "./ItemSearchProvider";
 import { Index, IndexRoot, IndexType, parseIndexRoot } from "./Index";
 import joinUrl from "./joinUrl";
+import { BaseModel } from "../Definition/Model";
 
 const t = i18next.t.bind(i18next);
 
@@ -30,8 +31,12 @@ export default class IndexedItemSearchProvider extends ItemSearchProvider {
    *
    * @param options An object containing {indexRootUrl: string}
    */
-  constructor(options: any, parameterOptions: SearchParameterTraits[]) {
-    super(options, parameterOptions);
+  constructor(
+    options: any,
+    parameterOptions: SearchParameterTraits[],
+    item: BaseModel
+  ) {
+    super(options, parameterOptions, item);
     makeObservable(this);
     const indexRootUrl = options?.indexRootUrl;
     if (typeof indexRootUrl !== "string")

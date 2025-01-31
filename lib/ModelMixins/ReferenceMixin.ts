@@ -119,18 +119,17 @@ function ReferenceMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
       const result = (await this._referenceLoader.load(forceReload)).clone(
         `Failed to load reference \`${getName(this)}\``
       );
-
-      if (!result.error && this.target) {
+      const target = this.target;
+      if (!result.error && target) {
         runInAction(() => {
           // Copy knownContainerUniqueIds to target
           this.knownContainerUniqueIds.forEach((id) =>
-            !this.target!.knownContainerUniqueIds.includes(id)
-              ? this.target!.knownContainerUniqueIds.push(id)
+            !target.knownContainerUniqueIds.includes(id)
+              ? target.knownContainerUniqueIds.push(id)
               : null
           );
+          applyItemProperties(this, target);
         });
-
-        applyItemProperties(this, this.target);
       }
 
       return result;

@@ -4,6 +4,7 @@ import mixTraits from "../mixTraits";
 import ModelTraits from "../ModelTraits";
 import AttributionTraits from "./AttributionTraits";
 import { FeatureInfoTemplateTraits } from "./FeatureInfoTraits";
+import SearchableItemTraits from "./SearchableItemTraits";
 
 export class RectangleTraits extends ModelTraits {
   @primitiveTrait({
@@ -199,7 +200,10 @@ export class InitialMessageTraits extends ModelTraits {
   height?: number;
 }
 
-class MappableTraits extends mixTraits(AttributionTraits) {
+class MappableTraits extends mixTraits(
+  AttributionTraits,
+  SearchableItemTraits
+) {
   @objectTrait({
     type: RectangleTraits,
     name: "Rectangle",

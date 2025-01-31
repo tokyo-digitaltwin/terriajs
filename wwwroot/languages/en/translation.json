@@ -2111,6 +2111,11 @@
     "missingOptionIndexRootUrl": "Option `indexRootUrl` is missing in the item's search configuration.",
     "errorParsingIndexRoot": "Error parsing indexRoot file: {{indexRootUrl}}."
   },
+  "dataSourceItemSearchProvider": {
+    "all": "Query",
+    "entityName": "Name",
+    "entityDescription": "Description"
+  },
   "pedestrianMode": {
     "toolButtonTitle": "Pedestrian Mode",
     "dropPedestrianTooltipMessage": "<b>Left click</b> to select drop location<br /><b>Right click / Esc</b> to cancel",

@@ -1,4 +1,7 @@
 import "jasmine-ajax";
+import Terria from "../../../lib/Models/Terria";
+import CreateModel from "../../../lib/Models/Definition/CreateModel";
+import mixTraits from "../../../lib/Traits/mixTraits";
 import JsonValue from "../../../lib/Core/Json";
 import IndexedItemSearchProvider from "../../../lib/Models/ItemSearchProviders/IndexedItemSearchProvider";
 import Csv from "../../../lib/Table/Csv";
@@ -41,6 +44,8 @@ const validIndexRoot = {
   }
 };
 
+class TestCatalogItem extends CreateModel(mixTraits()) {}
+
 describe("IndexedItemSearchProvider", function () {
   beforeEach(function () {
     jasmine.Ajax.install();
@@ -54,7 +59,8 @@ describe("IndexedItemSearchProvider", function () {
     it("can be constructed", function () {
       return new IndexedItemSearchProvider(
         { indexRootUrl: "indexRoot.json" },
-        []
+        [],
+        new TestCatalogItem("", new Terria())
       );
     });
   });
@@ -65,7 +71,8 @@ describe("IndexedItemSearchProvider", function () {
         {
           indexRootUrl: "indexRoot.json"
         },
-        []
+        [],
+        new TestCatalogItem("", new Terria())
       );
       stubRequest("indexRoot.json", validIndexRoot);
       let error;
@@ -82,7 +89,8 @@ describe("IndexedItemSearchProvider", function () {
         {
           indexRootUrl: "indexRoot.json"
         },
-        []
+        [],
+        new TestCatalogItem("", new Terria())
       );
       stubRequest("indexRoot.json", {});
       let error;
@@ -103,7 +111,8 @@ describe("IndexedItemSearchProvider", function () {
         {
           indexRootUrl: "indexRoot.json"
         },
-        [{ id: "street_address", queryOptions: { prefix: "true" } }]
+        [{ id: "street_address", queryOptions: { prefix: "true" } }],
+        new TestCatalogItem("", new Terria())
       );
       stubRequest("indexRoot.json", validIndexRoot);
       await provider.initialize();
@@ -149,7 +158,8 @@ describe("IndexedItemSearchProvider", function () {
         {
           indexRootUrl: "indexRoot.json"
         },
-        []
+        [],
+        new TestCatalogItem("", new Terria())
       );
       stubRequest("indexRoot.json", validIndexRoot);
       stubRequest("resultsData.csv", resultsDataCsv);

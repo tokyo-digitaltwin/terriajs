@@ -25,7 +25,7 @@ function SearchableItemMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
      *
      * @param results The search results to be highlighted.
      */
-    abstract highlightFeaturesFromItemSearchResults(
+    highlightFeaturesFromItemSearchResults?(
       results: ItemSearchResult[]
     ): ItemSelectionDisposer;
 
@@ -34,7 +34,7 @@ function SearchableItemMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
      *
      * @param results The search results to be hidden.
      */
-    abstract hideFeaturesNotInItemSearchResults(
+    hideFeaturesNotInItemSearchResults?(
       results: ItemSearchResult[]
     ): ItemSelectionDisposer;
 
@@ -68,7 +68,11 @@ function SearchableItemMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
         this.search.providerType &&
         ItemSearchProviders.get(this.search.providerType);
       if (!klass) return;
-      return new klass(this.search.providerOptions, this.search.parameters);
+      return new klass(
+        this.search.providerOptions,
+        this.search.parameters,
+        this
+      );
     }
   }
   return SearchableItemMixin;

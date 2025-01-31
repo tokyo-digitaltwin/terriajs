@@ -1,11 +1,15 @@
 import Constructor from "../../Core/Constructor";
 import ItemSearchProvider from "./ItemSearchProvider";
 import IndexedItemSearchProvider from "./IndexedItemSearchProvider";
+import DataSourceItemSearchProvider from "./DataSourceItemSearchProvider";
 
-export const ItemSearchProviders: Map<
+export const ItemSearchProviders = new Map<
   string,
   Constructor<ItemSearchProvider>
-> = new Map([["indexed", IndexedItemSearchProvider]]);
+>([
+  ["data-source", DataSourceItemSearchProvider],
+  ["indexed", IndexedItemSearchProvider]
+]);
 
 export function registerItemSearchProvider(
   type: string,
