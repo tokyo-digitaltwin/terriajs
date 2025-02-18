@@ -323,7 +323,7 @@ class FeatureInfoPanel extends React.Component<Props> {
       position = terria.pickedFeatures?.pickPosition;
     }
 
-    const locationElements = position ? (
+    const locationElements = position && featureInfoCatalogItems.some((element) => element.props.catalogItem.type != "cog") ? (
       <li>{this.renderLocationItem(position)}</li>
     ) : null;
 
