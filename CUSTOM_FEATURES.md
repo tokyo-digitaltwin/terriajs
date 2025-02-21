@@ -1,12 +1,12 @@
-# 東京都デジタルツイン 3D ビューア（β 版）独自の設定項目
+# 東京都デジタルツイン 3D ビューア独自の設定項目
 
-東京都デジタルツイン 3D ビューア（β 版）のカタログアイテムには、[TerriaJSの公式ドキュメント](https://docs.terria.io/guide/)に記載のない設定項目(Traits)があります。
+東京都デジタルツイン 3D ビューアのカタログアイテムには、[TerriaJSの公式ドキュメント](https://docs.terria.io/guide/)に記載のない設定項目(Traits)があります。
 
 ## 全カタログアイテム共通
 
 | Trait            | Type   | Default | Description                                                                         |
 | :--------------- | :----- | :------ | ----------------------------------------------------------------------------------- |
-| customProperties | object |         | 東京都デジタルツイン 3D ビューア（β 版）独自の機能に必要なパラメータを設定するためのtrait。 |
+| customProperties | object |         | 東京都デジタルツイン 3D ビューア独自の機能に必要なパラメータを設定するためのtrait。 |
 
 ### customPropertiesに設定可能なパラメータ
 | Property            | Type     | Description                                                                                                                       |
