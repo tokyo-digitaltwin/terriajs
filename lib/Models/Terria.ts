@@ -989,6 +989,13 @@ export default class Terria {
         hashProperties["configUrl"] !== ""
       )
         options.configUrl = hashProperties["configUrl"];
+    }else{
+      if (
+        isDefined(hashProperties["configUrl"]) &&
+        hashProperties["configUrl"] !== "" &&
+        ! isValidURL(hashProperties["configUrl"])
+      )
+        options.configUrl = hashProperties["configUrl"];
     }
 
     const baseUri = new URI(options.configUrl).filename("");
@@ -2349,5 +2356,14 @@ function setCustomRequestSchedulerDomainLimits(
     Object.entries(customDomainLimits).forEach(([domain, limit]) => {
       RequestScheduler.requestsByServer[domain] = limit;
     });
+  }
+}
+
+function isValidURL(url:string ) {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
   }
 }

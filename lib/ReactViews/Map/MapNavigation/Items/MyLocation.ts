@@ -103,10 +103,10 @@ export class MyLocation extends MapNavigationItemController {
     } else {
       // west, south, east, north, result
       const rectangle = Rectangle.fromDegrees(
-        longitude - 0.1,
-        latitude - 0.1,
-        longitude + 0.1,
-        latitude + 0.1
+        longitude - 0.006,
+        latitude - 0.006,
+        longitude + 0.006,
+        latitude + 0.006
       );
       this.terria.currentViewer.zoomTo(rectangle);
     }
