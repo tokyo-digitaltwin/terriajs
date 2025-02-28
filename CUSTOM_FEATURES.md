@@ -9,13 +9,14 @@
 | customProperties | object |         | 東京都デジタルツイン 3D ビューア独自の機能に必要なパラメータを設定するためのtrait。 |
 
 ### customPropertiesに設定可能なパラメータ
-| Property            | Type     | Description                                                                                                                       |
-| :------------------ | :------- | :-------------------------------------------------------------------------------------------------------------------------------- |
-| switchableUrls      | object[] | 3DTilesのurlをUIで切り替えるためのパラメータ。`{"name": string, "url": string }` 形式のobjectの配列で記述する。                   |
-| multipleDownload    | boolean  | カタログアイテムが複数ダウンロード機能の対象かを示すパラメータ。trueで複数ダウンロード機能対象となる。                            |
-| downloadUrlProperty | string   | 複数ダウンロード機能で、ダウンロードURLが記述されているデータの属性名を指定するパラメータ。                                       |
-| stories             | object[] | ワークベンチ内のボタンからストーリーを再生する機能を設定するパラメータ。 `{"name": string, "items": any[]}`形式のobjectの配列で記述する。 |
-| initialCamera       | object   | ワークベンチ内の「データ視点移動」ボタンクリックで移動する位置をオーバーライドするパラメータ。                                  |
+| Property            | Type      | Description                                                                                                                       |
+| :------------------ | :-------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| switchableUrls      | object[]  | 3DTilesのurlをUIで切り替えるためのパラメータ。`{"name": string, "url": string }` 形式のobjectの配列で記述する。                   |
+| multipleDownload    | boolean   | カタログアイテムが複数ダウンロード機能の対象かを示すパラメータ。trueで複数ダウンロード機能対象となる。                            |
+| downloadUrlProperty | string    | 複数ダウンロード機能で、ダウンロードURLが記述されているデータの属性名を指定するパラメータ。                                       |
+| stories             | object[]  | ワークベンチ内のボタンからストーリーを再生する機能を設定するパラメータ。 `{"name": string, "items": any[]}`形式のobjectの配列で記述する。 |
+| initialCamera       | object    | ワークベンチ内の「データ視点移動」ボタンクリックで移動する位置をオーバーライドするパラメータ。                                  |
+| lightColor          | integer[] | 3DTilesにshading（陰影処理）を行う際のlightcolor（光の色）を指定するパラメータ。 `["r":integer,"g":integer,"b":integer]`形式のintegerの配列で記述する。データカタログに設定がない場合は、Cesiumのデフォルトのlightcolor（光の色）となる。                                  |
 
 ## KmlCatalogItem に追加されたtraits
 | Trait         | Type    | Default | Description                                                                                                                                                                   |
