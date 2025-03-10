@@ -40,6 +40,27 @@ function buildBaseShareUrl(
 ) {
   const uri = new URI(document.baseURI).fragment("").search("");
 
+  // Check the actual uri with all the hash after # to extract the configUrl one and split it in key and value
+  let newUri = new URL(window.location.href);
+  let configUrl = ""
+  let configUrlFound = false;
+  let configUrlSplitted = null;
+  try {
+    if (window.location.href.includes("configUrl")) {
+      let hashes = newUri.hash.split("&");
+      for (let i = 0; i < hashes.length; i++) {
+        if (hashes[i].includes("configUrl")) {
+          configUrlFound = true;
+          
+          configUrl = hashes[i].replace('#','').replace('&','');
+
+          configUrlSplitted = configUrl.split("=");
+          
+        }
+      }
+    }
+  } catch {}
+
   if (terria.developmentEnv) {
     uri.addSearch(toJS(terria.userProperties));
   } else {
@@ -49,6 +70,15 @@ function buildBaseShareUrl(
   }
 
   uri.addSearch(hashParams);
+
+  // If configUrl was found, add it to the end of the string
+  // Used the same AddSearch to try to not break anything
+  try {
+    if (configUrlFound) {
+      uri.addSearch(configUrlSplitted[0], configUrlSplitted[1]);
+    }
+  } catch { }
+  
 
   return uri.fragment(uri.query()).query("").toString();
 }
