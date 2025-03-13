@@ -74,7 +74,7 @@ function buildBaseShareUrl(
   // If configUrl was found, add it to the end of the string
   // Used the same AddSearch to try to not break anything
   try {
-    if (configUrlFound) {
+    if (configUrlFound && configUrlSplitted) {
       uri.addSearch(configUrlSplitted[0], configUrlSplitted[1]);
     }
   } catch { }
