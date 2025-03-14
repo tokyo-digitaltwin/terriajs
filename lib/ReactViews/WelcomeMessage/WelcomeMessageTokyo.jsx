@@ -123,7 +123,7 @@ export const WelcomeMessagePure = (props) => {
       return;
     }
     viewState.terria.setLocalProperty("useCookie", accept);
-    handleClose(false);
+    handleClose(accept);
   };
 
   // useKeyPress("Escape", () => {
