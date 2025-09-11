@@ -11,7 +11,7 @@ import {
 import Box from "../../../../Styled/Box";
 import Button, { RawButton } from "../../../../Styled/Button";
 import Icon, { StyledIcon } from "../../../../Styled/Icon";
-import Spacing from "../../../../Styled/Spacing";
+import Spacing,{SpacingSpan} from "../../../../Styled/Spacing";
 import Text from "../../../../Styled/Text";
 import parseCustomMarkdownToReact from "../../../Custom/parseCustomMarkdownToReact";
 import { withViewState } from "../../../Context";
@@ -136,6 +136,103 @@ class HelpPanel extends React.Component {
               {t("helpPanel.takeTour")}
             </Button>
           </Box>
+
+          <Spacing bottom={2} />
+          <Box centered>
+            <Button
+              primary
+              rounded
+              styledMinWidth={"240px"}
+              onClick={() => {
+                window.open("https://info.tokyo-digitaltwin.metro.tokyo.lg.jp/3dmodel/howto#tutorialvideo", "_blank")?.focus()
+              }}
+              renderIcon={() => (
+                <StyledIcon
+                  light
+                  styledWidth={"18px"}
+                  glyph={Icon.GLYPHS.play}
+                />
+              )}
+              textProps={{
+                large: true
+              }}
+              css={`
+                ${(p) => p.theme.addTerriaPrimaryBtnStyles(p)}
+              `}
+            >
+              操作説明動画を見る
+            </Button>
+          </Box>
+
+          <Spacing bottom={2} />
+          <Box centered>
+            <Button
+              primary={false}
+              rounded={false}
+              styledMinWidth={"240px"}
+              onClick={() => {
+                window.open("https://info.tokyo-digitaltwin.metro.tokyo.lg.jp/3dmodel/howto/3dmodel-basic-manual.pdf", "_blank")?.focus()
+              }}
+              renderIcon={() => (
+                <StyledIcon
+                  light
+                  styledWidth={"22px"}
+                  glyph={Icon.GLYPHS.pdf}
+                />
+              )}
+              textProps={{
+                large: true
+              }}
+              css={`
+                ${(p) => p.theme.addTerriaPrimaryBtnStyles(p)}
+              `}
+            >
+              操作マニュアル〜基礎編〜
+              <SpacingSpan marginRight={5} />
+              <StyledIcon
+                  displayInline={true}
+                  light
+                  styledWidth={"18px"}
+                  glyph={Icon.GLYPHS.downloadSquare}
+                />
+            </Button>
+          </Box>
+
+          <Spacing bottom={2} />
+          <Box centered>
+            <Button
+              primary={false}
+              rounded={false}
+              styledMinWidth={"240px"}
+              onClick={() => {
+                window.open("https://info.tokyo-digitaltwin.metro.tokyo.lg.jp/3dmodel/howto/3dmodel-advanced-manual.pdf", "_blank")?.focus()
+              }}
+              renderIcon={() => (
+                <StyledIcon
+                  light
+                  styledWidth={"22px"}
+                  glyph={Icon.GLYPHS.pdf}
+                />
+              )}
+              textProps={{
+                large: true
+              }}
+              css={`
+                ${(p) => p.theme.addTerriaPrimaryBtnStyles(p)}
+              `}
+            >
+              操作マニュアル～応用編～
+              <SpacingSpan marginRight={5} />
+              <StyledIcon
+                  displayInline={true}
+                  light
+                  styledWidth={"18px"}
+                  glyph={Icon.GLYPHS.downloadSquare}
+                />
+            </Button>
+          </Box>
+
+
         </Box>
         <Spacing bottom={10} />
         <Box centered displayInlineBlock fullWidth styledPadding="0 26px">
