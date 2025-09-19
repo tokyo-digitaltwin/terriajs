@@ -175,7 +175,7 @@ class HelpPanel extends React.Component {
                   rounded={false}
                   styledMinWidth={"240px"}
                   onClick={() => {
-                    window.open("https://info.tokyo-digitaltwin.metro.tokyo.lg.jp/3dmodel/howto/3dmodel-basic-manual.pdf", "_blank")?.focus()
+                    window.open("https://info.tokyo-digitaltwin.metro.tokyo.lg.jp/docs/3dmodel/howto/3dmodel-basic-manual.pdf", "_blank")?.focus()
                   }}
                   renderIcon={() => (
                     <StyledIcon
@@ -209,7 +209,7 @@ class HelpPanel extends React.Component {
                   rounded={false}
                   styledMinWidth={"240px"}
                   onClick={() => {
-                    window.open("https://info.tokyo-digitaltwin.metro.tokyo.lg.jp/3dmodel/howto/3dmodel-advanced-manual.pdf", "_blank")?.focus()
+                    window.open("https://info.tokyo-digitaltwin.metro.tokyo.lg.jp/docs/3dmodel/howto/3dmodel-advanced-manual.pdf", "_blank")?.focus()
                   }}
                   renderIcon={() => (
                     <StyledIcon
