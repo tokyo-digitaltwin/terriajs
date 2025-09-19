@@ -324,28 +324,28 @@ export default class Legend extends React.Component<{
           >
             {
               // Show temporary "legend button" - if custom styling has been applied
-              TableMixin.isMixedInto(this.props.item) &&
-              this.props.item.legendButton ? (
-                <Button
-                  primary
-                  shortMinHeight
-                  css={{ position: "absolute", top: 10, right: 0 }}
-                  renderIcon={() => (
-                    <StyledIcon
-                      light
-                      glyph={Icon.GLYPHS.menuDotted}
-                      styledWidth="12px"
-                    />
-                  )}
-                  rightIcon
-                  iconProps={{ css: { marginRight: 0, marginLeft: 4 } }}
-                  onClick={this.props.item.legendButton.onClick.bind(
-                    this.props.item
-                  )}
-                >
-                  {this.props.item.legendButton.title}
-                </Button>
-              ) : null
+              // TableMixin.isMixedInto(this.props.item) &&
+              // this.props.item.legendButton  ? (
+              //   <Button
+              //     primary
+              //     shortMinHeight
+              //     css={{ position: "absolute", top: 10, right: 0 }}
+              //     renderIcon={() => (
+              //       <StyledIcon
+              //         light
+              //         glyph={Icon.GLYPHS.menuDotted}
+              //         styledWidth="12px"
+              //       />
+              //     )}
+              //     rightIcon
+              //     iconProps={{ css: { marginRight: 0, marginLeft: 4 } }}
+              //     onClick={this.props.item.legendButton.onClick.bind(
+              //       this.props.item
+              //     )}
+              //   >
+              //     {this.props.item.legendButton.title}
+              //   </Button>
+              // ) : null
             }
 
             {(this.props.item.legends as Model<LegendTraits>[]).map(
