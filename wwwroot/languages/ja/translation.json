@@ -364,8 +364,8 @@
   "search": {
     "searchCatalogue": "カタログを検索する",
     "placeholder": "場所・データを検索",
-    "viewMore": "より {{name}} 結果を表示",
-    "viewLess": "{{name}} 少なく結果を表示",
+    "viewMore": "検索結果をさらに表示",
+    "viewLess": "検索結果を少なく表示",
     "search": "データカタログで '{{searchText}}' を検索",
     "searchInDataCatalog": "データカタログで 「{{locationSearchText}}」 を検索",
     "data": "データ",
