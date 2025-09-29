@@ -11,6 +11,7 @@ import TerriaViewer from "../../../ViewModels/TerriaViewer";
 import Marker from "./Marker";
 
 const minimapNavIcon = require("../../../../wwwroot/images/minimap-nav.svg");
+const CALIBRATION = 86;
 
 type MiniMapProps = {
   terria: Terria;
@@ -96,17 +97,35 @@ export function getViewFromScene(scene: Scene): MiniMapView {
   // This seem to work for now as a zoom rectangle for leaflet. Consider
   // adapting Cesium.getCurrentCameraView() for a more sophisticated
   // implementation.
+  const rect = bboxFromCenterMeters(camera.positionCartographic.longitude, camera.positionCartographic.latitude, 500);
   const rectangle = new Rectangle(
-    camera.positionCartographic.longitude,
-    camera.positionCartographic.latitude,
-    camera.positionCartographic.longitude,
-    camera.positionCartographic.latitude
+    rect.west,
+    rect.south, 
+    rect.east,
+    rect.north
   );
   return {
     rectangle,
     position: camera.position,
     rotation: camera.heading
   };
+}
+
+function bboxFromCenterMeters(lon: any, lat: any, meters: any) {
+  const R = 6378137; 
+  const degPerRad = 180 / Math.PI;
+
+  const dLat = ((meters / CALIBRATION) / R) * degPerRad;
+  const dLon = ((meters / CALIBRATION) / (R * Math.cos(lat * Math.PI / 180))) * degPerRad;
+
+  const west  = lon - dLon;
+  const south = lat - dLat;
+  const east  = lon + dLon;
+  const north = lat + dLat;
+
+  const norm = (x: any) => ((x + 180) % 360 + 360) % 360 - 180;
+
+  return { west: norm(west), south: Math.max(-90, south), east: norm(east), north: Math.min(90, north) };
 }
 
 export default MiniMap;

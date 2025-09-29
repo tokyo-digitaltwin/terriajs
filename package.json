@@ -40,6 +40,7 @@
     "@turf/kinks": "^6.5.0",
     "@turf/boolean-point-on-line": "^6.5.0",
     "@turf/bbox-polygon": "^6.5.0",
+    "@turf/buffer": "^6.5.0",
     "@types/arcgis-rest-api": "^10.4.5",
     "@types/chroma-js": "^2.4.0",
     "@types/create-react-class": "^15.6.2",
