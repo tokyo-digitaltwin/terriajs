@@ -1,10 +1,10 @@
 import { observer } from "mobx-react";
-import { FC } from "react";
+import { FC, useState, ChangeEventHandler, useEffect } from "react";
 import TerriaError from "../../../Core/TerriaError";
 import { Complete } from "../../../Core/TypeModifiers";
 import DiscretelyTimeVaryingMixin from "../../../ModelMixins/DiscretelyTimeVaryingMixin";
 import hasTraits from "../../../Models/Definition/hasTraits";
-import { BaseModel } from "../../../Models/Definition/Model";
+import Model, { BaseModel } from "../../../Models/Definition/Model";
 import {
   DEFAULT_PLACEMENT,
   SelectableDimension
@@ -25,9 +25,18 @@ import DimensionSelectorSection from "./SelectableDimensionSection";
 import ShortReport from "./ShortReport";
 import TimerSection from "./TimerSection";
 import ViewingControls from "./ViewingControls";
+import CatalogMemberTraits from "../../../Traits/TraitsClasses/CatalogMemberTraits";
+import { runInAction } from "mobx";
+import CommonStrata from "../../../Models/Definition/CommonStrata";
+import MappableMixin from "../../../ModelMixins/MappableMixin";
+import UrlMixin from "../../../ModelMixins/UrlMixin";
+import StorySection from "./StorySection";
+import UrlTraits from "../../../Traits/TraitsClasses/UrlTraits";
+import DownloadControls from "./DownloadControls";
 
 type WorkbenchControls = {
   viewingControls?: boolean;
+  downloadControls?: boolean;
   opacity?: boolean;
   scaleWorkbench?: boolean;
   splitter?: boolean;
@@ -40,6 +49,7 @@ type WorkbenchControls = {
   colorScaleRange?: boolean;
   shortReport?: boolean;
   legend?: boolean;
+  story?: boolean;
 };
 
 type WorkbenchItemControlsProps = {
@@ -51,6 +61,7 @@ type WorkbenchItemControlsProps = {
 
 export const defaultControls: Complete<WorkbenchControls> = {
   viewingControls: true,
+  downloadControls: true,
   opacity: true,
   scaleWorkbench: true,
   splitter: true,
@@ -62,11 +73,13 @@ export const defaultControls: Complete<WorkbenchControls> = {
   selectableDimensions: true,
   colorScaleRange: true,
   shortReport: true,
-  legend: true
+  legend: true,
+  story: true
 };
 
 export const hideAllControls: Complete<WorkbenchControls> = {
   viewingControls: false,
+  downloadControls: false,
   opacity: false,
   scaleWorkbench: false,
   splitter: false,
@@ -78,8 +91,24 @@ export const hideAllControls: Complete<WorkbenchControls> = {
   selectableDimensions: false,
   colorScaleRange: false,
   shortReport: false,
-  legend: false
+  legend: false,
+  story: false
 };
+
+const getSwitchableUrls = (
+  item: BaseModel | CatalogMemberTraits
+): { url: string; name: string }[] | null => {
+  if (
+    !("customProperties" in item) ||
+    !item.customProperties ||
+    !item.customProperties.switchableUrls
+  ) {
+    return null;
+  }
+  return item.customProperties.switchableUrls as any;
+};
+
+const hasUrl = (value: object): value is Model<UrlTraits> => "url" in value;
 
 const WorkbenchItemControls: FC<WorkbenchItemControlsProps> = observer(
   ({ item, viewState, controls: controlsWithoutDefaults }) => {
@@ -91,11 +120,39 @@ const WorkbenchItemControls: FC<WorkbenchItemControlsProps> = observer(
       error.log();
     }
 
+    const [{ switchableUrls, urlIndex }, setSwitchableUrlsState] = useState(
+      () => ({
+        urlIndex: 0,
+        switchableUrls: getSwitchableUrls(item)
+      })
+    );
+    const handleSwitchableUrlChange: ChangeEventHandler<HTMLInputElement> = ({
+      target: { value }
+    }) => {
+      setSwitchableUrlsState((prevState) => ({
+        ...prevState,
+        urlIndex: Number(value)
+      }));
+    };
+    useEffect(() => {
+      runInAction(() => {
+        if (!switchableUrls) return;
+        if (!MappableMixin.isMixedInto(item)) return;
+        if (!hasUrl(item)) return;
+        item.setTrait(CommonStrata.user, "url", switchableUrls[urlIndex].url);
+        item.loadMapItems();
+      });
+    }, [item, switchableUrls, urlIndex]);
+
     return (
       <>
         {controls?.viewingControls ? (
           <ViewingControls item={item} viewState={viewState} />
         ) : null}
+        {controls?.downloadControls ? (
+          <DownloadControls item={item} viewState={viewState} />
+        ) : null}
+        {controls?.story ? <StorySection item={item} /> : null}
         {controls?.opacity ? <OpacitySection item={item} /> : null}
         {controls?.scaleWorkbench ? <ScaleWorkbenchInfo item={item} /> : null}
         {controls?.timer ? <TimerSection item={item} /> : null}
@@ -137,6 +194,28 @@ const WorkbenchItemControls: FC<WorkbenchItemControlsProps> = observer(
               maxValue={item.colorScaleMaximum}
             />
           )}
+
+        {switchableUrls && (
+          <div
+            css={`
+              margin: 5px 0;
+            `}
+          >
+            {switchableUrls.map((su, i) => (
+              <div key={i}>
+                <label>
+                  <input
+                    type="radio"
+                    value={i}
+                    onChange={handleSwitchableUrlChange}
+                    checked={urlIndex === i}
+                  />
+                  {su.name}
+                </label>
+              </div>
+            ))}
+          </div>
+        )}
         {controls?.shortReport ? <ShortReport item={item} /> : null}
         {controls?.legend ? <Legend item={item} /> : null}
         {controls?.selectableDimensions ? (

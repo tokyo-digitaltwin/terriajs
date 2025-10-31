@@ -29,6 +29,7 @@ import ShapefileCatalogItem from "./CatalogItems/ShapefileCatalogItem";
 import SocrataMapViewCatalogItem from "./CatalogItems/SocrataMapViewCatalogItem";
 import StubCatalogItem from "./CatalogItems/StubCatalogItem";
 import UrlTemplateImageryCatalogItem from "./CatalogItems/UrlTemplateImageryCatalogItem";
+import AnimatedPolylineCatalogItem from "./CatalogItems/AnimatedPolylineCatalogItem";
 import CatalogMemberFactory from "./CatalogMemberFactory";
 import CatalogIndexReference from "./CatalogReferences/CatalogIndexReference";
 import MagdaReference from "./CatalogReferences/MagdaReference";
@@ -243,6 +244,10 @@ export default function registerCatalogMembers() {
   );
   CatalogMemberFactory.register(AssImpCatalogItem.type, AssImpCatalogItem);
   CatalogMemberFactory.register(CogCatalogItem.type, CogCatalogItem);
+  CatalogMemberFactory.register(
+    AnimatedPolylineCatalogItem.type,
+    AnimatedPolylineCatalogItem
+  );
 
   UrlToCatalogMemberMapping.register(
     matchesExtension("csv"),

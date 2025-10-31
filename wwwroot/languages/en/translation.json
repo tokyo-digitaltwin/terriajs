@@ -55,7 +55,16 @@
   "measure": {
     "measureTool": "Measure Tool",
     "measureToolTitle": "Line Measure",
-    "measureDistance": "Measure distance between locations"
+    "measureDistance": "Measure distance between locations",
+    "measureArea": "Measure the area",
+    "areaMeasureToolTitle": "Area Measure",
+    "areaMeasureTool": "Area measure Tool",
+    "areaMeasureLineLabel": "Length ",
+    "areaMeasureAreaLabel": "  Area ",
+    "areaMeasureHelp": "Click <a href='/area_measurement_tool.html'>here</a> for usage notes",
+    "areaMeasureInvalidError": "There is an error in the polygon. Draw the correct polygons.",
+    "areaMeasureAttention": "*Caution: Area measurement is not possible when polygons intersect.",
+    "areaMeasureNotify": "*To cancel a point that has already been selected, click on that point."
   },
   "location": {
     "errorGettingLocation": "Error getting location",
@@ -281,6 +290,9 @@
       "hideUnderground": "Terrain hides underground features",
       "showUndergroundFeatures": "Press to start showing features that are underneath the terrain surface",
       "hideUndergroundFeatures": "Press to start hiding features that are underneath the terrain surface",
+      "enableCollisionDetection": "Press to disable going underground",
+      "disableCollisionDetection": "Press to enable going underground",
+      "enableToGoUnderground": "Go underground",
       "sideLabel": "Show Terrain on the",
       "left": "Left",
       "both": "Both",
@@ -557,7 +569,8 @@
     "addItemErrorMessage": "An error occurred while loading the catalog item.",
     "searchItem": "Search",
     "searchItemTitle": "Search",
-    "splitScreenMode": "SPLIT SCREEN MODE"
+    "splitScreenMode": "SPLIT SCREEN MODE",
+    "filter": "Show {{name}}: {{minimumShown}} to {{maximumShown}}"
   },
   "dateTime": {
     "selectorLabel": "Time:",
@@ -623,29 +636,11 @@
   },
   "emptyWorkbenchInfo": [
     {
-      "heading": "Add a dataset here",
-      "body": "When you add a dataset, its legend and settings appear here."
+      "body": "Your workbench is empty"
     },
     {
-      "heading": "Get started",
-      "list": [
-        "Click Explore data to view available datasets",
-        "Upload your own via Upload data",
-        "Find your added data in this panel"
-      ]
-    },
-    {
-      "heading": "What you can do",
-      "list": [
-        "Show or hide data",
-        "Adjust transparency (opacity)",
-        "Compare side-by-side",
-        "Change styles (colours, lines, symbols)",
-        "View different dates and times (if supported)"
-      ]
-    },
-    {
-      "body": "Use this panel to explore data, manage settings, and build your map scene or story."
+      "heading": "Helpful hints",
+      "body": "Browse available data by selecting ‘Explore map data’ or click ‘Upload’ to add your own data to the map."
     }
   ],
   "dataCatalog": {
@@ -2207,5 +2202,19 @@
     "buttonTitle": "See related maps",
     "panelHeading": "Related Maps",
     "panelText": "Clicking on a map below will open it in a separate window or tab."
+  },
+  "downloadControls": {
+    "ariaDownloadUnselected": "Download multiple ranges",
+    "ariaDownloadSelected": "Shift+drag to select a range",
+    "downloadProgress": "{{size}} items remaining, {{progress}} % downloaded"
+  },
+  "downloadDialog": {
+    "title": "Download",
+    "message": "There are {{count}} downloads available. ",
+    "targets": "{{targets}}",
+    "notice1": "The file size is large and downloading will take some time.",
+    "notice2": "Please try downloading in a few files.",
+    "confirmText": "Do download",
+    "denyText": "Cancel"
   }
 }

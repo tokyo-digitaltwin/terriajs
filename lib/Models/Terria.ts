@@ -367,6 +367,11 @@ export interface ConfigParameters {
   aboutButtonHrefUrl?: string | null;
 
   /**
+   * URL that serves the website's policy.
+   */
+  policyUrl?: string;
+
+  /**
    * The search bar allows requesting information from various search services at once.
    */
   searchBarConfig?: ModelPropertiesFromTraits<SearchBarTraits>;
@@ -601,6 +606,7 @@ export default class Terria {
     relatedMaps: [],
     aboutButtonHrefUrl: "about.html",
     plugins: undefined,
+    policyUrl: undefined,
     searchBarConfig: undefined,
     searchProviders: []
   };
@@ -1016,6 +1022,13 @@ export default class Terria {
         hashProperties["configUrl"] !== ""
       )
         options.configUrl = hashProperties["configUrl"];
+    }else{
+      if (
+        isDefined(hashProperties["configUrl"]) &&
+        hashProperties["configUrl"] !== "" &&
+        ! isValidURL(hashProperties["configUrl"])
+      )
+        options.configUrl = hashProperties["configUrl"];
     }
 
     const baseUri = new URI(options.configUrl).filename("");
@@ -1071,11 +1084,13 @@ export default class Terria {
       }
     }
     this.analytics?.start(this.configParameters);
-    this.analytics?.logEvent(
-      Category.launch,
-      LaunchAction.url,
-      launchUrlForAnalytics
-    );
+    if (this.getLocalProperty("useCookie")) {
+      this.analytics?.logEvent(
+        Category.launch,
+        LaunchAction.url,
+        launchUrlForAnalytics
+      );
+    }
     this.serverConfig = new ServerConfig();
     const serverConfig = await this.serverConfig.init(
       this.configParameters.serverConfigUrl
@@ -2382,5 +2397,14 @@ function setCustomRequestSchedulerDomainLimits(
     Object.entries(customDomainLimits).forEach(([domain, limit]) => {
       RequestScheduler.requestsByServer[domain] = limit;
     });
+  }
+}
+
+function isValidURL(url:string ) {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
   }
 }

@@ -1,4 +1,5 @@
-import { GridLayer } from "leaflet";
+import { Bounds, DomUtil, GridLayer, LeafletMouseEvent, Point } from "leaflet";
+import i18next from "i18next";
 import {
   action,
   autorun,
@@ -79,6 +80,8 @@ export default class Leaflet extends GlobeOrMap {
   private _cesiumReqAnimFrameId: number | undefined;
   private _pickedFeatures: PickedFeatures | undefined = undefined;
   private _pauseMapInteractionCount = 0;
+  private pickFeature: any;
+  private _pickLocation: any;
 
   /* Disposers */
   private readonly _disposeWorkbenchMapItemsSubscription: () => void;
@@ -91,6 +94,10 @@ export default class Leaflet extends GlobeOrMap {
   @observable nw: L.Point | undefined;
   @observable se: L.Point | undefined;
 
+  // For area downloading function
+  private _areaDownlaodDocumentEvents: ((e: KeyboardEvent) => void)[] = [];
+  private _areaDownloadLeafletEvents: ((e: L.LeafletMouseEvent) => void)[] = [];
+
   @action
   private updateMapObservables() {
     this.size = this.map.getSize();
@@ -101,7 +108,7 @@ export default class Leaflet extends GlobeOrMap {
   private _createImageryLayer: (
     ip: ImageryProvider,
     clippingRectangle: Rectangle | undefined
-  ) => GridLayer = computedFn((ip, clippingRectangle) => {
+  ) => GridLayer | undefined = computedFn((ip, clippingRectangle) => {
     const layerOptions = {
       maxZoom: this.terria.configParameters.leafletMaxZoom,
       bounds: clippingRectangle && rectangleToLatLngBounds(clippingRectangle)
@@ -151,9 +158,11 @@ export default class Leaflet extends GlobeOrMap {
       attributionControl: false,
       zoomSnap: 1, // Change to  0.2 for incremental zoom when Chrome fixes canvas scaling gaps
       preferCanvas: true,
-      worldCopyJump: false
+      worldCopyJump: false,
+      maxZoom: 22
     }).setView([-28.5, 135], 5);
 
+    (window as any).map = this.map;
     this.map.on("move", () => this.updateMapObservables());
     this.map.on("zoom", () => this.updateMapObservables());
 
@@ -201,8 +210,8 @@ export default class Leaflet extends GlobeOrMap {
         map.dragging,
         map.tapHold
       ]);
-      const pickLocation = this.pickLocation.bind(this);
-      const pickFeature = (entity: Entity, event: L.LeafletMouseEvent) => {
+      this._pickLocation = this.pickLocation.bind(this);
+      this.pickFeature = (entity: Entity, event: L.LeafletMouseEvent) => {
         this._featurePicked(entity, event);
       };
 
@@ -217,15 +226,15 @@ export default class Leaflet extends GlobeOrMap {
 
       if (this.terriaViewer.disableInteraction) {
         interactions.forEach((handler) => handler.disable());
-        this.map.off("click", pickLocation);
-        this.scene.featureClicked.removeEventListener(pickFeature);
+        this.map.off("click", this._pickLocation);
+        this.scene.featureClicked.removeEventListener(this.pickFeature);
         if (this._disposeSelectedFeatureSubscription) {
           this._disposeSelectedFeatureSubscription();
         }
       } else {
         interactions.forEach((handler) => handler.enable());
-        this.map.on("click", pickLocation);
-        this.scene.featureClicked.addEventListener(pickFeature);
+        this.map.on("click", this._pickLocation);
+        this.scene.featureClicked.addEventListener(this.pickFeature);
         this._disposeSelectedFeatureSubscription = autorun(() => {
           const feature = this.terria.selectedFeature;
           this._selectFeature(feature);
@@ -492,6 +501,149 @@ export default class Leaflet extends GlobeOrMap {
         }
       })
     );
+  }
+
+  doDisableZoom(): Promise<void> {
+    const map = this.map;
+    map.boxZoom.disable();
+    return Promise.resolve();
+  }
+
+  prepareAreaDownloading(dataSource: DataSource, downloadProperty: string): Promise<void> {
+    let shiftKeyPressed = false;
+    let privClickEvent: any;
+    const keydown = (event: KeyboardEvent) => {
+      if (event.shiftKey) {
+        shiftKeyPressed = true;
+        // remove click function
+        this.scene.featureClicked.removeEventListener(this.pickFeature);
+        this.map.off("click", this._pickLocation);
+      }
+    };
+    document.addEventListener('keydown', keydown);
+    this._areaDownlaodDocumentEvents.push(keydown)
+    const keyup = (event: KeyboardEvent) => {
+      if (!event.shiftKey) {
+        shiftKeyPressed = false;
+        if (isMoved) {
+          box.remove();
+          this.map.getContainer().classList.remove('leaflet-crosshair');
+          isMoved = false;
+        }
+        this.doEnableZoom();
+        this.removeAreaDownloading();
+      }
+    };
+    document.addEventListener('keyup', keyup);
+    this._areaDownlaodDocumentEvents.push(keyup);
+
+    let isDragging = false;
+    let startPoint: L.LatLng;
+    let startPosition: L.Point;
+    let endPoint: L.LatLng;
+    let isMoved = false;
+    let box: HTMLElement;
+    let resetStateTimeout: number | any = 0;
+    const resetState = () => {
+      resetStateTimeout = 0;
+      isMoved = false;
+    }
+    const clearDefferedResetState = () => {
+      if (resetStateTimeout !== 0) {
+        clearTimeout(resetStateTimeout);
+        resetStateTimeout = 0;
+      }
+    }
+    const mousedown = (e: L.LeafletMouseEvent) => {
+      if (shiftKeyPressed) {
+        clearDefferedResetState();
+        resetState();
+        isDragging = true;
+        startPoint = e.latlng;
+        startPosition = this.map.mouseEventToContainerPoint(e.originalEvent);
+        DomUtil.disableImageDrag();
+        DomUtil.disableTextSelection();
+      }
+    }
+    this.map.on('mousedown', mousedown);
+    this._areaDownloadLeafletEvents.push(mousedown);
+    const mousemove = (e: L.LeafletMouseEvent) => {
+      if (shiftKeyPressed && isDragging) {
+        if (!isMoved) {
+          isMoved = true;
+          box = DomUtil.create('div', 'leaflet-zoom-box', this.map.getContainer());
+          this.map.getContainer().classList.add('leaflet-crosshair');
+          this.map.fire("boxzoomstart");
+        }
+        const position = this.map.mouseEventToContainerPoint(e.originalEvent);
+        const bounds = new Bounds(position, startPosition);
+        const size = bounds.getSize();
+        DomUtil.setPosition(box, bounds.min as Point);
+        box.style.width = `${size.x}px`;
+        box.style.height = `${size.y}px`;
+      }
+    }
+    this.map.on('mousemove', mousemove);
+    this._areaDownloadLeafletEvents.push(mousemove)
+    const mouseup = (e: LeafletMouseEvent) => {
+      if (shiftKeyPressed && isDragging) {
+        isDragging = false;
+        if (isMoved) {
+          box.remove();
+          this.map.getContainer().classList.remove('leaflet-crosshair');
+        }
+        DomUtil.enableTextSelection();
+        DomUtil.enableImageDrag();
+        // Postpone to next JS tick so internal click event handling
+        // still see it as "moved".
+        clearDefferedResetState();
+        resetStateTimeout = setTimeout(resetState.bind(this), 0);
+        endPoint = e.latlng;
+        const rets: Entity[] = this.dataSourceDisplay.getItemsByBboxAndDatasource(dataSource, startPoint, endPoint);
+        const values: string[] = [];
+        rets.forEach((entity: Entity) => {
+          values.push(entity.properties?.getValue(this.terria.timelineClock.currentTime)[downloadProperty]);
+        })
+        const targets: string[] = [];
+        rets.forEach((entity: Entity) => {
+          targets.push(entity.properties?.getValue(this.terria.timelineClock.currentTime)['図郭名']);
+        })
+        this.doAreaDownloading(values, targets);
+        this.map.fire("boxzoomend");
+        this.doEnableZoom();
+        this.removeAreaDownloading();
+      }
+    }
+    this.map.on('mouseup', mouseup);
+    this._areaDownloadLeafletEvents.push(mouseup);
+
+    return Promise.resolve();
+  }
+
+  doEnableZoom(): Promise<void> {
+    const map = this.map;
+    map.boxZoom.enable();
+    return Promise.resolve();
+  }
+
+  removeAreaDownloading(): Promise<void> {
+    const keydown = this._areaDownlaodDocumentEvents.shift();
+    document.removeEventListener('keydown', keydown as any);
+    const keyup = this._areaDownlaodDocumentEvents.shift();
+    document.removeEventListener('keyup', keyup as any);
+    const mousedown = this._areaDownloadLeafletEvents.shift();
+    this.map.off('mousedown', mousedown);
+    const mousemove = this._areaDownloadLeafletEvents.shift();
+    this.map.off('mousemove', mousemove);
+    const mouseup = this._areaDownloadLeafletEvents.shift();
+    this.map.off('mouseup', mouseup);
+    this.isAreaDownloading = false;
+    // enable click feature
+    setTimeout(() => {
+      this.scene.featureClicked.addEventListener(this.pickFeature);
+      this.map.on("click", this._pickLocation);
+    }, 5000);
+    return Promise.resolve();
   }
 
   doZoomTo(

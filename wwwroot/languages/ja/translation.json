@@ -65,15 +65,15 @@
     "title": "クリック＋ドラッグでカメラを回転",
     "guidanceBtnText": "コンパスの詳しい使い方を見る",
     "guidanceBtnTitle": "ジャイロスコープの使い方",
-    "description": "・外側の輪：地図を回転 （Nが北）\n・内側の円：視点の自由な移動\n・ダブルクリック：真上からの視点にリセット\n回転の簡便操作：Ctrlキーと地図のドラッグ操作で視点の自由な移動が可能",
+    "description": "外側の輪：地図を回転（Nが北）\n内側の円：視点の自由な移動\nダブルクリック：ホームポジションに戻る\n回転の簡易操作：Ctrlキーと地図のドラッグ操作でも視点の自由な移動が可能",
     "guidance": {
-      "ctrlDragDescription": "CTRLキーを押しながらドラッグしても地図を傾けたり回したりできます。",
+      "ctrlDragDescription": "Ctrlキーと地図のドラッグ操作でも視点の自由な移動が可能です。",
       "dismissText": "閉じて今後は表示しない",
       "innerCircleDescription2": "また、ここをダブルクリックすると表示が初期状態に戻ります。",
-      "innerCircleDescription1": "内側の丸い部分をクリックしたまま上下左右にゆっくりとドラッグすると、地図を傾けたり回したりできます。",
-      "innerCircleTitle": "内側の円",
-      "outerRingDescription": "外側の輪をドラッグして回すと地図が回転します。",
-      "outerRingTitle": "外側の輪",
+      "innerCircleDescription1": "内側の丸い部分をクリックして上下左右にドラッグすると、地図を傾けたり回したり自由に視点を移動できます。",
+      "innerCircleTitle": "内側の円（十字矢印）",
+      "outerRingDescription": "外側の輪をドラッグして回すと地図を回転できます。（Nが北）",
+      "outerRingTitle": "外側の輪（白輪）",
       "title": "ジャイロスコープ制御"
     }
   },
@@ -254,6 +254,21 @@
   "loader": {
     "loadingMessage": "読み込み中"
   },
+  "emptyWorkbenchInfo": [
+    {
+      "heading": ""
+    },
+    {
+      "heading": "「データを追加」ボタンから、表示するデータを追加できます"
+    },
+    {
+      "heading": ""
+    },
+    {
+      "heading": "使い方",
+      "body": "「データを追加」 を選択して登録済みのデータを探すか、「ローカルデータ」 で手元のデータを地図に追加します。"
+    }
+  ],
   "dragDrop": {
     "not": "<0>bbbb</0>",
     "text": "<0>ドラッグ&ドロップ</0><1>してあなたのデータをマップに表示<1>"
@@ -300,7 +315,8 @@
     "colorScaleRangeTitle": "カラーレンジのスケールが間違っています",
     "searchItemTitle": "検索",
     "searchItem": "検索",
-    "splitScreenMode": "画面分割モード"
+    "splitScreenMode": "画面分割モード",
+    "filter": "{{name}}: {{minimumShown}} から {{maximumShown}}"
   },
   "description": {
     "dataNotLocal": "データの詳細はデータ提供者に確認してください（データ利用上の制限も含む）。",
@@ -428,7 +444,7 @@
   "settingPanel": {
     "performanceLabel": "パフォーマンス",
     "qualityLabel": "質",
-    "mapQuality": "地図の質:",
+    "mapQuality": "ラスターデータの質:",
     "nativeResolutionHeader": "デバイスの解像度を適用",
     "imageOptimisation": "画像の最適化",
     "baseMap": "ベースマップ",
@@ -452,7 +468,10 @@
       "sideLabel": "地形の表示",
       "hideUndergroundFeatures": "ここを押すと地下が非表示になります",
       "showUndergroundFeatures": "ここを押すと地下が表示されます",
-      "hideUnderground": "地下部分を非表示にする"
+      "hideUnderground": "地下部分を非表示にする",
+      "enableCollisionDetection": "ここを押すと地下に入れなくなります",
+      "disableCollisionDetection": "ここを押すと地下に入れるようになります",
+      "enableToGoUnderground": "地面との衝突を無効にする"
     },
     "timeline": {
       "alwaysShow": "常に表示",
@@ -548,7 +567,16 @@
   "measure": {
     "measureDistance": "距離を計測します",
     "measureToolTitle": "距離の計測",
-    "measureTool": "計測ツール"
+    "measureTool": "計測ツール",
+    "measureArea": "面積を計測します",
+    "areaMeasureToolTitle": "面積の計測",
+    "areaMeasureTool": "面積計測ツール",
+    "areaMeasureLineLabel": "周の長さ　",
+    "areaMeasureAreaLabel": "面　　積　",
+    "areaMeasureHelp": "利用上の留意点は<a href='/area_measurement_tool.html'>こちら</a>",
+    "areaMeasureInvalidError": "ポリゴンにエラーがあります。正しいポリゴンを描画してください。",
+    "areaMeasureAttention": "※注意：ポリゴンが交差した場合は面積計測ができません。",
+    "areaMeasureNotify": "※既に選択したポイントを取り消す場合、当該ポイントをクリックしてください。"
   },
   "addData": {
     "note": "<0>注意：</0>この方法で追加されたデータは保存されず、他の人に見せることもできません。",
@@ -558,7 +586,7 @@
     "webTitle": "ウェブからデータを追加する",
     "localTitle": "ローカルのデータを追加する",
     "browse": "ブラウズ...",
-    "urlInputBtn": "マップに追加",
+    "urlInputBtn": "マップに追加する",
     "localFile": "<0>ステップ2</0>：ファイルを選択",
     "webFile": "<0>ステップ2</0>：データファイルまたはウェブサービスのURLを入力",
     "webFileType": "<0>ステップ1</0>：ファイルまたはウェブサービスタイプを選択",
@@ -621,7 +649,7 @@
       "auto": "ファイルタイプ",
       "shp": "Shapefile",
       "gltf": "glTF",
-      "carto": "CartoV1",
+      "carto": "Carto",
       "json": "Terriaカタログ",
       "gpx": "GPX",
       "czml": "CZML",
@@ -634,10 +662,10 @@
       "socrata-group": "Socrata サーバー",
       "assimp-remote-description": "**警告:** 3D ファイルコンバータは試験的機能です。  \n[サポートされる形式のリスト](https://github.com/assimp/assimp/blob/master/doc/Fileformats.md).  \nファイルは必ずZIPしてください",
       "ifc": "IFC",
+      "cog": "Cloud Optimised Geotiff",
       "assimp-local": "3Dファイルコンバーター (zip) (試験的機能)",
       "assimp-local-description": "**警告:** 3D ファイルコンバータは試験的機能です。  \n[サポートされる形式のリスト](https://github.com/assimp/assimp/blob/master/doc/Fileformats.md).  \nファイルは必ずZIPしてください。",
-      "assimp-remote": "3Dファイルコンバータ（試験的機能）",
-      "carto-v3": "CARTO V3"
+      "assimp-remote": "3Dファイルコンバータ（試験的機能）"
     },
     "dataUri": {
       "errorMessage": "残念ながら、Microsoftのブラウザ（全てのバージョンのInternet ExplorerとEdge）では、データをファイルとしてダウンロードするのに必要となるdata URI機能がサポートされていません。ダウンロードするには、次のURLを $t(browsers.chrome), $t(browsers.firefox), $t(browsers.safari)など別のブラウザにコピーしてください。{{href}}",
@@ -710,6 +738,8 @@
     "searchLocations": "場所",
     "searchAddresses": "住所",
     "searchErrorOccurred": "検索中にエラーが発生しました。インターネット接続を確認するか後でやり直してください。",
+    "searchMinCharacters": " {{count}} 文字以上入力してください。",
+    "searchMinCharacters_plural": " {{count}} 文字以上入力してください。",
     "searchMinCharacters_0": "最低限 {{count}} 文字を入力してください"
   },
   "chart": {
@@ -804,9 +834,7 @@
       "readyToUpload": "{{appName}}の変換サービスにアップロードする準備はできていますか？",
       "getConfirmationMessage": "このファイルは{{appName}}では直接サポートされていません。\n\n{{appName}}の変換サービスにアップロードしますか？ファイルサイズが小さく、かつzip化されたEsri ShapeファイルやMapInfo Tabファイルであればこの方法で表示できる可能性があります。",
       "unsupportedFileTypeMessageII": "このファイルフォーマットは{{appName}}ではサポートされていません。直接サポートされているフォーマットは <ul><li>.geojson</li><li>.kml, .kmz</li><li>.csv (in {{link}})</li></ul>  です。オンライン変換サービスを通してサポートされているファイルフォーマットは <ul><li>Shapefile (.zip)</li><li>MapInfo TAB (.zip)</li><li>その他の {{linkII}}</li></ul> などです。",
-      "stubCreationFailure": "カタログアイテム {{item}} を消すことができません",
-      "addAll": "全てを追加",
-      "removeAll": "全てを削除"
+      "stubCreationFailure": "カタログアイテム {{item}} を消すことができません"
     },
     "ckan": {
       "idsNotSpecifiedMessage": "CkanCatalogItemではresourceIdかdatasetIdのどちらかが指定されている必要があります。",
@@ -900,7 +928,7 @@
       "badlyFormatedMessage": "'{{name}}' データセットは、周期性の点で正しくフォーマットされていません '{{isoSegments}}'。データセットの情報ボタンをクリックするとデータセットとデータを管理する主体の情報が得られます。",
       "badlyFormatedTitle": "周期性が正しくフォーマットされていません",
       "datasetScaleErrorTitle": "このスケールではデータセットは表示されません",
-      "noLayerFoundMessage": "WMS データセット'{{name}}' に '{{layers}}'に該当するレイヤがありません。 カタログファイルが正しく設定されていないかWMSサーバーが変更された可能性があります。",
+      "noLayerFoundMessage": "WMS データセット'{{name}}' に '{{layers}}'に該当するレイヤがありません。 {{suggested}} {{line}}{{line}}カタログファイルが正しく設定されていないかWMSサーバーが変更された可能性があります。",
       "noLayerFoundTitle": "レイヤが一つも見つかりません",
       "defaultStyleLabel": "デフォルトのスタイル",
       "getCapabilitiesUrl": "GetCapabilities URL",
@@ -915,9 +943,9 @@
       "reachedMaxFeatureLimit": "警告: このレイヤはWFSフィーチャの限度 ({{maxFeatures}}) に達しました",
       "missingUrlMessage": "Web Feature Service (WFS) の GetCapabilities ドキュメントを読めませんでした。語るぐアイテムに `url`がないためです。",
       "missingUrlTitle": "GetCapabilities を読めませんでした",
-      "missingDataMessage": "WFS データセット '{{name}}' は何もデータを返しません。カタログが正しく設定されていないかサーバーのアドレスが変わったかもしれません。",
+      "missingDataMessage": "WFS データセット '{{name}}' は何もデータを返しません。{{line}}{{line}}カタログが正しく設定されていないかサーバーのアドレスが変わったかもしれません。",
       "missingDataTitle": "見つからないデータ",
-      "noLayerFoundMessage": "WFS データセット'{{name}}' には '{{typeNames}}' に該当するレイヤがありません。 カタログファイルが正しく設定されていないか、WFSサーバーが変更されたと思われます。",
+      "noLayerFoundMessage": "WFS データセット'{{name}}' には '{{typeNames}}' に該当するレイヤがありません。 {{suggested}} {{line}}{{line}}カタログファイルが正しく設定されていないか、WFSサーバーが変更されたと思われます。",
       "noLayerFoundTitle": "レイヤがありません",
       "getCapabilitiesUrl": "GetCapabilities URL",
       "serviceContact": "サービスに関する連絡先",
@@ -947,8 +975,7 @@
       "invalidServiceTitle": "無効なArcGISマップサービス",
       "name": "ArcGIS マップサーバーグループ",
       "groupNotAvailableMessage": "ArcGIS Map Serviceの呼び出し中にエラーが発生しました。",
-      "invalidServiceMessage": "ArcGIS Map Serviceの呼び出し中にエラーが発生しました。サーバーの応答が有効なMap Serviceドキュメントではないようです。",
-      "singleFusedMapCacheLayerName": "全レイヤ"
+      "invalidServiceMessage": "ArcGIS Map Serviceの呼び出し中にエラーが発生しました。サーバーの応答が有効なMap Serviceドキュメントではないようです。"
     },
     "georss": {
       "copyrightText": "著作権",
@@ -1469,7 +1496,7 @@
       "loadingInitSourceError2Message": "以下から初期化情報を読み込む際にエラー発生:  \n*`{{loadSource}}`*.",
       "loadingInitSourceErrorMessage": "`{{fragment}}` から初期化情報を読み込めませんでした。initFragmentPaths が定義されていません。",
       "loadingInitSourceErrorTitle": "初期化リソース読み込み時エラー",
-      "loadingInitSourcesErrorMessage": "{{appName}} 地図設定の読み込み時エラー &mdash; 正しく表示されないかもしれません。地図を再読み込みしてください。もし問題が解決しない場合、 {{email}} にエラーを報告するか、下のボタンを押してください。",
+      "loadingInitSourcesErrorMessage": "{{appName}} の地図設定の読み込み時にエラーが発生しました。地図を再度読み込んで下さい。問題が解決しない場合、「 {{email}} 」にエラーを報告するか、「ご意見・ご要望」ボタンをクリックしてください。",
       "loadingInitSourcesErrorTitle": "地図設定読み込み時のエラー",
       "loadingMagdaInitSourceErrorMessage": "Magda レコード `{{url}}` から初期化情報を読み込み時にエラー発生。",
       "loadingMagdaInitSourceErrorTitle": "Magdaの初期化ソース読み込み時のエラー",
@@ -2025,11 +2052,7 @@
       "unusalTilingScheme": "このデータセットは特殊なタイル化方式を使用しているため、2Dのマップでは表示できません。",
       "notWebMercatorTilingScheme": "このデータセットはウェブメルカトル（EPSG:3857）図法をサポートしていないため、2Dのマップでは表示できません。",
       "failedToObtain": "画像タイル X: {{x}} Y: {{y}} Level: {{level}} の取得に失敗しました。",
-      "devError": "cesiumが必須です。",
-      "stoppedRenderingTitle": "3D地図の描画に失敗しました",
-      "stoppedRenderingMessage": "先程ワークベンチに追加したデータが原因で問題が起きているかもしれません - データを削除してください。それでも問題が解決しない場合は {{appName}}を再読込してみてください。",
-      "terrainServerErrorTitle": "地形配信サーバが反応しません",
-      "terrainServerErrorMessage": " 地形配信サーバが反応しません。   {{appName}} のすべての機能は使えますが、3Dモードで地形が表示できません。  ご迷惑をおかけします。  しばらくしてからもう一度お試し下さい。  もし問題が解決していないようでしたら、以下までメールでご連絡下さい。 {{supportEmail}}."
+      "devError": "cesiumが必須です。"
     },
     "regionProvider": {
       "csvRegionMappingMessageLoadError": "リージョン{{regionName}}のリージョン境界を読み込めませんでした。{{exception}}",
@@ -2223,5 +2246,19 @@
       "unsupportedTypeMessage": "不明モデルタイプ {{type}}は作成できません。"
     },
     "noSearchProviders": "検索プロバイダが設定されていません"
+  },
+  "downloadControls": {
+    "ariaDownloadUnselected": "複数範囲をダウンロード",
+    "ariaDownloadSelected": "Shift+ドラッグで範囲選択",
+    "downloadProgress": "残り {{size}} 件, {{progress}} % ダウンロード済み"
+  },
+  "downloadDialog": {
+    "title": "ダウンロード",
+    "message": "{{count}}件のメッシュを選択しています",
+    "targets": "{{targets}}",
+    "notice1": "ファイルサイズが大きく、ダウンロードに時間を要します。",
+    "notice2": "数ファイルでのダウンロードでお試しください。",
+    "confirmText": "ダウンロードする",
+    "denyText": "キャンセル"
   }
 }

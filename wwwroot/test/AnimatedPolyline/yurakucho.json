@@ -1,0 +1,69 @@
+[
+  {
+    "width": 20,
+    "attributes": {
+      "color": [
+        0,
+        0.5,
+        0
+      ]
+    },
+    "waypoints": [
+      {
+        "longitude": 139.763581,
+        "latitude": 35.675622,
+        "height": 50
+      },
+      {
+        "longitude": 139.762810,
+        "latitude": 35.675748,
+        "height": 50
+      },
+      {
+        "longitude": 139.762505,
+        "latitude": 35.674787,
+        "height": 50
+      },
+      {
+        "longitude": 139.761433,
+        "latitude": 35.673858,
+        "height": 50
+      },
+      {
+        "longitude": 139.759954,
+        "latitude": 35.674891,
+        "height": 50
+      },
+      {
+        "longitude": 139.759717,
+        "latitude": 35.674676,
+        "height": 50
+      },
+      {
+        "longitude": 139.759548,
+        "latitude": 35.674701,
+        "height": 50
+      },
+      {
+        "longitude": 139.759189,
+        "latitude": 35.674950,
+        "height": 50
+      },
+      {
+        "longitude": 139.758667,
+        "latitude": 35.675207,
+        "height": 50
+      },
+      {
+        "longitude": 139.757763,
+        "latitude": 35.675267,
+        "height": 50
+      },
+      {
+        "longitude": 139.756910,
+        "latitude": 35.675585,
+        "height": 100
+      }
+    ]
+  }
+]

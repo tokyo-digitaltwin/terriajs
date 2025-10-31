@@ -1,11 +1,72 @@
-<svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
-  <g fill-rule="evenodd">
-    <path d="M32 64C14.327 64 0 49.673 0 32 0 14.327 14.327 0 32 0c17.673 0 32 14.327 32 32 0 17.673-14.327 32-32 32zm0-14c-9.941 0-18-8.059-18-18s8.059-18 18-18 18 8.059 18 18-8.059 18-18 18z" fill="#FFF"/>
-    <circle cx="49" cy="16" r="1"/>
-    <circle cx="51" cy="48" r="1"/>
-    <circle cx="13" cy="48" r="1"/>
-    <circle cx="13" cy="16" r="1"/>
-    <path d="M31.35 9V6.984c0-.244-.018-.652-.055-1.224h.026L33.185 9h1.154V4.717h-.818v2.027c0 .23.015.624.044 1.18h-.02l-1.86-3.207h-1.146V9h.812z" fill-rule="nonzero"/>
-    <path stroke="#3E4553" stroke-linecap="round" d="M32 55v4M55 32h4M5 32h4"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="64"
+   height="64"
+   version="1.1"
+   id="svg307"
+   sodipodi:docname="compass-outer-enlarged.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs311" />
+  <sodipodi:namedview
+     id="namedview309"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="20.85965"
+     inkscape:cx="34.468459"
+     inkscape:cy="25.743481"
+     inkscape:window-width="2560"
+     inkscape:window-height="1529"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g305" />
+  <g
+     fill-rule="evenodd"
+     id="g305">
+    <path
+       d="M32 64C14.327 64 0 49.673 0 32 0 14.327 14.327 0 32 0c17.673 0 32 14.327 32 32 0 17.673-14.327 32-32 32zm0-14c-9.941 0-18-8.059-18-18s8.059-18 18-18 18 8.059 18 18-8.059 18-18 18z"
+       fill="#FFF"
+       id="path291" />
+    <circle
+       cx="49"
+       cy="16"
+       r="1"
+       id="circle293" />
+    <circle
+       cx="51"
+       cy="48"
+       r="1"
+       id="circle295" />
+    <circle
+       cx="13"
+       cy="48"
+       r="1"
+       id="circle297" />
+    <circle
+       cx="13"
+       cy="16"
+       r="1"
+       id="circle299" />
+    <path
+       d="M 29.976156,11.301093 V 7.1188528 c 0,-0.5061839 -0.04071,-1.3525897 -0.124386,-2.5392175 h 0.0588 l 4.215556,6.7214577 h 2.609845 V 2.4159067 H 34.886013 V 6.620967 c 0,0.4771405 0.03392,1.294503 0.09951,2.4479384 H 34.94029 L 30.733781,2.4159067 h -2.591753 v 8.8851863 h 1.83639 z"
+       fill-rule="nonzero"
+       id="path301"
+       style="stroke-width:2.16603" />
+    <path
+       stroke="#3E4553"
+       stroke-linecap="round"
+       d="M32 55v4M55 32h4M5 32h4"
+       id="path303" />
   </g>
 </svg>

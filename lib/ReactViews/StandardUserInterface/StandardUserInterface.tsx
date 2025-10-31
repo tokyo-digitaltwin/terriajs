@@ -31,7 +31,7 @@ import StoryPanel from "../Story/StoryPanel/StoryPanel";
 import ClippingBoxToolLauncher from "../Tools/ClippingBox/ClippingBoxToolLauncher";
 import Tool from "../Tools/Tool";
 import TourPortal from "../Tour/TourPortal";
-import WelcomeMessage from "../WelcomeMessage/WelcomeMessage";
+import WelcomeMessage from "../WelcomeMessage/WelcomeMessageTokyo";
 import SelectableDimensionWorkflow from "../Workflow/SelectableDimensionWorkflow";
 import WorkflowPanelPortal from "../Workflow/WorkflowPanelPortal";
 import { ContextProviders } from "../Context";

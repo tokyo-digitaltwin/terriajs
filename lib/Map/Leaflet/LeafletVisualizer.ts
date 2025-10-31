@@ -20,6 +20,8 @@ import Property from "terriajs-cesium/Source/DataSources/Property";
 import isDefined from "../../Core/isDefined";
 import { convertCesiumDashNumberToDashArray } from "../../Models/Catalog/Esri/esriStyleToTableStyle";
 import LeafletScene from "./LeafletScene";
+import bboxPolygon from '@turf/bbox-polygon'
+import booleanIntersects from "@turf/boolean-intersects";
 
 interface PointDetails {
   layer?: L.CircleMarker;
@@ -1096,6 +1098,44 @@ class LeafletGeomVisualizer {
     });
 
     return result;
+  }
+
+  public getItemsByBbox(latlng1: L.LatLng, latlng2: L.LatLng): Entity[] {
+    let minx;
+    let miny;
+    let maxx;
+    let maxy;
+    if (latlng1.lng < latlng2.lng) {
+      minx = latlng1.lng;
+      maxx = latlng2.lng;
+    } else {
+      minx = latlng2.lng;
+      maxx = latlng1.lng;
+    }
+    if (latlng1.lat < latlng2.lat) {
+      miny = latlng1.lat;
+      maxy = latlng2.lat;
+    } else {
+      miny = latlng2.lat;
+      maxy = latlng1.lat;
+    }
+    const bboxPoly = bboxPolygon([minx, miny, maxx, maxy])
+    const entityHash = this._entityHash;
+    const containsHash: string[] = []
+    Object.entries(entityHash).forEach(([key, value]) => {
+      if (isDefined(value.polygon) && isDefined(value.polygon.layer)) {
+        const geojson = value.polygon.layer.toGeoJSON();
+        if (booleanIntersects(bboxPoly, geojson)) {
+          containsHash.push(key)
+        }
+      }
+    })
+    const targets: Entity[] = []
+    containsHash.forEach((key) => {
+      targets.push(this._entitiesToVisualize.get(key))
+    })
+    console.log(targets);
+    return targets;
   }
 }
 

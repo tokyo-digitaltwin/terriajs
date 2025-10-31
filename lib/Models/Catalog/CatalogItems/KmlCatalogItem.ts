@@ -1,6 +1,8 @@
 import i18next from "i18next";
 import { computed, makeObservable, override } from "mobx";
 import Resource from "terriajs-cesium/Source/Core/Resource";
+import PolylineGraphics from "terriajs-cesium/Source/DataSources/PolylineGraphics";
+import PolygonGraphics from "terriajs-cesium/Source/DataSources/PolygonGraphics";
 import KmlDataSource from "terriajs-cesium/Source/DataSources/KmlDataSource";
 import TerriaError, { networkRequestError } from "../../../Core/TerriaError";
 import isDefined from "../../../Core/isDefined";
@@ -14,6 +16,11 @@ import { ModelConstructorParameters } from "../../Definition/Model";
 import HasLocalData from "../../HasLocalData";
 import proxyCatalogItemUrl from "../proxyCatalogItemUrl";
 import CesiumIonMixin from "../../../ModelMixins/CesiumIonMixin";
+import Color from "terriajs-cesium/Source/Core/Color";
+import Positions from "terriajs-cesium/Source/DataSources/PositionProperty";
+import PolylineEntity from "terriajs-cesium/Source/Scene/Polyline";
+import JulianDate from "terriajs-cesium/Source/Core/JulianDate";
+import Property from "terriajs-cesium/Source/DataSources/Property";
 
 const kmzRegex = /\.kmz$/i;
 
@@ -90,6 +97,8 @@ class KmlCatalogItem
           ? proxyCatalogItemUrl(this, this.dataSourceUri, "1d")
           : undefined
       } as any);
+
+      this.polylineClampToGround(this._dataSource);
     } catch (e) {
       throw networkRequestError(
         TerriaError.from(e, {
@@ -115,6 +124,41 @@ class KmlCatalogItem
   protected forceLoadMetadata(): Promise<void> {
     return this.loadIonResource();
   }
+
+  private polylineClampToGround(kmlDataSource: KmlDataSource) {
+    // Clamp features to terrain.
+    if (isDefined(this.terria.cesium)) {
+      const entities = kmlDataSource.entities.values;
+      for (let i = 0; i < entities.length; ++i) {
+        try {
+          const polygon = entities[i].polygon;
+          if (!isDefined(polygon)) {
+            if(isDefined(PolylineGraphics)) {
+              const polylineEntity = entities[i].polyline;
+              let polylineFinal = kmlDataSource.entities.add({
+                polyline: {
+                  positions: getPropertyValue<Positions>(polylineEntity!.positions),
+                  clampToGround: this.clampToGround,
+                  width: polylineEntity!.width,
+                  material: polylineEntity!.material
+                },
+                description: entities[i].description
+              });
+              kmlDataSource.entities.remove(entities[i]);
+            }    
+          }
+        } 
+        catch{}
+      }
+    }
+  }
 }
 
 export default KmlCatalogItem;
+
+function getPropertyValue<T>(property: Property | undefined): T | undefined {
+  if (property === undefined) {
+    return undefined;
+  }
+  return property.getValue(JulianDate.now());
+}

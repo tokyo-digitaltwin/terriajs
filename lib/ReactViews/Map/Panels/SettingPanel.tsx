@@ -7,7 +7,8 @@ import {
   FC,
   MouseEvent,
   Ref,
-  useState
+  useState,
+  useEffect,
 } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
@@ -29,6 +30,7 @@ import { useViewState } from "../../Context";
 import { useRefForTerria } from "../../Hooks/useRefForTerria";
 import MenuPanel from "../../StandardUserInterface/customizable/MenuPanel";
 import Styles from "./setting-panel.scss";
+import defined from "terriajs-cesium/Source/Core/defined";
 
 const sides = {
   left: "settingPanel.terrain.left",
@@ -45,6 +47,7 @@ const SettingPanel: FC = observer(() => {
     viewState
   );
   const [hoverBaseMap, setHoverBaseMap] = useState<string | null>(null);
+  const [disableCollisionDetection, setDisableCollisionDetection] = useState<boolean>(true);
 
   const activeMapName = hoverBaseMap
     ? hoverBaseMap
@@ -132,6 +135,29 @@ const SettingPanel: FC = observer(() => {
     terria.setLocalProperty("useNativeResolution", terria.useNativeResolution);
   };
 
+  const toggleCollisionDetection = (event: ChangeEvent<HTMLInputElement>) => {
+    event.stopPropagation();
+    setDisableCollisionDetection((prev: boolean) => !prev);
+  }
+
+  const setCollisionDetection = () => {
+    if (terria.currentViewer instanceof Cesium) {
+      // seems cesium's enableCollisionDetection behaves oppositely to as expected
+      terria.currentViewer.scene.screenSpaceCameraController.enableCollisionDetection =
+        ! disableCollisionDetection;
+    }
+  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      setCollisionDetection();
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    setCollisionDetection();
+  }, [disableCollisionDetection]);
+
   const qualityLabels = {
     0: t("settingPanel.qualityLabels.maximumPerformance"),
     1: t("settingPanel.qualityLabels.balancedPerformance"),
@@ -175,6 +201,10 @@ const SettingPanel: FC = observer(() => {
   const depthTestAgainstTerrainLabel = depthTestAgainstTerrainEnabled
     ? t("settingPanel.terrain.showUndergroundFeatures")
     : t("settingPanel.terrain.hideUndergroundFeatures");
+
+  const collisionDetectionLabel = disableCollisionDetection
+    ? t("settingPanel.terrain.disableCollisionDetection")
+    : t("settingPanel.terrain.enableCollisionDetection");
 
   if (
     terria.configParameters.useCesiumIonTerrain ||
@@ -265,6 +295,22 @@ const SettingPanel: FC = observer(() => {
             )}
           </>
         )}
+        <Spacing bottom={2} />
+        <Box column>
+          <Checkbox
+            textProps={{ small: true }}
+            id="collisionDetection"
+            isChecked={disableCollisionDetection}
+            title={collisionDetectionLabel}
+            onChange={(event) => {
+              toggleCollisionDetection(event);
+            }}
+        >
+            <TextSpan>
+              {t("settingPanel.terrain.enableToGoUnderground")}
+            </TextSpan>
+          </Checkbox>
+        </Box>
         <>
           <Spacing bottom={2} />
           <Box column>

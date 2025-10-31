@@ -116,7 +116,7 @@ function GyroscopeGuidancePanel(props) {
         <Text>{t("compass.guidance.ctrlDragDescription")}</Text>
         <Spacing bottom={4} />
         <RawButton onClick={props.onClose}>
-          <TextSpan displayBlock primary isLink>
+          <TextSpan displayBlock isLink>
             {t("compass.guidance.dismissText")}
           </TextSpan>
         </RawButton>

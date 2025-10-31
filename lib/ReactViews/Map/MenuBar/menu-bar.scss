@@ -64,6 +64,7 @@
       variables.$map-button-border-radius;
   }
 
+  &:last-child > div > div > button,
   &:last-child > div > button,
   &:last-child > div > a,
   &:last-child > button,

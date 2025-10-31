@@ -104,6 +104,11 @@ const WorkbenchItemRaw: React.FC<IProps> = observer((props) => {
                       medium
                       maxLines={!isOpen ? 2 : false}
                       title={getName(item)}
+                      css={`
+                        text-decoration: ${item.show
+                          ? "none"
+                          : "line-through"};
+                      `}
                     >
                       {getName(item)}
                     </TextSpan>

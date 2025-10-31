@@ -10,7 +10,6 @@ import { useViewState } from "../../Context";
 import Loader from "../../Loader";
 import { BottomDockChart } from "./BottomDockChart";
 import Styles from "./chart-panel.scss";
-import { ChartPanelDownloadButton } from "./ChartPanelDownloadButton";
 
 const CHART_PANEL_HEIGHT = 300;
 const CHART_LEGEND_HEIGHT = 34;
@@ -99,9 +98,6 @@ const ChartPanel: FC<ChartPanelProps> = observer(({ onHeightChange }) => {
               <label className={Styles.sectionLabel}>
                 {isLoading ? <Loader /> : t("chart.sectionLabel")}
               </label>
-              <ChartPanelDownloadButton
-                chartableItems={chartableCatalogItems}
-              />
               <button
                 type="button"
                 title={t("chart.closePanel")}

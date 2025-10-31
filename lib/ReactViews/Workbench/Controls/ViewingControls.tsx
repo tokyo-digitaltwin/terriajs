@@ -44,6 +44,8 @@ import SplitterTraits from "../../../Traits/TraitsClasses/SplitterTraits";
 import { exportData } from "../../Preview/ExportData";
 import LazyItemSearchTool from "../../Tools/ItemSearchTool/LazyItemSearchTool";
 import WorkbenchButton from "../WorkbenchButton";
+import { JsonObject } from "protomaps";
+
 
 const BoxViewingControl = styled(Box).attrs({
   centered: true,
@@ -93,6 +95,14 @@ interface PropsType {
   item: BaseModel;
 }
 
+const getInitialCameraInfo = (item:CatalogMemberMixin.Instance) => {
+  if (!item.customProperties || !item.customProperties.initialCamera) {
+    return null;
+  }
+  return item.customProperties.initialCamera;
+};
+
+
 const ViewingControls: React.FC<PropsType> = observer((props) => {
   const { viewState, item } = props;
   const { t } = useTranslation();
@@ -123,6 +133,16 @@ const ViewingControls: React.FC<PropsType> = observer((props) => {
 
   const zoomTo = useCallback(() => {
     const viewer = viewState.terria.currentViewer;
+
+    const initialCameraInfo = getInitialCameraInfo(item as CatalogMemberMixin.Instance);
+    if (initialCameraInfo) {
+      setIsMapZoomingToCatalogItem(true);
+      const intitialView = CameraView.fromJson(initialCameraInfo as JsonObject)
+      viewer.zoomTo(intitialView).finally(() => {
+        setIsMapZoomingToCatalogItem(false);
+      });
+      return;
+    }
 
     if (!MappableMixin.isMixedInto(item)) return;
 

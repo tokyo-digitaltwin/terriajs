@@ -3,6 +3,9 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import HttpApi, { RequestCallback } from "i18next-http-backend";
 import { initReactI18next } from "react-i18next";
 import isDefined from "../Core/isDefined";
+import translationEN from "../../wwwroot/languages/en/translation.json";
+import translationFR from "../../wwwroot/languages/fr/translation.json";
+import translationJA from "../../wwwroot/languages/ja/translation.json";
 
 export interface I18nBackendOptions {
   /**
@@ -135,6 +138,18 @@ class Internationalization {
         ns: ["translation", "languageOverrides"],
         defaultNS: "languageOverrides",
         fallbackNS: "translation",
+
+        resources: {
+          en: {
+            translation: translationEN
+          },
+          fr: {
+            translation: translationFR
+          },
+          ja: {
+            translation: translationJA
+          }
+        },
 
         backend: Object.assign(
           {

@@ -309,7 +309,7 @@ export class FeatureInfoSection extends Component<FeatureInfoProps> {
 
     if (isDefined(feature.properties)) {
       return generateCesiumInfoHTMLFromProperties(
-        feature.properties,
+        parseBuildingsProperties(feature.properties),
         currentTime,
         MappableMixin.isMixedInto(this.props.catalogItem)
           ? this.props.catalogItem.showStringIfPropertyValueIsNull
@@ -387,10 +387,10 @@ export class FeatureInfoSection extends Component<FeatureInfoProps> {
 
   renderButtons() {
     const { t } = this.props;
-    return (
+    return this.generatedButtons.length ? (
       <ButtonsContainer>
         {/* If we have templated feature info (and not in print mode) - render "show raw data" button */}
-        {!this.props.printView && this.templatedFeatureInfoReactNode && (
+        {/* {!this.props.printView && this.templatedFeatureInfoReactNode && (
           <FeatureInfoPanelButton
             onClick={this.toggleRawData.bind(this)}
             text={
@@ -399,12 +399,12 @@ export class FeatureInfoSection extends Component<FeatureInfoProps> {
                 : t("featureInfo.showRawData")
             }
           />
-        )}
+        )} */}
         {this.generatedButtons.map((button, i) => (
           <FeatureInfoPanelButton key={i} {...button} />
         ))}
       </ButtonsContainer>
-    );
+    ) : null;
   }
 
   render() {
@@ -426,12 +426,7 @@ export class FeatureInfoSection extends Component<FeatureInfoProps> {
 
     /** Show feature info download if showing raw data - or showing template and `showFeatureInfoDownloadWithTemplate` is true
      */
-    const showFeatureInfoDownload =
-      this.showRawData ||
-      !this.templatedFeatureInfoReactNode ||
-      (this.templatedFeatureInfoReactNode &&
-        this.props.catalogItem.featureInfoTemplate
-          .showFeatureInfoDownloadWithTemplate);
+    const showFeatureInfoDownload = false;
 
     const titleElement = this.props.printView ? (
       <h2>{title}</h2>
@@ -476,18 +471,69 @@ export class FeatureInfoSection extends Component<FeatureInfoProps> {
       );
     }
 
+    let elevationCheck = "";
+    let elevationFixed = "";
+    let red = "";
+    let green = "";
+    let blue = "";
+    let rgbFixed = "";
+    let rgb = false;
+    let template = String(this.props.catalogItem.featureInfoTemplate.template);
+
+    let json = JSON.parse(JSON.stringify(this.parseMarkdownContextData.feature.data || {}));
+
+    let elevNumber = "";
+
+    if (json[2]) {
+      red = json[0];
+      green = json[1];
+      blue = json[2];
+      rgbFixed = ["Red= " + red, "Green= " + green, "Blue= " + blue].join("\r\n");
+      rgb = true;
+
+    }
+    else {
+      elevationCheck = json[0];
+      elevationFixed =  elevationCheck == "-9999.0" ? "No data" : ["Elevation:", parseFloat(elevationCheck).toFixed(3), "(m)"].join(' ');
+      elevNumber = elevationFixed;
+      rgb = false;
+    }
+
+    let isElevation = false;
+    if (template.includes("{{terria.rawDataTable}}") &&
+      template.includes("'標高:"))
+      {
+        isElevation = true;
+        elevationFixed =  elevationCheck == "-9999.0" ? "No data" : ["標高:", parseFloat(elevationCheck).toFixed(3), "(m)"].join(' ');
+        elevNumber = elevationFixed;
+      }
+
+    let currentCatalogType = this.props.catalogItem.type;
+
+    let stringForReplacing = String(this.props.catalogItem.featureInfoTemplate.template);
+
+    let newstr = "";
+    let newHtml = "";
+
+    if (isElevation) {
+      newstr = stringForReplacing.replace("{{terria.rawDataTable}}", elevNumber);
+
+      newHtml = parseCustomMarkdownToReact(newstr,
+            this.parseMarkdownContextData);
+    }
+
     return (
       <li className={classNames(Styles.section)}>
         {titleElement}
         {this.props.isOpen ? (
           <section className={Styles.content}>
             {this.renderButtons()}
-            <div>
+            <div id="testResult">
               {this.props.feature.loadingFeatureInfoUrl ? (
                 "Loading"
               ) : this.showRawData || !this.templatedFeatureInfoReactNode ? (
                 this.rawFeatureInfoReactNode ? (
-                  this.rawFeatureInfoReactNode
+                  currentCatalogType == "cog" ? (rgb == true ? rgbFixed : elevationFixed) : this.rawFeatureInfoReactNode
                 ) : (
                   <div
                     ref={(r) => {
@@ -500,8 +546,8 @@ export class FeatureInfoSection extends Component<FeatureInfoProps> {
                 )
               ) : (
                 // Show templated feature info
-                this.templatedFeatureInfoReactNode
-              )}
+                (currentCatalogType == "cog" && isElevation) ? newHtml : this.templatedFeatureInfoReactNode
+               )}
               {
                 // Show FeatureInfoDownload
                 !this.props.printView &&
@@ -534,6 +580,49 @@ function contains(text: string, number: number, precision: number) {
     text.indexOf(fixed(Math.ceil, number)) !== -1
   );
 }
+
+/**
+ * Customization for Tokyo Digital Twin
+ * take PropertyBag object and parse building specific "building_attributes", "disaster_risk_flood" and "disaster_risk_sediment" properties into simple key and value properties.
+ * and remove other properties.
+ * @param {*} properties
+ * @returns  Object or PropertyBag
+ * @private
+ */
+interface stringKeyObject {
+  [key: string]: string
+}
+
+function parseBuildingsProperties(properties:any) {
+  const jsonKeys = [
+    "building_attributes",
+    "disaster_risk_flood",
+    "disaster_risk_sediment",
+    "desaster_risk_flood",
+    "desaster_risk_sediment"
+  ];
+  const existingKeys = [...new Set(jsonKeys)].filter(value =>
+    Object.keys(properties).includes(value)
+  );
+  if (!existingKeys.length) {
+    return properties;
+  }
+  const jsonProperties = [];
+  for (const jk of jsonKeys) {
+    if (properties.hasOwnProperty(jk) && properties[jk]) {
+      jsonProperties.push(properties[jk]);
+    }
+  }
+
+  const p:stringKeyObject = {};
+  for (const jp of jsonProperties) {
+    for (const kv of jp) {
+      p[kv.key] = kv.value;
+    }
+  }
+  return p;
+}
+
 
 const ButtonsContainer = styled.div`
   display: flex;

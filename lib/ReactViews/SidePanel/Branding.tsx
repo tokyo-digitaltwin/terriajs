@@ -41,6 +41,11 @@ export default withViewState(
       : theme.logoHeight;
 
     const version = props.version ?? "Unknown";
+    try {
+      if (window.location.href.includes("configUrl")) {
+        document.title = "東京都デジタルツイン3Dビューア (簡易版)";
+      }
+    } catch {}
     return (
       <div
         css={`

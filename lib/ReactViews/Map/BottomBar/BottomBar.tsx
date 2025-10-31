@@ -24,7 +24,12 @@ export const BottomBar: VFC = () => {
         credits={viewState.terria.configParameters.extraCreditLinks?.slice()}
         currentViewer={viewState.terria.mainViewer.currentViewer}
       />
-      <Box paddedHorizontally={4} gap={2}>
+      <Box paddedHorizontally={4} gap={2} css={`
+          display: none;
+          @media (min-width: ${theme.sm}px) {
+            display: block;
+          }
+      `}>
         <LocationBar mouseCoords={viewState.terria.currentViewer.mouseCoords} />
         <DistanceLegend />
       </Box>

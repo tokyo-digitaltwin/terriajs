@@ -250,6 +250,12 @@ class CatalogMemberTraits extends ModelTraits {
     return;
   }
 
+  @anyTrait({
+    name: "customProperties",
+    description: "The dictionary of custom item properties."
+  })
+  customProperties?: JsonObject;
+
   @primitiveTrait({
     type: "boolean",
     name: "Shareable",
@@ -267,6 +273,7 @@ interface CatalogMemberTraits {
   shortReport: CatalogMemberTraits["shortReport"];
   description: CatalogMemberTraits["description"];
   disableAboutData: CatalogMemberTraits["disableAboutData"];
+  customProperties?: CatalogMemberTraits["customProperties"];
 }
 
 export default CatalogMemberTraits;

@@ -55,6 +55,7 @@ import lock from "../../wwwroot/images/icons/lock.svg";
 import loop from "../../wwwroot/images/icons/loop.svg";
 import menu from "../../wwwroot/images/icons/menu.svg";
 import measure from "../../wwwroot/images/icons/measure.svg";
+import measureArea from "../../wwwroot/images/icons/measure-area.svg";
 import opened from "../../wwwroot/images/icons/opened.svg";
 import pause from "../../wwwroot/images/icons/pause.svg";
 import play from "../../wwwroot/images/icons/play.svg";
@@ -200,6 +201,7 @@ export const GLYPHS = {
   loop,
   menu,
   measure,
+  measureArea,
   opened,
   pause,
   play,

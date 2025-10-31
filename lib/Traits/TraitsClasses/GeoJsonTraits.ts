@@ -11,6 +11,7 @@ import StyleTraits from "./StyleTraits";
 import TableTraits from "./Table/TableTraits";
 import UrlTraits from "./UrlTraits";
 
+
 export class PerPropertyGeoJsonStyleTraits extends ModelTraits {
   @anyTrait({
     name: "Properties",
@@ -114,6 +115,14 @@ export class GeoJsonTraits extends mixTraits(
       "The property of each GeoJSON feature that specifies the height. If defined, polygons will be extruded to this property (in meters) above terrain. This is only supported for cesium primitives (see `forceCesiumPrimitives`)"
   })
   heightProperty?: string;
+
+  @primitiveTrait({
+    type: "number",
+    name: "Cesium classification type",
+    description:
+      "Whether a Cesium entity's classification affects terrain, 3D Tiles or both. 0 = terrain, 1 = 3d-tiles and 2 = both."
+  })
+  cesiumClassificationType: number = 0;
 
   @anyTrait({
     name: "CZML template",

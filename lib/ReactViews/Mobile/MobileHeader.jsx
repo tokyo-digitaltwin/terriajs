@@ -175,7 +175,7 @@ class MobileHeader extends Component {
           fullWidth
           fullHeight
           paddedRatio={1}
-          backgroundColor={this.props.theme.dark}
+          backgroundColor={"#fff"}
         >
           {!searchState.showMobileLocationSearch &&
           !searchState.showMobileCatalogSearch ? (
@@ -194,7 +194,7 @@ class MobileHeader extends Component {
                   title={t("mobile.toggleNavigation")}
                 >
                   <StyledIcon
-                    light
+                    dark
                     glyph={Icon.GLYPHS.menu}
                     styledWidth="20px"
                     styledHeight="20px"
@@ -206,12 +206,7 @@ class MobileHeader extends Component {
                   version={this.props.version}
                 />
               </Box>
-              <div
-                className={Styles.groupRight}
-                css={`
-                  background-color: ${(p) => p.theme.dark};
-                `}
-              >
+              <div className={Styles.groupRight}>
                 <button
                   type="button"
                   className={Styles.btnAdd}
@@ -284,7 +279,6 @@ const HamburgerButton = styled(RawButton)`
   border-radius: 4px;
   padding: 0 5px;
   margin-right: 3px;
-  background: ${(p) => p.theme.darkLighter};
   width: 50px;
   height: 38px;
   box-sizing: content-box;
@@ -294,7 +288,7 @@ const HamburgerButton = styled(RawButton)`
   &:hover,
   &:focus,
   & {
-    border: 1px solid ${(p) => p.theme.textLightTranslucent};
+    border: 1px solid ${(p) => p.theme.textDark};
   }
 `;
 

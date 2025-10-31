@@ -29,6 +29,7 @@ export class LeafletAttribution extends L.Control.Attribution {
   }
 
   onAdd(map: L.Map): HTMLElement {
+    // @ts-ignore
     map.attributionControl = this;
     this.map = map;
 

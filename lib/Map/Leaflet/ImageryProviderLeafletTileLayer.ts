@@ -275,6 +275,10 @@ export default class ImageryProviderLeafletTileLayer extends L.TileLayer {
           this.options.minNativeZoom = this.imageryProvider.minimumLevel;
         }
 
+        if (this.options.maxNativeZoom && this._map.options.maxZoom){
+          this.options.maxZoom = this._map.options.maxZoom + 1;
+        }
+
         if (isDefined(this.imageryProvider.credit)) {
           (this._map as any).attributionControl.addAttribution(
             getCreditHtml(this.imageryProvider.credit)

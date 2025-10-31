@@ -275,7 +275,7 @@ class StoryBuilder extends Component<
           background={dataStoriesImg}
           videoName={STORY_VIDEO}
         />
-        <StoryButton
+        {/* <StoryButton
           title={t("story.gettingStartedTitle")}
           btnText={t("story.gettingStarted")}
           onClick={() => {
@@ -284,7 +284,7 @@ class StoryBuilder extends Component<
         >
           <StyledIcon glyph={Icon.GLYPHS.play} light styledWidth={"20px"} />
         </StoryButton>
-        <Spacing bottom={2} />
+        <Spacing bottom={2} /> */}
         <CaptureScene
           disabled={this.state.isRemoving}
           onClickCapture={this.onClickCapture}
@@ -481,8 +481,6 @@ class StoryBuilder extends Component<
         ref={(component: HTMLElement) => (this.refToMeasure = component)}
         isVisible={this.props.isVisible}
         isHidden={!this.props.isVisible}
-        styledWidth={"320px"}
-        styledMinWidth={"320px"}
         backgroundColor={this.props.theme.dark}
         column
       >

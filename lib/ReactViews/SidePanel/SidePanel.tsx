@@ -80,7 +80,7 @@ const EmptyWorkbench: FC<EmptyWorkbenchProps> = observer(() => {
               )}
             </div>
           ))}
-          <Box centered css="margin-top: 25px">
+          {/* <Box centered css="margin-top: 25px">
             <Button
               textLight
               transparentBg
@@ -108,7 +108,7 @@ const EmptyWorkbench: FC<EmptyWorkbenchProps> = observer(() => {
             >
               {t("helpPanel.takeTour")}
             </Button>
-          </Box>
+          </Box> */}
         </BoxHelpfulHints>
       </Text>
     </Box>
@@ -171,7 +171,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
       <Box column styledMinHeight={"0"} flex={1}>
         <div
           css={`
-            padding: 0 15px;
+            padding: 0 12px;
             background: none;
           `}
         >
@@ -188,7 +188,9 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
               onClick={onAddDataClicked}
               title={addData}
               btnText={addData}
-              styledWidth={"152px"}
+              css={`
+                flex: 1;
+              `}
             >
               <StyledIcon glyph={Icon.GLYPHS.add} light styledWidth={"20px"} />
             </SidePanelButton>
@@ -197,7 +199,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
               onClick={onAddLocalDataClicked}
               title={t("addData.load")}
               btnText={uploadText}
-              styledWidth={"152px"}
+              marginLeft={2}
             >
               <StyledIcon
                 glyph={Icon.GLYPHS.uploadThin}

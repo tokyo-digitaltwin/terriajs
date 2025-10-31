@@ -73,6 +73,8 @@ export default class CompositeCatalogItem extends MappableMixin(
     ).throwIfError();
   }
 
+  // Todo: これで共有URL長すぎ問題は修正されているか？
+  // 修正されていなければ、下のコメントアウトした関数syncVisibilityToMembersを試す
   syncVisibilityToMembers() {
     const { show } = this;
     this.memberModels.forEach((model) => {
@@ -81,6 +83,15 @@ export default class CompositeCatalogItem extends MappableMixin(
       });
     });
   }
+
+  // syncVisibilityToMembers() {
+  //   this.strata.forEach((stratum, stratumId) => {
+  //     const show = this.getTrait(stratumId, "show");
+  //     this.memberModels.forEach(model => {
+  //       model.setTrait(stratumId, "show", show);
+  //     });
+  //   });
+  // }
 
   @computed get mapItems() {
     const result: MapItem[] = [];
