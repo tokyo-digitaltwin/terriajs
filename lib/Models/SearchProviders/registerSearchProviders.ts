@@ -2,12 +2,18 @@ import AustralianGazetteerSearchProvider from "./AustralianGazetteerSearchProvid
 import BingMapsSearchProvider from "./BingMapsSearchProvider";
 import CesiumIonSearchProvider from "./CesiumIonSearchProvider";
 import NominatimSearchProvider from "./NominatimSearchProvider";
+import MapboxSearchProvider from "./MapboxSearchProvider";
 import SearchProviderFactory from "./SearchProviderFactory";
 
 export default function registerSearchProviders() {
+  // SearchProviderFactory.register(
+  //   BingMapsSearchProvider.type,
+  //   BingMapsSearchProvider
+  // );
+
   SearchProviderFactory.register(
-    BingMapsSearchProvider.type,
-    BingMapsSearchProvider
+    MapboxSearchProvider.type,
+    MapboxSearchProvider
   );
 
   SearchProviderFactory.register(
