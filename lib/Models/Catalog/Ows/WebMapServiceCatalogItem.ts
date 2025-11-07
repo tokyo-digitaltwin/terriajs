@@ -543,7 +543,11 @@ class WebMapServiceCatalogItem
       // Set dimensionParameters
       const dimensionParameters = formatDimensionsForOws(this.dimensions);
       if (time !== undefined) {
-        dimensionParameters.time = time;
+        if (this.timeMode !== "range" || !this.timeRangeTemplate) {
+          dimensionParameters.time = time;
+        } else {
+          dimensionParameters.time = this.timeRangeTemplate.replace(/\{date\}/g, time.split("T")[0]);    
+        }
       }
 
       // Construct parameters objects

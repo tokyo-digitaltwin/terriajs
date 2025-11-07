@@ -346,4 +346,18 @@ export default class WebMapServiceCatalogItemTraits extends mixTraits(
       "Additional parameters to pass WMS `GetFeatureInfo` requests. If `parameters` trait is also defined, this is applied on top. Dimension parameters are stored in `dimensions`."
   })
   getFeatureInfoParameters?: JsonObject;
+
+  @primitiveTrait({
+    type: "string",
+    name: "Time Mode",
+    description: "Choose between single time and time range."
+  })
+  timeMode?: "instant" | "range";
+
+  @primitiveTrait({
+    type: "string",
+    name: "Time Range Template",
+    description: "ISO time range format with (date) substitution"
+  })
+  timeRangeTemplate?: string;
 }
