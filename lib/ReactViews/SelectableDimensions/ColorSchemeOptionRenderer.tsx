@@ -103,6 +103,10 @@ function swatches(name: string | undefined) {
   if (!colors && name === "HighContrast") {
     colors = StandardCssColors.highContrast;
   }
+  // Handle custom TokyoDigitalTwin style
+  if (!colors && name === "TokyoDigitalTwin") {
+    colors = StandardCssColors.tokyoDigitalTwin;
+  }
   if (!colors) return <Invalid />;
   const n = colors.length;
   return (

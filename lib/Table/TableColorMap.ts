@@ -81,6 +81,8 @@ export const SEQUENTIAL_CONTINUOUS_SCALES = [
 ];
 
 export const QUALITATIVE_SCALES = [
+  // Note tokyoDigitalTwin is custom - see StandardCssColors.tokyoDigitalTwin
+  "TokyoDigitalTwin",
   // Note HighContrast is custom - see StandardCssColors.highContrast
   "HighContrast",
   "Category10",
@@ -656,6 +658,9 @@ export default class TableColorMap {
       // "HighContrast" is a custom additional palette
       if (this.colorTraits.colorPalette === "HighContrast") {
         colorScaleScheme = StandardCssColors.highContrast;
+      // "TokyoDigitalTwin" is a custom additional palette
+      } else if (this.colorTraits.colorPalette === "TokyoDigitalTwin") {
+        colorScaleScheme = StandardCssColors.tokyoDigitalTwin;
       } else {
         colorScaleScheme = (d3Scale as any)[
           `scheme${this.colorTraits.colorPalette}`
