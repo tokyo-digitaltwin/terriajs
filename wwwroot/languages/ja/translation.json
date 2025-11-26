@@ -285,6 +285,8 @@
     "addItemErrorTitle": "カタログのアイテムをワークベンチに追加できませんでした。",
     "toggleVisibility": "データの表示/非表示",
     "expandAll": "全て展開",
+    "disableAll": "すべて無効",
+    "enableAll": "すべて有効",
     "collapseAll": "全て折りたたむ",
     "removeAll": "すべて削除",
     "label": "データセット",
@@ -596,6 +598,7 @@
     "searchPlaceholder": "カタログから検索する",
     "searchPlaceholderWhole": "カタログ全体から検索する",
     "dataCatalogue": "データカタログ",
+    "data": "カタログから追加",
     "myData": "自分のデータを追加",
     "done": "完了",
     "closeDataPanel": "データパネルを閉じる",
@@ -1511,7 +1514,7 @@
     "commonModelErrors": {
       "datasetScaleErrorMessage": "データセット {{name}} はあまりズームすると表示されないようにデータ提供者が設定しています。データセットの情報ボタンをクリックしてよし詳細な情報を参照してください。",
       "datasetScaleErrorTitle": "このスケールではデータセットは表示されません",
-      "3dTypeIn2dMode": "**備考:** このデータセットは2Dビュワーでは表示できません。3D地図モードで表示してください。"
+      "3dTypeIn2dMode": "**備考:** このデータセットは2Dモードでは表示できません。3D地形モード/3D地形なしモードで表示してください。"
     },
     "openDataSoft": {
       "viewDatasetPage": "データセットのページを見る"
