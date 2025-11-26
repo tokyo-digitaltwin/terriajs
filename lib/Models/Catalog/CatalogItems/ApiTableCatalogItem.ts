@@ -22,6 +22,9 @@ import StratumOrder from "../../Definition/StratumOrder";
 import Terria from "../../Terria";
 import proxyCatalogItemUrl from "../proxyCatalogItemUrl";
 import JsonValue from "../../../Core/Json";
+import defined from "terriajs-cesium/Source/Core/defined";
+import { header } from "../../../ReactViews/FeatureInfo/feature-info-panel.scss";
+
 
 export class ApiTableStratum extends LoadableStratum(
   ApiTableCatalogItemTraits
@@ -89,11 +92,21 @@ export class ApiTableCatalogItem extends AutoRefreshingMixin(
     const apiUrls = apisWithUrl.map((api) =>
       proxyCatalogItemUrl(this, api.url!)
     );
+
+    const headers: any = {
+    };
+
+    if (this.headers !== undefined) {
+      this.headers.forEach(({ name, value }) => {
+        if (name !== undefined && value !== undefined) headers[name] = value;
+      });
+    }
+
     return Promise.all(
       apisWithUrl.map(async (api, idx) => {
         let data = await loadJson(
           apiUrls[idx],
-          undefined,
+          headers,
           api.requestData
             ? saveModelToJson(api.requestData as unknown as BaseModel)
             : undefined,
