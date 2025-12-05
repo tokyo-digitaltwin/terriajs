@@ -406,6 +406,15 @@ const SettingPanel: FC = observer(() => {
                     margin: 0 10px;
                     margin-top: 5px;
                   `}
+                  handleStyle={{
+                    backgroundColor: "white"
+                  }}
+                  trackStyle={{
+                    backgroundColor: "white"
+                  }}
+                  dotStyle={{
+                    backgroundColor: "white"
+                  }}
                 />
                 <Text mini>{t("settingPanel.performanceLabel")}</Text>
               </Box>
@@ -440,7 +449,7 @@ type IButtonProps = {
 };
 
 const SettingsButton = styled(Button)<IButtonProps>`
-  background-color: ${(props) => props.theme.overlay};
+  background-color: #2E5075;
   border: 1px solid
     ${(props) => (props.isActive ? "rgba(255, 255, 255, 0.5)" : "transparent")};
 `;

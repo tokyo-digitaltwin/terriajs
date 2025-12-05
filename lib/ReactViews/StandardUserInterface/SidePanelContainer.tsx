@@ -23,7 +23,7 @@ const SidePanelContainer = styled.div.attrs<PropsType>(({ viewState }) => ({
   top: ${(p) => p.theme.workbenchMargin}px;
   height: calc(100% - 2 * ${(p) => p.theme.workbenchMargin}px);
   z-index: 100;
-  background: ${(p) => p.theme.transparentDark};
+  background: linear-gradient(to bottom, #017881, #09315D);
   backdrop-filter: ${(p) => p.theme.blur};
   font-family: ${(p) => p.theme.fontPop}px;
   width: ${(p) => p.theme.workbenchWidth}px;

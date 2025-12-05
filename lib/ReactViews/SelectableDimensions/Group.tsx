@@ -81,5 +81,5 @@ export const SelectableDimensionGroup: FC<{
 const GroupContainer = styled.div`
   padding: 10px 12px;
   border-radius: 6px;
-  background: ${(p) => p.theme.overlay};
+  background: #577390;
 `;

@@ -192,7 +192,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
                 flex: 1;
               `}
             >
-              <StyledIcon glyph={Icon.GLYPHS.add} light styledWidth={"20px"} />
+              <StyledIcon glyph={Icon.GLYPHS.plus} light styledWidth={"20px"} />
             </SidePanelButton>
             <SidePanelButton
               ref={refForUploadData}

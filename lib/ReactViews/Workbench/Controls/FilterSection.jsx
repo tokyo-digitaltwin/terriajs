@@ -52,6 +52,13 @@ class FilterSection extends Component {
           min={filter.minimumValue}
           max={filter.maximumValue}
           onChange={this.change.bind(this, filter)}
+          handleStyle={[
+            {backgroundColor: "white"},
+            {backgroundColor: "white"}
+          ]}
+          trackStyle={[
+            {backgroundColor: "white"}
+          ]}
         />
       </div>
     );

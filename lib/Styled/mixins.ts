@@ -16,12 +16,12 @@ export const scrollBars = (props: MixinProps) => `
     }
 
     &::-webkit-scrollbar-track {
-      background: ${props.theme.scrollbarTrackColor};
+      background: rgba(255,255,255,0.1);
       border-radius: ${props.theme.radiusLarge};
     }
 
     &::-webkit-scrollbar-thumb {
-      background: ${props.theme.scrollbarColor};
+      background: rgba(255,255,255,0.6);
       border-radius: ${props.theme.radiusLarge}
     }`;
 
@@ -84,7 +84,7 @@ export const addTerriaPrimaryBtnStyles = (props: MixinProps) => `
   &:hover,
   &:focus {
     color: ${props.theme.textLight};
-    background: ${props.theme.colorPrimary};
+    background: #22466E;
   }
 `;
 
@@ -114,12 +114,13 @@ export const addTerriaTertiaryBtnStyles = (props: MixinProps) => `
 
 export const addTerriaMapBtnStyles = (props: MixinProps) => `
   color: ${props.theme.textLight};
-  background-color: ${props.theme.dark};
+  background-color: ${props.theme.colorPrimary};
   &:hover,
   &:focus,
   .is-open &,
   &.is-active {
-    background: ${props.theme.colorPrimary};
+    background: #1B426B;
+    opacity: 1;
   }
   svg {
     fill: ${props.theme.mapButtonColor};

@@ -115,7 +115,7 @@ class DataPreview extends Component {
                 Press <strong>Shift</strong> and click
               </span>
               <Icon
-                glyph={Icon.GLYPHS.add}
+                glyph={Icon.GLYPHS.plus}
                 css={{
                   height: "20px",
                   width: "20px",

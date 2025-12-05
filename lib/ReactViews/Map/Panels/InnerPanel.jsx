@@ -111,7 +111,7 @@ const InnerPanel = createReactClass({
           { [Styles.showDropdownInCenter]: this.props.showDropdownInCenter }
         )}
         css={`
-          background: ${(p) => p.theme.dark};
+          background: ${(p) => p.theme.colorPrimary};
         `}
         ref={this.props.innerRef}
         onClick={(e) => e.stopPropagation()}
@@ -166,7 +166,7 @@ const InnerPanel = createReactClass({
             className={classNames(Styles.caret, "tjs-sc-InnerPanel__caret")}
             style={{ left: this.props.caretOffset }}
             css={`
-              background: ${(p) => p.theme.dark};
+              background: ${(p) => p.theme.colorPrimary};
             `}
           />
         )}

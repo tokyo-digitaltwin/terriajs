@@ -22,7 +22,7 @@ interface IStyledWorkbenchButton {
 // styles half ripped from nav.scss
 const StyledWorkbenchButton = styled(RawButton)<IStyledWorkbenchButton>`
   border-radius: 3px;
-  background: ${(props) => props.theme.darkLighter};
+  background: ${(props) => props.theme.colorPrimary};
   color: ${(props) => props.theme.textLight};
   flex-grow: 1;
 

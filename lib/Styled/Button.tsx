@@ -93,7 +93,7 @@ export const StyledButton = styled.button<IStyledButtonProps>`
     `
     // background-color: #4d5766;
     background-color: ${props.theme.textLight};
-    color: ${props.theme.darkWithOverlay};
+    color: ${props.theme.colorPrimary};
     border-radius: 4px;
     border: 2px solid ${props.theme.darkWithOverlay};
   `}

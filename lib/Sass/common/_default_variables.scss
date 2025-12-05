@@ -28,7 +28,7 @@ $font-mono: monospace !default;
 $font-feature-info: $font-mono !default;
 $font: $font-base !default;
 
-$color-primary: #35a7c4 !default;
+$color-primary: #09315D !default;
 $color-primary-disabled: #595b60 !default;
 
 @function get-hover-color($base-color) {
@@ -126,10 +126,10 @@ $dropdown-hover-color: orange !default;
 
 $data-catalog-color: $text-black !default;
 
-$feature-info-bg: rgba($dark, 0.95) !default;
+$feature-info-bg: rgba(63, 72, 84, 0.95) !default;
 $feature-info-section-bg: $overlay !default;
 $feature-info-color: $text-light !default;
-$feature-info-header-bg: $dark !default;
+$feature-info-header-bg: #3f4854 !default;
 $feature-info-btn-color: $text-light !default;
 // $feature-info-table-odd-row-bg: lighten($feature-info-bg, 5%) !default; // Optionally define for stripy tables.
 $feature-info-table-border-style: 1px solid $dark !default;
@@ -220,7 +220,7 @@ $legend-item-height: 16px !default;
 $legend-padding: calc($legend-item-height / 2) !default;
 $legend-spacer-height: calc($legend-padding / 2) !default;
 
-$tool-primary-color: $color-primary !default;
+$tool-primary-color: #519AC2 !default;
 
-$scrollbar-color: $color-primary !default;
-$scrollbar-track-color: transparent !default;
+$scrollbar-color: rgba(136,136,136,0.6) !default;
+$scrollbar-track-color: rgba(136,136,136,0.1) !default;

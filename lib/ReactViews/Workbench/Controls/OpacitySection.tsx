@@ -56,6 +56,12 @@ class OpacitySection extends Component<OpacitySectionProps> {
           max={100}
           value={(item.opacity * 100) | 0}
           onChange={this.changeOpacity}
+          handleStyle={{
+            backgroundColor: "white"
+          }}
+          trackStyle={{
+            backgroundColor: "white"
+          }}
         />
       </Box>
     );

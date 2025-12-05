@@ -209,6 +209,9 @@ const WorkbenchItemControls: FC<WorkbenchItemControlsProps> = observer(
                     value={i}
                     onChange={handleSwitchableUrlChange}
                     checked={urlIndex === i}
+                    css={`
+                      accent-color: #0061DF;
+                    `}
                   />
                   {su.name}
                 </label>

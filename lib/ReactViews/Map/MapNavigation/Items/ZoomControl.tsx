@@ -218,7 +218,7 @@ class ZoomControlBase extends Component<PropTypes> {
 }
 
 const StyledZoomControl = styled(Box).attrs((props) => ({
-  backgroundColor: props.theme.dark,
+  backgroundColor: "white",
   centered: true,
   column: true,
   styledWidth: "32px",
@@ -229,7 +229,7 @@ const StyledZoomControl = styled(Box).attrs((props) => ({
   svg {
     height: 20px;
     width: 20px;
-    fill: ${(props) => props.theme.grey};
+    fill: #3A5A7D;
   }
   ${Li} {
     margin: 5px 0;
