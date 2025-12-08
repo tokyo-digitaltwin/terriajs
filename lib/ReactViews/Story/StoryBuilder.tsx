@@ -481,7 +481,7 @@ class StoryBuilder extends Component<
         ref={(component: HTMLElement) => (this.refToMeasure = component)}
         isVisible={this.props.isVisible}
         isHidden={!this.props.isVisible}
-        backgroundColor={this.props.theme.dark}
+        charcoalGreyBg
         column
       >
         <Box right>
