@@ -221,6 +221,9 @@ class StoryEditor extends Component {
               textProps={{
                 medium: true
               }}
+              css={`
+                border: 1px solid #e4e5e7; 
+                `}
             >
               {t("story.editor.saveStory")}
             </Button>

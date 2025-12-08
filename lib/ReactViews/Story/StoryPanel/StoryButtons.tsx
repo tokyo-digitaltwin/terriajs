@@ -52,7 +52,7 @@ export const ExitBtn = ({ onClick }: BtnProp) => {
 };
 
 export const StoryIcon = styled(StyledIcon).attrs(() => ({
-  fillColor: "white",
+  fillColor: "#595b60",
   opacity: 0.5
 }))`
   &:hover {

@@ -109,7 +109,7 @@ const ItemTitleButton = styled(RawButton)<{
 
   &:focus,
   &:hover {
-    color: ${(p) => p.theme.modalHighlight};
+    color: #62A4C8;
   }
 
   ${(p) => p.selected && `color: ${p.theme.modalHighlight};`}

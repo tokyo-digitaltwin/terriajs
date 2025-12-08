@@ -271,7 +271,7 @@ const Story = (props: Props) => {
           padded
           verticalCenter
           styledHeight={"57px"}
-          backgroundColor={theme.darkWithOverlay}
+          backgroundColor={"#3A5A7D"}
           rounded
           css={`
             padding-left: 15px;

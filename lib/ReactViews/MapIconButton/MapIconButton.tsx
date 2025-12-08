@@ -42,7 +42,7 @@ const StyledMapIconButton = styled(RawButton)<IStyledMapIconButtonProps>`
     width: 20px;
     margin: 0 auto;
     vertical-align: middle;
-    fill: $#3E4959;
+    fill: #4D5766;
   }
 
   ${(props) =>

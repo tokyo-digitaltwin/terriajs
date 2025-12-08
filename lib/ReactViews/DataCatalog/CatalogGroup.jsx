@@ -15,7 +15,7 @@ const CatalogGroupButton = styled.button`
     &:hover,
     &:focus {
       color: ${props.theme.textLight};
-      background-color: ${props.theme.modalHighlight};
+      background-color: #62A4C8;
       svg {
         fill: white;
       }
@@ -24,7 +24,7 @@ const CatalogGroupButton = styled.button`
       props.active &&
       `
         color: ${props.theme.textLight};
-        background-color: ${props.theme.modalHighlight};
+        background-color: #62A4C8;
         svg {
           fill: white;
         }

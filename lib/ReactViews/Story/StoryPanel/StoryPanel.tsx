@@ -276,8 +276,8 @@ class StoryPanel extends Component<Props, State> {
             `}
           >
             <Box
-              backgroundColor={this.props.theme.dark}
-              css={{ color: "white" }}
+              backgroundColor={"#FFFFFF"}
+              css={{ color: this.props.theme.textDark }}
               paddedRatio={3}
               column
             >
@@ -297,8 +297,8 @@ class StoryPanel extends Component<Props, State> {
               <StoryBody isCollapsed={this.state.isCollapsed} story={story} />
             </Box>
             <Box
-              backgroundColor={this.props.theme.dark}
-              css={{ color: "white" }}
+              backgroundColor={"#FFFFFF"}
+              css={{ color: this.props.theme.textDark }}
               paddedHorizontally={3}
               fullWidth
             >
