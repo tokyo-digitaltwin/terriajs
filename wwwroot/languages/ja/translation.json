@@ -560,6 +560,7 @@
   },
   "location": {
     "centreMap": "自位置に地図を寄せる",
+    "permissionDenied": "位置情報を取得する許可が拒否されました。ブラウザの設定を確認してください。",
     "originError": "HTTPSを利用しないとブラウザが位置情報を提供できません。代わりに {{secureUrl}} が利用できるかもしれません。",
     "location": "位置",
     "myLocation": "自位置",
