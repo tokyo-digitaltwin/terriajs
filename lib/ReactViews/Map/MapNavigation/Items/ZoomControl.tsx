@@ -229,7 +229,7 @@ const StyledZoomControl = styled(Box).attrs((props) => ({
   svg {
     height: 20px;
     width: 20px;
-    fill: #3A5A7D;
+    fill: ${(props) => props.theme.darkBluePurple};
   }
   ${Li} {
     margin: 5px 0;

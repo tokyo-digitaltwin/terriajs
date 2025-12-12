@@ -71,6 +71,33 @@ const NotificationWindow = createReactClass({
     };
     const isStory = type === "story";
 
+    const getButtonCss = () => {
+      if (isStory) 
+        return {
+          backgroundColor: this.props.theme.colorPrimary,
+          border: "1px solid white"
+        };
+
+      return {
+        backgroundColor: "#8498AE"  
+      };
+    };
+
+    const getDenyButtonCss = () => {
+      if (isStory) 
+        return {
+          backgroundColor: this.props.theme.colorPrimary,
+          border: "1px solid white",
+          color: "white"
+        };
+
+      return {
+        backgroundColor: "#8498AE",
+        border: "none",
+        color: "white"
+      };
+    };
+
     return (
       <div className={classNames(Styles.wrapper, `${type}`)}>
         <div
@@ -78,7 +105,7 @@ const NotificationWindow = createReactClass({
           // eslint-disable-next-line react/no-unknown-property
           isStory={isStory}
           css={`
-            background: ${(p) => p.theme.dark};
+            background: ${(p) => p.theme.colorPrimary};
             a,
             a:visited {
               color: ${(p) => p.theme.primary};
@@ -98,11 +125,7 @@ const NotificationWindow = createReactClass({
           <div className={Styles.footer}>
             {denyText && (
               <Button
-                css={{
-                  backgroundColor: this.props.theme.darkLighter,
-                  border: "none",
-                  color: "white"
-                }}
+                css={getDenyButtonCss()}
                 onClick={this.deny}
                 textProps={{
                   medium: true
@@ -118,6 +141,7 @@ const NotificationWindow = createReactClass({
               textProps={{
                 medium: true
               }}
+              css={getButtonCss()}
             >
               {confirmText}
             </Button>

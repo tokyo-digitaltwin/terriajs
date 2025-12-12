@@ -253,7 +253,7 @@ const Story = (props: Props) => {
       <Box
         ref={storyRef}
         column
-        backgroundColor={theme.darkWithOverlay}
+        backgroundColor={theme.darkBluePurple}
         rounded
         css={`
           cursor: move;
@@ -271,7 +271,6 @@ const Story = (props: Props) => {
           padded
           verticalCenter
           styledHeight={"57px"}
-          backgroundColor={"#3A5A7D"}
           rounded
           css={`
             padding-left: 15px;

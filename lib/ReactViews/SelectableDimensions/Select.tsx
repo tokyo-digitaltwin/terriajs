@@ -49,9 +49,9 @@ export const SelectableDimensionEnum: FC<{
           ...baseStyles,
           borderColor: theme.darkLighter
         }),
-        option: (baseStyles) => ({
+        option: (baseStyles, props) => ({
           ...baseStyles,
-          color: "white"
+          color: props.isSelected ? "white" : "black"
         })
       }}
       options={options}
@@ -67,10 +67,10 @@ export const SelectableDimensionEnum: FC<{
         ...selectTheme,
         colors: {
           ...selectTheme.colors,
-          neutral0: theme.darkLighter,
+          neutral0: "white",
           neutral10: theme.grey,
           neutral20: theme.grey,
-          neutral80: "white",
+          neutral80: "black",
           primary25: theme.grey,
           primary50: theme.colorPrimary,
           primary75: theme.colorPrimary,

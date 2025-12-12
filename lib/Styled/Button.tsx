@@ -84,10 +84,7 @@ export const StyledButton = styled.button<IStyledButtonProps>`
     border: none;
     border-radius:4px;
   `}
-  ${(props) => props.rounded && ` border-radius: 32px; `}
-  ${(props) => props.roundLeft && `border-radius: 32px 0 0 32px;`}
-  ${(props) => props.roundRight && `border-radius: 0 32px 32px 0;`}
-
+  
   ${(props) =>
     props.secondary &&
     `
@@ -97,6 +94,11 @@ export const StyledButton = styled.button<IStyledButtonProps>`
     border-radius: 4px;
     border: 2px solid ${props.theme.darkWithOverlay};
   `}
+  
+  ${(props) => props.rounded && ` border-radius: 32px; `}
+  ${(props) => props.roundLeft && `border-radius: 32px 0 0 32px;`}
+  ${(props) => props.roundRight && `border-radius: 0 32px 32px 0;`}
+  
   ${(props) =>
     props.denyButton &&
     `

@@ -7,6 +7,7 @@ declare namespace VariablesExportScssNamespace {
     compassWidth: string;
     dark: string;
     darkAlpha: string;
+    darkBluePurple: string;
     darkLighter: string;
     darkMid: string;
     darkWithOverlay: string;

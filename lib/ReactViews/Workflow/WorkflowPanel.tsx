@@ -116,6 +116,7 @@ const Container = styled.div`
   max-width: ${(p) => p.theme.workflowPanelWidth}px;
   box-sizing: border-box;
   padding: 0 0 5px;
+  background: linear-gradient(to bottom, #017881, #09315D);
 `;
 
 const TitleBar = styled.div`
@@ -147,7 +148,23 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 0;
-  ${(p) => scrollBars(p)}
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    width: 5px; /* for vertical scrollbars */
+    height: 8px; /* for horizontal scrollbars */
+  }
+
+  &::-webkit-scrollbar-track {
+    background: ${(props) => props.theme.scrollbarTrackColor};
+    border-radius: $${(props) => props.theme.radiusLarge};
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${(props) => props.theme.scrollbarColor};
+    border-radius: ${(props) => props.theme.radiusLarge};
+  }
+
 `;
 
 const CloseIconButton = styled(Button).attrs({
@@ -168,6 +185,8 @@ const CloseTextButton = styled(Button).attrs({
   primary: true
 })`
   font-size: 14px;
+  background-color: white;
+  color: ${(p) => p.theme.darkBluePurple};
 `;
 
 const Error = styled.div`

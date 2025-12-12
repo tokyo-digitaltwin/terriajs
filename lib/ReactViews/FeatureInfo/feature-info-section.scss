@@ -6,7 +6,7 @@
 .section {
   composes: clearfix from "../../Sass/common/_base.scss";
   background: variables.$feature-info-section-bg;
-  border-top: 1px solid #3a5a7d;
+  border-top: 1px solid variables.$dark-blue-purple;
 }
 
 .title {

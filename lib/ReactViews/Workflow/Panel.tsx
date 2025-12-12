@@ -91,10 +91,11 @@ export const PanelButton: FC<{ onClick: () => void; title: string }> = ({
 );
 
 const Wrapper = styled.div`
-  background-color: ${(p) => p.theme.darkWithOverlay};
+  background-color: ${(p) => p.theme.darkBluePurple};
   margin: 15px 15px 0px 15px;
   padding: 15px;
   border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 `;
 
 const TitleBar = styled.div`

@@ -194,7 +194,7 @@ class FeedbackForm extends Component<IProps, IState> {
       : undefined;
     return (
       <FormWrapper>
-        <Box backgroundColor={theme.darkLighter} paddedRatio={2}>
+        <Box backgroundColor={theme.darkBluePurple} paddedRatio={2}>
           <Text
             textLight
             textAlignCenter

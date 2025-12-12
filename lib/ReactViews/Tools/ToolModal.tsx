@@ -63,7 +63,7 @@ export const Main = styled(Text)`
   overflow-y: auto;
   ${({ theme }) => scrollBars({ theme })}
   border-radius: ${({ theme }) => `0 0 ${theme.radiusXL} ${theme.radiusXL}`};
-  background-color: #3A5A7D;
+  background-color: ${(p) => p.theme.darkBluePurple};;
   min-height: 350px;
 `;
 

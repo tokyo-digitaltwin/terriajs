@@ -290,8 +290,7 @@ class StoryPanel extends Component<Props, State> {
             </Box>
             <Box
               css={{
-                backgroundColor: "rgba(255, 255, 255, 0.85)",
-                backdropFilter: this.props.theme.blur
+                backgroundColor: "#FFFFFF"
               }}
             >
               <StoryBody isCollapsed={this.state.isCollapsed} story={story} />
