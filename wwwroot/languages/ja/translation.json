@@ -129,6 +129,9 @@
     "exitBtn": "ストーリーを終了",
     "locationBtn": "シーンの中心に移動",
     "editor": {
+      "modalHeader": "ストーリーエディタ - シーンをキャプチャ",
+      "titleLabel": "タイトル (必須)",
+      "descriptionLabel": "説明",
       "saveStory": "保存",
       "saveBtn": "保存",
       "cancelEditing": "キャンセル",
