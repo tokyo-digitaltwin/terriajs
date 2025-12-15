@@ -85,7 +85,7 @@ const StoryMenuButton = styled(RawButton)`
 
   border-radius: 0;
 
-  width: 124px;
+  width: 140px;
   // ensure we support long strings
   min-height: 32px;
   display: block;
