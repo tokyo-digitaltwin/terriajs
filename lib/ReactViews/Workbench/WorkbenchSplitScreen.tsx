@@ -34,7 +34,7 @@ const WorkbenchSplitScreen: FC<IWorkbenchSplitScreenProps> = observer(
           fullWidth
           column
           css={`
-            background: ${theme.darkWithOverlay};
+            background: ${theme.darkBluePurple};
             color: ${theme.textLight};
             border-radius: 2px;
             flex-basis: 145px;

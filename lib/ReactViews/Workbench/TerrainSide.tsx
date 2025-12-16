@@ -104,7 +104,7 @@ const TerrainSide: FC<ITerrainSideProps> = observer(
               key={side}
               onClick={(evt: any) => showTerrainOnSide(side, evt)}
               css={`
-                background: ${theme.overlay};
+                background: #577390;
                 padding: 14px 0;
                 display: flex;
                 align-items: center;
