@@ -44,33 +44,37 @@ class OpacitySection extends Component<OpacitySectionProps> {
       return null;
     }
     return (
-      <Box verticalCenter paddedHorizontally={3} paddedVertically={2}>
-        <StyledLabel medium htmlFor="opacity">
-          {t("workbench.opacity", {
-            opacity: Math.round(item.opacity * 100)
-          })}
-        </StyledLabel>
-        <Spacing right={3} />
-        <Slider
-          min={0}
-          max={100}
-          value={(item.opacity * 100) | 0}
-          onChange={this.changeOpacity}
-          handleStyle={{
-            backgroundColor: "white"
-          }}
-          trackStyle={{
-            backgroundColor: "white"
-          }}
-        />
-      </Box>
+      <>
+        <Spacing bottom={2} />
+        <Box>
+          <StyledLabel medium htmlFor="opacity">
+            {t("workbench.opacity", {
+              opacity: Math.round(item.opacity * 100)
+            })}
+          </StyledLabel>
+          
+          <Spacing right={3} />
+          <Slider
+            min={0}
+            max={100}
+            value={(item.opacity * 100) | 0}
+            onChange={this.changeOpacity}
+            handleStyle={{
+              backgroundColor: "white"
+            }}
+            trackStyle={{
+              backgroundColor: "white"
+            }}
+          />
+        </Box>
+      </>
     );
   }
 }
 
 const StyledLabel = styled(Text).attrs({ as: "label" })<{ htmlFor: string }>`
   white-space: nowrap;
-  flex-basis: 50%;
+  flex: 0 0 40%;
 `;
 
 export default withTranslation()(withTheme(OpacitySection));

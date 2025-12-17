@@ -160,7 +160,7 @@ const WorkbenchItemRaw: React.FC<IProps> = observer((props) => {
       {isOpen && (
         <Box
           column
-          gap={3}
+          gap={0}
           paddedRatio={3}
           css={{
             borderTop: `1px solid ${theme.grey}`,

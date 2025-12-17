@@ -94,7 +94,7 @@ const PanelMenuItem = styled.button`
   padding: 8px 10px;
   border: 0;
   border-radius: 2px;
-  background-color: ${(p) => p.theme.dark};
+  background-color: ${(p) => p.theme.colorPrimary};
 
   :disabled > ${Text} {
     color: ${(p) => p.theme.textLightDimmed};
@@ -120,7 +120,7 @@ const PanelMenuButton = styled.button<{ isOpen: boolean }>`
     height: 16px;
   }
 
-  ${(p) => p.isOpen && `background-color: ${p.theme.dark}`};
+  ${(p) => p.isOpen && `background-color: ${p.theme.colorPrimary}`};
 
   :hover {
     cursor: pointer;
