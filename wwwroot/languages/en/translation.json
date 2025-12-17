@@ -66,6 +66,16 @@
     "areaMeasureAttention": "*Caution: Area measurement is not possible when polygons intersect.",
     "areaMeasureNotify": "*To cancel a point that has already been selected, click on that point."
   },
+  "sdkHeight": {
+    "sdkHeightPlugin": "Height measurement",
+    "sdkHeightPluginName": "Height measure",
+    "sdkHeightPluginTooltip": "Measure height above ground",
+    "sdkHeightPluginNoteTitle": "Height Measurement Tool",
+    "sdkHeightPluginNoteMessage": "Click to specify the point from which to measure the height above the ground",
+    "sdkHeightPluginDone": "Done",
+    "sdkHeightPluginCancel": "Cancel",
+    "sdkHeightPluginHeight": "Height: "
+  },
   "location": {
     "errorGettingLocation": "Error getting location",
     "browserCannotProvide": "Your browser cannot provide your location.",

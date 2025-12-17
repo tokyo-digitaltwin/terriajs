@@ -61,6 +61,16 @@
     "btnRealign": "手動による並びに固定",
     "btnHover": "ホバーする高さを固定"
   },
+  "sdkHeight": {
+    "sdkHeightPlugin": "高さの計測",
+    "sdkHeightPluginName": "高さを計測する",
+    "sdkHeightPluginTooltip": "地表からの高さを計測します",
+    "sdkHeightPluginNoteTitle": "高さ計測ツール",
+    "sdkHeightPluginNoteMessage": "高さ計測ツールクリックして地表からの高さを計測する地点を指定",
+    "sdkHeightPluginDone": "了解",
+    "sdkHeightPluginCancel": "キャンセル",
+    "sdkHeightPluginHeight": "高さ: "
+  },
   "compass": {
     "title": "クリック＋ドラッグでカメラを回転",
     "guidanceBtnText": "コンパスの詳しい使い方を見る",
