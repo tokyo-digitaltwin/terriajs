@@ -42,29 +42,37 @@
        cx="49"
        cy="16"
        r="1"
-       id="circle293" />
+       id="circle293" 
+       fill="#3A5A7D"
+       />
     <circle
        cx="51"
        cy="48"
        r="1"
-       id="circle295" />
+       id="circle295" 
+       fill="#3A5A7D"
+       />
     <circle
        cx="13"
        cy="48"
        r="1"
-       id="circle297" />
+       id="circle297" 
+       fill="#3A5A7D"
+       />
     <circle
        cx="13"
        cy="16"
        r="1"
-       id="circle299" />
+       id="circle299" 
+       fill="#3A5A7D"
+       />
     <path
        d="M 29.976156,11.301093 V 7.1188528 c 0,-0.5061839 -0.04071,-1.3525897 -0.124386,-2.5392175 h 0.0588 l 4.215556,6.7214577 h 2.609845 V 2.4159067 H 34.886013 V 6.620967 c 0,0.4771405 0.03392,1.294503 0.09951,2.4479384 H 34.94029 L 30.733781,2.4159067 h -2.591753 v 8.8851863 h 1.83639 z"
        fill-rule="nonzero"
        id="path301"
        style="stroke-width:2.16603" />
     <path
-       stroke="#3E4553"
+       stroke="#3F3F3F"
        stroke-linecap="round"
        d="M32 55v4M55 32h4M5 32h4"
        id="path303" />

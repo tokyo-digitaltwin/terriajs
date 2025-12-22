@@ -129,6 +129,9 @@
     "exitBtn": "ストーリーを終了",
     "locationBtn": "シーンの中心に移動",
     "editor": {
+      "modalHeader": "ストーリーエディタ - シーンをキャプチャ",
+      "titleLabel": "タイトル (必須)",
+      "descriptionLabel": "説明",
       "saveStory": "保存",
       "saveBtn": "保存",
       "cancelEditing": "キャンセル",
@@ -251,16 +254,24 @@
     "groupEmpty": "このグループは空です",
     "groupRemove": "グループを削除"
   },
-  "emptyWorkbench": {
-    "emptyArea": "「データを追加」ボタンから、表示するデータを追加できます",
-    "helpfulHintsThree": "一旦読み込んだデータは、表示・非表示の切り替え、不透明度の調整、画面分割比較モードへの移行、スタイルの変更ができるほか、対応しているデータでは日時の変更も行えます。",
-    "helpfulHintsTwo": "データを地図に追加すると、データセットがここにリストされます。",
-    "helpfulHintsOne": "「データを追加」 を選択して登録済みのデータを探すか、「ローカルデータ」 で手元のデータを地図に追加します。",
-    "helpfulHints": "使い方"
-  },
   "loader": {
     "loadingMessage": "読み込み中"
   },
+  "emptyWorkbenchInfo": [
+    {
+      "heading": ""
+    },
+    {
+      "heading": "「データを追加」ボタンから、表示するデータを追加できます"
+    },
+    {
+      "heading": ""
+    },
+    {
+      "heading": "使い方",
+      "body": "「データを追加」 を選択して登録済みのデータを探すか、「ローカルデータ」 で手元のデータを地図に追加します。"
+    }
+  ],
   "dragDrop": {
     "not": "<0>bbbb</0>",
     "text": "<0>ドラッグ&ドロップ</0><1>してあなたのデータをマップに表示<1>"
@@ -277,6 +288,8 @@
     "addItemErrorTitle": "カタログのアイテムをワークベンチに追加できませんでした。",
     "toggleVisibility": "データの表示/非表示",
     "expandAll": "全て展開",
+    "disableAll": "すべて無効",
+    "enableAll": "すべて有効",
     "collapseAll": "全て折りたたむ",
     "removeAll": "すべて削除",
     "label": "データセット",
@@ -367,7 +380,7 @@
     "viewMore": "検索結果をさらに表示",
     "viewLess": "検索結果を少なく表示",
     "search": "データカタログで '{{searchText}}' を検索",
-    "searchInDataCatalog": "データカタログで 「{{locationSearchText}}」 を検索",
+    "searchInDataCatalog": "データカタログで「{{locationSearchText}}」を検索",
     "data": "データ",
     "done": "終了",
     "resultsLabel": "検索結果"
@@ -549,12 +562,15 @@
     "zoomIn": "ズームイン"
   },
   "location": {
-    "centreMap": "自位置に地図を寄せる",
-    "originError": "HTTPSを利用しないとブラウザが位置情報を提供できません。代わりに {{secureUrl}} が利用できるかもしれません。",
-    "location": "位置",
+    "errorGettingLocation": "位置情報の取得中にエラーが発生しました。",
+    "browserCannotProvide": "お使いのブラウザでは位置情報を取得できません。",
     "myLocation": "自位置",
-    "browserCannotProvide": "ブラウザが位置情報を提供できません。",
-    "errorGettingLocation": "位置を取得する際にエラー発生"
+    "location": "位置",
+    "originError": "HTTPSを利用しないとブラウザが位置情報を提供できません。代わりに {{secureUrl}} が利用できるかもしれません。",
+    "centreMap": "自位置に地図を寄せる",
+    "permissionDenied": "位置情報を取得する許可が拒否されました。ブラウザの設定を確認してください。",
+    "positionUnavailable": "位置情報を取得できません。",
+    "timeout": "位置情報の取得に時間がかかりすぎました。しばらくしてからもう一度お試しください。"
   },
   "measure": {
     "measureDistance": "距離を計測します",
@@ -588,6 +604,7 @@
     "searchPlaceholder": "カタログから検索する",
     "searchPlaceholderWhole": "カタログ全体から検索する",
     "dataCatalogue": "データカタログ",
+    "data": "カタログから追加",
     "myData": "自分のデータを追加",
     "done": "完了",
     "closeDataPanel": "データパネルを閉じる",
@@ -731,7 +748,8 @@
     "searchAddresses": "住所",
     "searchErrorOccurred": "検索中にエラーが発生しました。インターネット接続を確認するか後でやり直してください。",
     "searchMinCharacters": " {{count}} 文字以上入力してください。",
-    "searchMinCharacters_plural": " {{count}} 文字以上入力してください。"
+    "searchMinCharacters_plural": " {{count}} 文字以上入力してください。",
+    "searchMinCharacters_0": "最低限 {{count}} 文字を入力してください"
   },
   "chart": {
     "download": "ダウンロード",
@@ -742,7 +760,6 @@
     "noData": "チャート化できるデータがありません。",
     "showItemInChart": "チャートで {{value}} を表示"
   },
-  "emptyWorkbenchMessage": "<0><0>「データを追加」ボタンから、表示するデータを追加できます。</0><1><strong>上の「$t(addData.addDataBtnText)」をクリック</strong>して</1><2><0>データカタログを開き、</0><1>データを地図上に展開できます</1></2><3><0></0><strong>使い方：</strong><2>アクティブなデータセットはすべてここに表示されます</2></3></0>",
   "concept": {
     "summary": {
       "addFirstText": "新しい条件を追加",
@@ -1268,7 +1285,7 @@
       "name": "Socrata サーバー"
     },
     "shareData": {
-      "expandErrorMessage": "{{appName}} を起動するためために利用する共有データサービスが見つかりません。リンクのエラーか現在サービスが使えない可能性があります。",
+      "expandErrorMessage": "{{appName}} を起動するために利用する共有データサービスが見つかりません。リンクのエラーか現在サービスが使えない可能性があります。",
       "expandErrorTitle": "URLを展開できません",
       "generateErrorMessage": "短縮URLを生成するための共有データサービスを利用する際に問題が発生しました。",
       "generateErrorTitle": "短縮URLを生成できませんでした。"
@@ -1488,7 +1505,7 @@
       "loadingInitSourceError2Message": "以下から初期化情報を読み込む際にエラー発生:  \n*`{{loadSource}}`*.",
       "loadingInitSourceErrorMessage": "`{{fragment}}` から初期化情報を読み込めませんでした。initFragmentPaths が定義されていません。",
       "loadingInitSourceErrorTitle": "初期化リソース読み込み時エラー",
-      "loadingInitSourcesErrorMessage": "{{appName}} の地図設定の読み込み時にエラーが発生しました。地図を再度読み込んで下さい。問題が解決しない場合、「 {{email}} 」にエラーを報告するか、「ご意見・ご要望」ボタンをクリックしてください。",
+      "loadingInitSourcesErrorMessage": "{{appName}} の地図設定の読み込み時にエラーが発生しました。地図を再度読み込んで下さい。問題が解決しない場合、 {{email}} にエラーを報告するか、「ご意見・ご要望」ボタンをクリックしてください。",
       "loadingInitSourcesErrorTitle": "地図設定読み込み時のエラー",
       "loadingMagdaInitSourceErrorMessage": "Magda レコード `{{url}}` から初期化情報を読み込み時にエラー発生。",
       "loadingMagdaInitSourceErrorTitle": "Magdaの初期化ソース読み込み時のエラー",
@@ -1503,7 +1520,7 @@
     "commonModelErrors": {
       "datasetScaleErrorMessage": "データセット {{name}} はあまりズームすると表示されないようにデータ提供者が設定しています。データセットの情報ボタンをクリックしてよし詳細な情報を参照してください。",
       "datasetScaleErrorTitle": "このスケールではデータセットは表示されません",
-      "3dTypeIn2dMode": "**備考:** このデータセットは2Dビュワーでは表示できません。3D地図モードで表示してください。"
+      "3dTypeIn2dMode": "**備考:** このデータセットは2Dモードでは表示できません。3D地形モード/3D地形なしモードで表示してください。"
     },
     "openDataSoft": {
       "viewDatasetPage": "データセットのページを見る"
@@ -2229,6 +2246,15 @@
     "colorAdd": "追加",
     "colorRemove": "削除",
     "invalid": "無効"
+  },
+  "searchProvider": {
+    "models": {
+      "idForMatchingErrorTitle": "欠損属性",
+      "idForMatchingErrorMessage": "モデルオブジェクトは `id`, `localId`, または `name` 属性を持つ必要があります。",
+      "unsupportedTypeTitle": "不明タイプ",
+      "unsupportedTypeMessage": "不明モデルタイプ {{type}}は作成できません。"
+    },
+    "noSearchProviders": "検索プロバイダが設定されていません"
   },
   "downloadControls": {
     "ariaDownloadUnselected": "複数範囲をダウンロード",

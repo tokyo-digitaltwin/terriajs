@@ -1,6 +1,5 @@
 import CommonStrata from "../../lib/Models/Definition/CommonStrata";
 import MagdaReference from "../../lib/Models/Catalog/CatalogReferences/MagdaReference";
-import { BaseModel } from "../../lib/Models/Definition/Model";
 import Terria from "../../lib/Models/Terria";
 import WebMapServiceCatalogItem from "../../lib/Models/Catalog/Ows/WebMapServiceCatalogItem";
 import Workbench from "../../lib/Models/Workbench";
@@ -222,7 +221,7 @@ describe("Workbench", function () {
     expect(workbench.itemIds).toEqual(["A", "B", "C"]);
   });
 
-  it("remove item", async function () {
+  it("remove item", function () {
     workbench.items = [item1, item2, item3];
 
     workbench.remove(item2);

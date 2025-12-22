@@ -1,13 +1,11 @@
 import classNames from "classnames";
-import { TFunction } from "i18next";
 import { action, reaction, runInAction, makeObservable } from "mobx";
 import { disposeOnUnmount, observer } from "mobx-react";
-import React from "react";
-import { withTranslation } from "react-i18next";
+import { Component } from "react";
+import { withTranslation, TFunction } from "react-i18next";
 import Cartesian3 from "terriajs-cesium/Source/Core/Cartesian3";
 import Ellipsoid from "terriajs-cesium/Source/Core/Ellipsoid";
 import CesiumMath from "terriajs-cesium/Source/Core/Math";
-import DataSource from "terriajs-cesium/Source/DataSources/DataSource";
 import Entity from "terriajs-cesium/Source/DataSources/Entity";
 import flatten from "../../Core/flatten";
 import isDefined from "../../Core/isDefined";
@@ -21,7 +19,6 @@ import TerriaFeature from "../../Models/Feature/Feature";
 import {
   addMarker,
   isMarkerVisible,
-  LOCATION_MARKER_DATA_SOURCE_NAME,
   removeMarker
 } from "../../Models/LocationMarkerUtils";
 import Terria from "../../Models/Terria";
@@ -32,8 +29,7 @@ import Loader from "../Loader";
 import { withViewState } from "../Context";
 import Styles from "./feature-info-panel.scss";
 import FeatureInfoCatalogItem from "./FeatureInfoCatalogItem";
-
-const DragWrapper = require("../DragWrapper");
+import DragWrapper from "../Drag/DragWrapper";
 
 interface Props {
   viewState: ViewState;
@@ -42,7 +38,7 @@ interface Props {
 }
 
 @observer
-class FeatureInfoPanel extends React.Component<Props> {
+class FeatureInfoPanel extends Component<Props> {
   constructor(props: Props) {
     super(props);
     makeObservable(this);
@@ -115,7 +111,7 @@ class FeatureInfoPanel extends React.Component<Props> {
     catalogItems: MappableMixin.Instance[],
     featureMap: Map<string, TerriaFeature[]>
   ) {
-    return catalogItems.map((catalogItem, i) => {
+    return catalogItems.map((catalogItem, _i) => {
       // From the pairs, select only those with this catalog item, and pull the features out of the pair objects.
       const features =
         (catalogItem.uniqueId
@@ -328,7 +324,7 @@ class FeatureInfoPanel extends React.Component<Props> {
     ) : null;
 
     return (
-      <DragWrapper>
+      <DragWrapper handleSelector=".drag-handle">
         <div
           className={panelClassName}
           aria-hidden={!viewState.featureInfoPanelIsVisible}
@@ -370,13 +366,11 @@ class FeatureInfoPanel extends React.Component<Props> {
               viewState.featureInfoPanelIsVisible ? (
                 // Are picked features loading -> show Loader
                 isDefined(terria.pickedFeatures) &&
-                terria.pickedFeatures.isLoading ? (
+                terria.pickedFeatures.isLoading ? ( // Do we have no features/catalog items to show?
                   <li>
                     <Loader light />
                   </li>
-                ) : // Do we have no features/catalog items to show?
-
-                featureInfoCatalogItems.length === 0 ? (
+                ) : featureInfoCatalogItems.length === 0 ? (
                   <li className={Styles.noResults}>
                     {this.getMessageForNoResults()}
                   </li>

@@ -31,6 +31,22 @@ export class ApiTableRequestTraits extends mixTraits(ApiRequestTraits) {
   columnMajorColumnNames?: string[] = ["value"];
 }
 
+export class HeadersTraits extends ModelTraits {
+  @primitiveTrait({
+    name: "Name",
+    description: "The header name",
+    type: "string"
+  })
+  name?: string;
+
+  @primitiveTrait({
+    name: "Value",
+    description: "The header value",
+    type: "string"
+  })
+  value?: string;
+}
+
 export class ApiTableColumnTraits extends ModelTraits {
   @primitiveTrait({
     name: "Name",
@@ -61,6 +77,12 @@ export class ApiTableColumnTraits extends ModelTraits {
         timeColumn: "sensing_datetime"
       }
     },
+    headers: [
+      {
+        name: "Authorization",
+        value: "apikey put-a-real-api-key-here"
+      }
+    ],
     initialTimeSource: "stop",
     columns: [
       {
@@ -112,6 +134,14 @@ export default class ApiTableCatalogItemTraits extends mixTraits(
     idProperty: "url"
   })
   apis: ApiTableRequestTraits[] = [];
+
+  @objectArrayTrait({
+    name: "Headers",
+    description: "Extra headers to attach to queries to the GTFS endpoint",
+    type: HeadersTraits,
+    idProperty: "name"
+  })
+  headers?: HeadersTraits[];
 
   @objectArrayTrait({
     name: "API Columns",

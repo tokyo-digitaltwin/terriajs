@@ -1,11 +1,10 @@
 import dateFormat from "dateformat";
-import { get as _get, map as _map } from "lodash";
+import { get as _get, map as _map } from "lodash-es";
 import { computed, observable, runInAction, makeObservable } from "mobx";
 import URI from "urijs";
 import isDefined from "../../../Core/isDefined";
 import loadJson from "../../../Core/loadJson";
 import AutoRefreshingMixin from "../../../ModelMixins/AutoRefreshingMixin";
-import CatalogMemberMixin from "../../../ModelMixins/CatalogMemberMixin";
 import TableMixin from "../../../ModelMixins/TableMixin";
 import TableAutomaticStylesStratum from "../../../Table/TableAutomaticStylesStratum";
 import ApiRequestTraits from "../../../Traits/TraitsClasses/ApiRequestTraits";
@@ -23,6 +22,9 @@ import StratumOrder from "../../Definition/StratumOrder";
 import Terria from "../../Terria";
 import proxyCatalogItemUrl from "../proxyCatalogItemUrl";
 import JsonValue from "../../../Core/Json";
+import defined from "terriajs-cesium/Source/Core/defined";
+import { header } from "../../../ReactViews/FeatureInfo/feature-info-panel.scss";
+
 
 export class ApiTableStratum extends LoadableStratum(
   ApiTableCatalogItemTraits
@@ -90,11 +92,21 @@ export class ApiTableCatalogItem extends AutoRefreshingMixin(
     const apiUrls = apisWithUrl.map((api) =>
       proxyCatalogItemUrl(this, api.url!)
     );
+
+    const headers: any = {
+    };
+
+    if (this.headers !== undefined) {
+      this.headers.forEach(({ name, value }) => {
+        if (name !== undefined && value !== undefined) headers[name] = value;
+      });
+    }
+
     return Promise.all(
       apisWithUrl.map(async (api, idx) => {
         let data = await loadJson(
           apiUrls[idx],
-          undefined,
+          headers,
           api.requestData
             ? saveModelToJson(api.requestData as unknown as BaseModel)
             : undefined,
@@ -215,9 +227,11 @@ export class ApiTableCatalogItem extends AutoRefreshingMixin(
       .then(() => {
         runInAction(() => {
           const newTableData = this.apiResponseToTable();
-          this.shouldAppendNewData
-            ? this.append(newTableData)
-            : (this.dataColumnMajor = newTableData);
+          if (this.shouldAppendNewData) {
+            this.append(newTableData);
+          } else {
+            this.dataColumnMajor = newTableData;
+          }
           this.hasData = true;
         });
       })
@@ -228,9 +242,11 @@ export class ApiTableCatalogItem extends AutoRefreshingMixin(
     this.loadDataFromApis().then(() => {
       runInAction(() => {
         const newTableData = this.apiResponseToTable();
-        this.shouldAppendNewData
-          ? this.append(newTableData)
-          : (this.dataColumnMajor = newTableData);
+        if (this.shouldAppendNewData) {
+          this.append(newTableData);
+        } else {
+          this.dataColumnMajor = newTableData;
+        }
       });
     });
   }

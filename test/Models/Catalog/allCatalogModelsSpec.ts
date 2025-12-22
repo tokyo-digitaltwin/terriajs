@@ -1,5 +1,4 @@
 import ReferenceMixin from "../../../lib/ModelMixins/ReferenceMixin";
-import TableMixin from "../../../lib/ModelMixins/TableMixin";
 import CatalogMemberFactory from "../../../lib/Models/Catalog/CatalogMemberFactory";
 import registerCatalogMembers from "../../../lib/Models/Catalog/registerCatalogMembers";
 import hasTraits from "../../../lib/Models/Definition/hasTraits";
@@ -49,7 +48,7 @@ describe("All Catalog models", () => {
     // The only correct way to provide a legend is through legendOwnerTraits.
     models
       .filter(
-        ([modelName, model]) => !hasTraits(model, LegendOwnerTraits, "legends")
+        ([_modelName, model]) => !hasTraits(model, LegendOwnerTraits, "legends")
       )
       .forEach(([modelName, model]) => {
         expect((model as any).legends).toBeUndefined(
