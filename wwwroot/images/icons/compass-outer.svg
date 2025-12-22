@@ -43,27 +43,35 @@
        cx="46"
        cy="13"
        r="1"
-       id="circle33" />
+       id="circle33" 
+       fill="#3A5A7D"
+       />
     <circle
        opacity=".75"
        cx="46"
        cy="43"
        r="1"
-       id="circle35" />
+       id="circle35" 
+       fill="#3A5A7D"
+       />
     <circle
        opacity=".75"
        cx="10"
        cy="43"
        r="1"
-       id="circle37" />
+       id="circle37" 
+       fill="#3A5A7D"
+       />
     <circle
        opacity=".75"
        cx="10"
        cy="13"
        r="1"
-       id="circle39" />
+       id="circle39" 
+       fill="#3A5A7D"
+       />
     <path
-       stroke="#000"
+       stroke="#3F3F3F"
        opacity=".75"
        stroke-linecap="round"
        d="M49 28h4M3 28h4M28 49v4"

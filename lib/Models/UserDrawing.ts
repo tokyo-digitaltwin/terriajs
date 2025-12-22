@@ -191,7 +191,7 @@ export default class UserDrawing extends MappableMixin(
     return this.getRectangleForShape();
   }
 
-  enterDrawMode() {
+  enterDrawMode(): void {
     // Create and setup a new dragHelper
     this.dragHelper = new DragPoints(this.terria, (customDataSource) => {
       if (typeof this.onPointMoved === "function") {
@@ -349,7 +349,7 @@ export default class UserDrawing extends MappableMixin(
     }
   }
 
-  endDrawing() {
+  endDrawing(): void {
     this.dragHelper?.destroy();
     if (this.disposePickedFeatureSubscription) {
       this.disposePickedFeatureSubscription();
@@ -504,7 +504,9 @@ export default class UserDrawing extends MappableMixin(
         // If it gets down to 2 points, it should stop acting like a polygon.
         if (this.pointEntities.entities.values.length < 2 && this.closeLoop) {
           this.closeLoop = false;
-          this.polygon && this.otherEntities.entities.remove(this.polygon);
+          if (this.polygon) {
+            this.otherEntities.entities.remove(this.polygon);
+          }
         }
         // Also let client of UserDrawing know if a point has been removed.
         if (typeof that.onPointClicked === "function") {
@@ -520,7 +522,7 @@ export default class UserDrawing extends MappableMixin(
   /**
    * User has finished or cancelled; restore initial state.
    */
-  cleanUp() {
+  cleanUp(): void {
     this.terria.overlays.remove(this);
     this.pointEntities = new CustomDataSource("Points");
     this.otherEntities = new CustomDataSource("Lines and polygons");
@@ -559,7 +561,7 @@ export default class UserDrawing extends MappableMixin(
    *     373.45 km
    *     Click to add another point
    */
-  getDialogMessage() {
+  getDialogMessage(): string {
     let message =
       "<strong>" +
       (typeof this.messageHeader === "function"
@@ -602,7 +604,7 @@ export default class UserDrawing extends MappableMixin(
   /**
    * Figure out the text for the dialog button.
    */
-  getButtonText() {
+  getButtonText(): any {
     return defaultValue(
       this.buttonText,
       this.pointEntities.entities.values.length >= 2
@@ -614,7 +616,7 @@ export default class UserDrawing extends MappableMixin(
   /**
    * Return a list of the coords for the user drawing
    */
-  getPointsForShape() {
+  getPointsForShape(): Cartesian3[] | undefined {
     if (isDefined(this.pointEntities.entities)) {
       const pos = [];
       for (let i = 0; i < this.pointEntities.entities.values.length; i++) {

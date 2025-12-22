@@ -1,9 +1,283 @@
 # Change Log
 
-#### next release (8.5.2)
+#### next release (8.9.6)
+
+- [The next improvement]
+
+#### 8.9.5 - 2025-06-03
+
+- Upgrade terriajs-server to version 4.0.2
+
+#### 8.9.4 - 2025-06-03
+
+- Remove regenerator-runtime polyfill as generators are now widely supported. #7615
+- Remove direct usage of core-js polyfills. #7615
+- TSify `ChartPanel` and convert to a functional component #7581
+- Convert `Chart` component of `FeatureInfoPanelChart` to functional component. #7598
+- TSify `DataCatalogGroup` and convert to a functional component. #7575
+- TSify `BottomDockChart`, `ChartPanel`, `LineAndPointChart`, `LineChart`, `MomentLinesChart`, `MomentPointsChart`, `Chart Tooltip` to typescript and convert to functional components. #7617
+- Upgrade mkdocs to 1.6.1
+- Refactor the `DateTimePicker` component and split it into multiple components. #7585
+- Update data-attribution and terms of conditions links to point to terria.io. #7627
+- Hide the related maps button. #7627
+- Change `BingMapSearchProvider` to correctly logs bing search action. #7601
+- fix `MapboxStyleCatalogItem` scaleFactor bug where tiles are always scaled-up in Cesium. #7639
+
+#### 8.9.3 - 2025-04-24
+
+- Remove unused d3-array dependency.
+- Update to plugin-error 2.0.1
+- TSify `MenuButton` and convert it to functional component. #7576
+- Convert `WorkbenchItem` to functional component #7564
+- Remove BrowserStack and SauceLabs gulp tasks.
+- Remove `test-travis` gulp task.
+- Allow to modify `lookupCookie` for i18next
+- TSify dropdown and convert it to a functional component. #7577
+- Convert SettingPanel to a functional component. #7589
+- Update html-to-react to 1.7.0
+- Pass explicit refs to css transition component to avoid findDomNode usage. #7590
+- TSify FadeIn component. #7590
+- Convert `ViewingControls` to a functional component. #7574
+- DOMPurify updated to 3.2.5 to fix CVE-2025-26791.
+- Fix pmtiles rendering issue. #7607
+- Remove unused types/rbush dependency.
+
+#### 8.9.2 - 2025-03-31
+
+- Replace clipboardjs with native browser clipboard
+- Update react-swipeable to v7. #7542
+- Use theme.dark for bottomBar background
+- Remove interactjs dependency #7544
+- Rewrite drag-wrapper to use terriajs dragging implementation #7544
+- TSify `SearchBoxAndResults` and convert to a functional component #7477
+- Convert `DragDropFile` to functional component and styled-components. #7563
+- Remove `viewState.lastUploadedFiles` and replace with `DragDropFile` local state. #7563
+- TSify `DragDropNotification` and convert to functional component and styled-components. #7563
+- TSify `DataCatalogTab` and convert it to functional component #7476
+- Update to shpjs 6.1.0.
+- Enable `noUncheckedSideEffectImports` in `tsconfig.json` to get errors from tsc when non-existent modules are imported for side effects.
+- Return lat/lon as numbers from `geoJsonGeometryFromGeoRssSimpleGeometry` and `geoJsonGeometryFromW3cGeometry`.
+- Remove unused babel/parser dependency.
+
+#### 8.9.1 - 2025-03-24
+
+- Tweak `ArcGisFeatureServerCatalogItem.imageryProvider` to return undefined until metadata has finished loading
+- Fix scss theming regression by restoring webpack alias
+
+#### 8.9.0 - 2025-03-17
+
+- **Breaking changes:**
+- Major changes to UI
+
+  - Changed workbench and bottom dock to absolute positioned over map with transparent background
+  - Generally increase padding and font sizes to improve readability
+  - Generally use a darker default theme
+  - Increases logo size, redesign of collapsed workbench panel
+  - Update help text for empty workbench
+  - Decrease border radii
+  - Changed workbench and bottom dock to absolute positioned over map with transparent background
+  - Generally increase padding and font sizes to improve readability
+  - Generally use a darker default theme
+  - Increases logo size, redesign of collapsed workbench panel
+  - Update help text for empty workbench
+  - Decrease border radii
+  - Introduce `blur`, `dark-transparent`, `dark-alpha`, `scrollbar-color` and `scrollbar-track-color` theme variables
+  - Add `keepCatalogOpen` config option
+  - Add enable / disable all button to workbench
+
+- Add tiling support to `ArcGisFeatureServerCatalogItem` - this will be enabled by default if the server supports tiling and unsupported marker/point styles aren't used. See `ArcGisFeatureServerCatalogTraits` `tileRequests`. When enabled, `pbf` tiles will be fetched and drawn using `ProtomapsImageryProvider`
+  - This can be disabled by setting `tileRequests` to `false`
+  - For point features, only the following `PointSymbolTraits` are available - fill, stroke, height (which sets circle radius). Custom markers (markers other than `point` or `circle`) are not supported.
+- Add `request` parameter to `ArcGisImageServerImageryProvider.buildImageResource` - this enables Cesium to manage requests
+- Decrease protomaps tile buffer to 32 pixels (from 64) to increase performance
+- Change `ProtomapsImageryProvider` to use a "soft" minimum level, so no tiles will be created below the `minimumZoom` provided.
+- Move `ProtomapsImageryProvider.pickFeatures` GeoJSON logic to inside `ProtomapsGeojsonSource.pickFeatures`.
+- Fix `FeatureInfoUrlTemplateMixin` reactivity warnings
+- Move `GeojsonMixin` protomaps paint/label rules to `tableStyleToProtomaps`.
+  - Also create `getStyleReactiveDependencies` that can be used to track (and react to) table styling traits
+- Add `dash` to `OutlineStyleTraits` (only supported by line features), and `outlineStyle` to `LegendTraits`.
+- Add `MinMaxLevelMixin` to `ArcGisFeatureServerCatalogItem` - only applied when tiling requests
+- Tweaked `TableStyleMap` and `TableColorMap` conditions to handle empty `TableColumns` (to support styling `ArcGisFeatureServerCatalogItem` when tiling requests)
+- Fix bug with expanding "Developer Details" in the error modal
+- Fix regression bug from https://github.com/TerriaJS/terriajs/pull/7144, GeoJson `MultiPolygon`, `Polygon` and `Line` features were being dropped
+- Move GeoJSON helper functions (`isFeatureCollection` etc) to `lib/Core/GeoJson.ts`
+- Split up `ArcGisFeatureServerCatalogItem` into `ArcGisFeatureServerStratum` and `esriStyleToTableStyle`
+- Remove unused pmtiles dependency.
+- Update data styling docs
+- Remove unused babel/eslint-parser dependency.
+- Hide 'Story' button in mobile view if story panel is active.
+- Update empty workbench help text
+- Remove unused `arraysAreEqual`, `autoUpdate`, `flattenNested`, `freezeInDebug`, `isPromise`, `loadJsonp`, `OrUndefined`, and `superGet` files from lib/Core.
+- Update to react-virtual 2.10.4.
+- Update types/file-saver to 2.0.7.
+- Remove `request` dependency from CI scripts
+- Fix basemaps order to follow the order given by `enabledBaseMaps` setting. #7537
+- Modified DiffTool UI to use `WorkflowPanel` instead of floating side panel.
+
+#### 8.8.1 - 2025-02-27
+
+- Expose the `lightColor` setting for 3D Tilesets in Cesium3dTilesCatalogItem.
+- Fix GeoJSON regression bug (from 8.8.0) - multi-polygons, polygons and line features weren't being rendered through `ProtomapsImageryProvider`.
+- Remove unused klaw-sync dependency.
+- Remove unused hammerjs dependency.
+- Remove unused turf/meta dependency.
+
+#### 8.8.0 - 2025-02-18
+
+- **Breaking changes:**
+  - Upgrade Webpack to version 5
+    - Converted remaining CJS style modules and `require()` calls to ESM and `import` statements.
+    - Removed babel transformation to CJS for default build (we still use it for nodejs).
+    - Removed several other babel transforms (for JS features that should now be widely supported).
+    - Refactor and clean up configureWebpack.js. `configureWebpack()` now accepts a single object parameter.
+    - Removed code for hot reloading
+  - Upgraded `sass` to version 1.80+
+    - Migrated SASS files to use `modern` API (by running the `sass-migrator` script)
+    - Replaced webpack aliases `~terriajs-variables` and `~terriajs-mixins` with respective relative path. This was necessary to run the migrator. It also results in simpler webpack configuration.
+- Remove `MapboxImageryProvider`, `createRegionMappedImageryProvider` now uses `ProtomapsImageryProvider`.
+- Update `protomaps` to `protomaps-leaflet`. This fixes the 5400 vertex limit in a single tile.
+  - The very basic support of mvt style spec is now handled by Terria in [`lib/Map/Vector/mapboxStyleJsonToProtomaps.ts`](lib/Map/Vector/mapboxStyleJsonToProtomaps.ts)
+- Move `GeojsonSource` to new file `lib/Map/Vector/ProtomapsGeojsonSource.ts`.
+- support URL parameters in a GetLegendGraphic request for a layer without a style configured
+- Enhanced error processing for obtaining user location
+
+#### 8.7.11 - 2024-12-18
+
+- Explicitly set prettier tab-width
+- Move release guide from README.md to RELEASE_GUIDE.md
+- Add `clampToGround` to `KmlCatalogItemTraits` (defaults to `true`) - this is now passed to `KmlDataSource.load`. Terria no longer clamps polygon geometries to terrain manually. All clamping logic is now handled by Cesium.
+- Add `dataSourceUri` to `KmlCatalogItemTraits` - Overrides the url to use for resolving relative links and other KML network features
+
+#### 8.7.10 - 2024-11-29
+
+- Add OpenStreetMap as a basemap option.
+- Update to node-notifier 10.0.1 to fix security vulnerabilities.
+- Remove unused ts-loader dependency.
+- Remove unused class-list dependency.
+- TSify `ConsoleAnalytics` module.
+- Update to gulp 5.0 to fix security vulnerabilities.
+  - Gulp 5 defaults to encoding copied files as utf-8, had turn off encoding by setting `encoding: false` to correctly copy binary assets from dependencies.
+- Update to dompurify 2.5.7 to fix security vulnerabilities.
+- Update to @mapbox/togeojson 0.16.2 to fix security vulnerabilities.
+- Remove unused simple-statistics dependency.
+- Update to pretty-quick 4.0.0 to fix security vulnerabilities.
+
+#### 8.7.9 - 2024-11-22
+
+- Add "searchBarConfig.showSearchInCatalog" to configParameters so that the link in location search results can be disabled.
+- Properly initialize react ref in functional components
+- Add NominatimSearchProvider.
+- Removed the basemaps - positron, darkmatter and black-marble - from the default settings. The Carto ones are no longer free and requires an [Enterprise or Grantee license](https://carto.com/basemaps). If you have the appropriate license you can add them via your [initialization file](https://docs.terria.io/guide/customizing/initialization-files/#basemaps). [Example configuration](https://gist.github.com/na9da/ef7871afee7cbe3d0a95e5b6351834c9).
+- Restrict mobx version to '< 6.13.0' to avoid tsc errors because mobx now uses iterator helper types introduced in TypeScript 5.6.
+- Remove unused ts-node dependency.
+
+#### 8.7.8 - 2024-11-01
 
 - Fix the layout of the story builder and the item search tool.
-- [The next improvement]
+- Add support for Cloud Optimised Geotiff (cog) in Cesium mode. Currently supports EPSG 4326 and 3857. There is experimental support for other projections but performance might suffer and there could be other issues.
+- Fix `Workbench.collapseAll()` and `Workbench.expandAll()` for References.
+- Add to the "doZoomTo" function the case of an imagery layer with imageryProvider.rectangle
+- Add "leafletMaxZoom" to configParameters so that the maxZoom of the Leaflet viewer can be changed.
+- Restrict `sass` version to `< 1.80`- to avoid deprecations.
+
+#### 8.7.7 - 2024-10-01
+
+- **Breaking changes:**
+
+  - Remove RollbarErrorServiceProvder
+  - Error services now instantiated externally to terriajs
+
+- Fix remaining lint warnings
+- Augment cesium types and start using import instead of require in ts files
+- Update to sass 1.79.1
+- Add option to import assets from Cesium ion through the Add data panel. Use map config parameter "cesiumIonOAuth2ApplicationID" to enable the feature.
+
+#### 8.7.6 - 2024-08-22
+
+- Add I3SCatalogItem
+  - getFeaturesFromPickResult now async to handle I3SNode.loadFields()
+  - extract common style logic to new Cesium3dTilesStyleMixin.ts
+- Set default value for date and datetime WPS fields only when the field is marked as required.
+- Fix Sass deprecation warnings (declarations after nested blocks)
+- Fix legend shown for WMS difference output item
+- Add `diffItemProperties` trait to override properties of WSM difference output item. Useful for customizing feature info template strings etc.
+- Add Proj4 definition for EPSG:8059
+- Upgrade to terriajs-cesium 8.0.1.
+- Re-enable terrain splitting.
+- Add support for ArcGis ImageServer - this includes
+  - Support for "dynamic" `exportImage` endpoint (using `102100` wkid)
+  - Support for web mercator and wgs84 precached tiles
+  - Basic support for raster functions - a dropdown is rendered in the workbench for custom raster functions
+  - Traits to configure `bandIds` and `renderingRule`
+- Increase `maxRefreshIntervals` from 1000 to 10000 for `WebMapServiceCatalogItem` and `ArcGisMapServerCatalogItem`.
+- Add `nextDiscreteJulianDate` helper computed value to `DiscretelyTimeVaryingMixin`
+- Add `EPSG:7899` to `Proj4Definitions`
+
+#### 8.7.5 - 2024-06-26
+
+- TSify some `js` and `jsx` files and provide `.d.ts` ambient type files for a few others. This is so that running `tsc` on an external project that imports Terria code will typecheck successfully.
+- Upgraded a bunch of d3 dependencies for fixing security errors.
+- Show rectangle selector for WPS bounding box parameter
+- Fix `store` and `status` values send in WPS Execute request.
+- Add docs for `modelDimensions`
+
+#### 8.7.4 - 2024-06-07
+
+- Fix position of draggable point after moving.
+- Fix `getFeatureProperties` (in `FeatureInfoSection`) failing due to bad JSON parsing of nested strings.
+- The `TableFeatureInfoStratum` default `featureInfoTemplate` will now not show `_id_` (internal Terria feature ID) in feature info
+- Fix bug in FilterSection
+
+#### 8.7.3 - 2024-05-28
+
+- Fix broken chart selector
+- Feature info template `<chart>` definition now accepts a `y-column` attribute to set the y-column that should be rendered in the feature info panel chart.
+- Upgrade `thredds-catalog-crawler` to `v0.0.7` which makes a few security upgrades.
+- Fix bug with broken datetime after that Timeline has been closed once.
+- Fix WPS date time widget reset bug
+- Set default date for WPS date time widget on load
+- Add NumberParameterEditor to enable WPS AllowedValues Ranges to be set and use DefaultValue
+
+#### 8.7.2 - 2024-05-14
+
+- Add NumberParameterEditor to enable WPS AllowedValues Ranges to be set and use DefaultValue
+- Feature info template has access to activeStyle of item having TableTraits.
+- Updated a few dependencies to fix security warnings: `underscore`, `visx`, `shpjs`, `resolve-uri-loader`, `svg-sprite-loader`
+- Allow related maps UI strings to be translated. Translation support for related maps content is not included.
+
+#### 8.7.1 - 2024-04-16
+
+- Upgraded to TerriajS Cesium 1.115.0
+- Fix `PointStyleTraits.marker` bug where URLs were not being used.
+- Fixed a bug with passing a relative baseUrl to Cesium >= 1.113.0 when `document.baseURI` is different to its `location`.
+- Fix node v18 compatibility by forcing `webpack-terser-plugin` version resolution and fixing new type errors
+- Reduce log noise in `MagdaReference`.
+
+#### 8.7.0 - 2024-03-22
+
+- **Breaking changes:**
+  - `generateCatalogIndex` now uses `commander` to parse arguments. Run `node ./build/generateCatalogIndex.js --help` for more information.
+- Fixed exception thrown from `objectArrayTrait` when a model has 0 strata and a `MergeStrategy` of `topStratum`.
+- Fix `generateCatalogIndex` after `searchProvider` changes
+- Fix bug with relative URLs being ignored in `generateCatalogIndex`
+- Fix bug with ArcGisMapServerImageryProvider not correctly identifying if the `tile` endpoint can be used
+
+#### 8.6.1 - 2024-03-14
+
+- Fix SDMX `featureInfoTemplate` `<chart>` bug not showing correct `yColumn`
+
+#### 8.6.0 - 2024-03-12
+
+- **Breaking changes:**
+  - Add `MergeStrategy` to `objectArrayTrait` - this includes a new `topStratum` strategy - similar to `Merge.All` (the default behaviour), but only elements that exist in the top-most strata will be merged with lower strata. Elements that only exist in lower strata will be removed.
+  - **Note** the only trait with `MergeStrategy` set to `topStratum` is `lines` in `TableChartStyleTraits`.
+- Fix `y-column` in `FeatureInfoPanelChart` (`<chart>`)
+
+#### 8.5.2 - 2024-03-07
+
+- Add `usePreCachedTilesIfAvailable` to `ArcGisMapServerCatalogItemTraits`.
+- Improved `ChartableMixin.isMixedInto` to ensure there are no false positive matches when testing References.
+- Fixed a bug in `MagdaReference` where members of a group would not be updated/created correctly when a group is reloaded.
 
 #### 8.5.1 - 2024-02-23
 
@@ -29,6 +303,7 @@
 - Add option to enable/disable shortening share URLs via InitSourceData.
 - Fix bug in ArcGisMapServerCatalogItem.
 - Add examples.
+- Upgraded Cesium to 1.113.0 (i.e. `terriajs-cesium@6.2.0` & `terriajs-cesium-widgets@4.4.0`).
 
 #### 8.4.1 - 2023-12-08
 
@@ -91,6 +366,10 @@
 - Fix bug in mismatched GeoJSON Feature `_id_` and TableMixin `rowId` - this was causing incorrect styling when using `filterByProperties` or features had `null` geometry
 - Fix splitter for `GeoJsonMixin` (lines and polygon features only)
 - Fix share links with picked features from `ProtomapsImageryProvider`
+- Added on screen attribution and Google logo for Google Photorealistic 3D Tiles.
+- Add `hideDefaultDescription` to `CatalogMemberTraits` - if true, then no generic default description will be shown when `description` is empty.
+- Add `hideDefaultDescription` to `CatalogMemberTraits` - if true, then no generic default description will be shown when `description` is empty.
+- Add `clampPolygonsToGround` to `KmlCatalogItemTraits` (defaults to true`)
 - Added on screen attribution and Google logo for Google Photorealistic 3D Tiles.
 - Add `hideDefaultDescription` to `CatalogMemberTraits` - if true, then no generic default description will be shown when `description` is empty.
 

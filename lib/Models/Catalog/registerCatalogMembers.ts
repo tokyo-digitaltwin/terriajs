@@ -1,4 +1,3 @@
-import { uniq } from "lodash-es";
 import YDYRCatalogFunction from "./CatalogFunctions/YDYRCatalogFunction";
 import YDYRCatalogFunctionJob from "./CatalogFunctions/YDYRCatalogFunctionJob";
 import CatalogGroup from "./CatalogGroup";
@@ -11,13 +10,13 @@ import CartoMapV1CatalogItem from "./CatalogItems/CartoMapV1CatalogItem";
 import CartoMapV3CatalogItem from "./CatalogItems/CartoMapV3CatalogItem";
 import Cesium3DTilesCatalogItem from "./CatalogItems/Cesium3DTilesCatalogItem";
 import CesiumTerrainCatalogItem from "./CatalogItems/CesiumTerrainCatalogItem";
-import CogCatalogItem from "./CatalogItems/CogCatalogItem";
 import CompositeCatalogItem from "./CatalogItems/CompositeCatalogItem";
 import CsvCatalogItem from "./CatalogItems/CsvCatalogItem";
 import CzmlCatalogItem from "./CatalogItems/CzmlCatalogItem";
 import GeoJsonCatalogItem from "./CatalogItems/GeoJsonCatalogItem";
 import GeoRssCatalogItem from "./CatalogItems/GeoRssCatalogItem";
 import GpxCatalogItem from "./CatalogItems/GpxCatalogItem";
+import I3SCatalogItem from "./CatalogItems/I3SCatalogItem";
 import IonImageryCatalogItem from "./CatalogItems/IonImageryCatalogItem";
 import KmlCatalogItem from "./CatalogItems/KmlCatalogItem";
 import MapboxMapCatalogItem from "./CatalogItems/MapboxMapCatalogItem";
@@ -44,6 +43,7 @@ import CkanItemReference from "./Ckan/CkanItemReference";
 import ArcGisCatalogGroup from "./Esri/ArcGisCatalogGroup";
 import ArcGisFeatureServerCatalogGroup from "./Esri/ArcGisFeatureServerCatalogGroup";
 import ArcGisFeatureServerCatalogItem from "./Esri/ArcGisFeatureServerCatalogItem";
+import ArcGisImageServerCatalogItem from "./Esri/ArcGisImageServerCatalogItem";
 import ArcGisMapServerCatalogGroup from "./Esri/ArcGisMapServerCatalogGroup";
 import ArcGisMapServerCatalogItem from "./Esri/ArcGisMapServerCatalogItem";
 import ArcGisPortalCatalogGroup from "./Esri/ArcGisPortalCatalogGroup";
@@ -65,6 +65,7 @@ import WebProcessingServiceCatalogFunctionJob from "./Ows/WebProcessingServiceCa
 import WebProcessingServiceCatalogGroup from "./Ows/WebProcessingServiceCatalogGroup";
 import SdmxJsonCatalogGroup from "./SdmxJson/SdmxJsonCatalogGroup";
 import SdmxJsonCatalogItem from "./SdmxJson/SdmxJsonCatalogItem";
+import CogCatalogItem from "./CatalogItems/CogCatalogItem";
 
 export default function registerCatalogMembers() {
   CatalogMemberFactory.register(CatalogGroup.type, CatalogGroup);
@@ -109,6 +110,10 @@ export default function registerCatalogMembers() {
     ArcGisMapServerCatalogItem
   );
   CatalogMemberFactory.register(
+    ArcGisImageServerCatalogItem.type,
+    ArcGisImageServerCatalogItem
+  );
+  CatalogMemberFactory.register(
     ArcGisMapServerCatalogGroup.type,
     ArcGisMapServerCatalogGroup
   );
@@ -143,6 +148,7 @@ export default function registerCatalogMembers() {
     CesiumTerrainCatalogItem.type,
     CesiumTerrainCatalogItem
   );
+  CatalogMemberFactory.register(I3SCatalogItem.type, I3SCatalogItem);
   CatalogMemberFactory.register(
     IonImageryCatalogItem.type,
     IonImageryCatalogItem
@@ -315,6 +321,11 @@ export default function registerCatalogMembers() {
     true
   );
   UrlToCatalogMemberMapping.register(
+    matchesUrl(/\/arcgis\/rest\/.*\/ImageServer(\/.*)?$/i),
+    ArcGisImageServerCatalogItem.type,
+    true
+  );
+  UrlToCatalogMemberMapping.register(
     matchesUrl(/\/arcgis\/rest\/.*\/MapServer(\/.*)?$/i),
     ArcGisMapServerCatalogGroup.type,
     true
@@ -345,6 +356,11 @@ export default function registerCatalogMembers() {
     true
   );
   UrlToCatalogMemberMapping.register(
+    matchesUrl(/\/rest\/.*\/ImageServer(\/.*)?$/i),
+    ArcGisImageServerCatalogItem.type,
+    true
+  );
+  UrlToCatalogMemberMapping.register(
     matchesUrl(/\/rest\/.*\/MapServer(\/.*)?$/i),
     ArcGisMapServerCatalogGroup.type,
     true
@@ -367,37 +383,37 @@ export default function registerCatalogMembers() {
 
   // These don't even try to match a URL, they're just total fallbacks. We really, really want something to work.
   UrlToCatalogMemberMapping.register(
-    (s) => true,
+    (_s) => true,
     WebMapServiceCatalogGroup.type,
     true
   );
   UrlToCatalogMemberMapping.register(
-    (s) => true,
+    (_s) => true,
     WebFeatureServiceCatalogGroup.type,
     true
   );
   UrlToCatalogMemberMapping.register(
-    (s) => true,
+    (_s) => true,
     ArcGisMapServerCatalogItem.type,
     true
   );
   UrlToCatalogMemberMapping.register(
-    (s) => true,
+    (_s) => true,
     ArcGisMapServerCatalogGroup.type,
     true
   );
   UrlToCatalogMemberMapping.register(
-    (s) => true,
+    (_s) => true,
     ArcGisFeatureServerCatalogItem.type,
     true
   );
   UrlToCatalogMemberMapping.register(
-    (s) => true,
+    (_s) => true,
     ArcGisCatalogGroup.type,
     true
   );
   UrlToCatalogMemberMapping.register(
-    (s) => true,
+    (_s) => true,
     ArcGisFeatureServerCatalogGroup.type,
     true
   );

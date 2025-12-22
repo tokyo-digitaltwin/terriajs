@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Button from "../../../../../Styled/Button";
 import { downloadImg } from "./PrintView";
@@ -29,6 +29,13 @@ const PrintViewButtons = (props: Props) => {
           evt.preventDefault();
           props.screenshot?.then(downloadImg);
         }}
+        css={`
+          &:hover,
+          &:focus {
+            opacity: 1;
+            background: #22466E;
+          }
+        `}
       >
         Download map
       </Button>
@@ -40,6 +47,13 @@ const PrintViewButtons = (props: Props) => {
           evt.preventDefault();
           props.window.print();
         }}
+        css={`
+          &:hover,
+          &:focus {
+            opacity: 1;
+            background: #22466E;
+          }
+        `}
       >
         Print
       </Button>

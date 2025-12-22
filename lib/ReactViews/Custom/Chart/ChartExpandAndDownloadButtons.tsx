@@ -1,18 +1,18 @@
 import classNames from "classnames";
-import { TFunction } from "i18next";
-import { action, observable, runInAction, makeObservable } from "mobx";
+import { action, makeObservable, observable, runInAction } from "mobx";
 import { observer } from "mobx-react";
-import React from "react";
-import { WithTranslation, withTranslation } from "react-i18next";
+import { Component } from "react";
+import { WithTranslation, withTranslation, TFunction } from "react-i18next";
+import styled, { useTheme } from "styled-components";
 import filterOutUndefined from "../../../Core/filterOutUndefined";
 import ChartableMixin from "../../../ModelMixins/ChartableMixin";
 import hasTraits from "../../../Models/Definition/hasTraits";
 import Terria from "../../../Models/Terria";
-import Icon from "../../../Styled/Icon";
+import { Button, StyledButton } from "../../../Styled/Button";
+import Icon, { StyledIcon } from "../../../Styled/Icon";
 import UrlTraits from "../../../Traits/TraitsClasses/UrlTraits";
 import Styles from "./chart-expand-and-download-buttons.scss";
-
-const Dropdown = require("../../Generic/Dropdown");
+import Dropdown from "../../Generic/Dropdown";
 
 interface PropsType extends WithTranslation {
   terria: Terria;
@@ -26,7 +26,7 @@ interface PropsType extends WithTranslation {
 }
 
 @observer
-class ChartExpandAndDownloadButtons extends React.Component<PropsType> {
+class ChartExpandAndDownloadButtons extends Component<PropsType> {
   @observable sourceItems: ChartableMixin.Instance[] = [];
 
   constructor(props: PropsType) {
@@ -73,9 +73,7 @@ class ChartExpandAndDownloadButtons extends React.Component<PropsType> {
 
       try {
         terria.addModel(itemToExpand);
-      } catch {
-        /* eslint-disable-line no-empty */
-      }
+      } catch {}
       (await workbench.add(itemToExpand)).raiseError(terria, undefined, true);
     });
   }
@@ -164,26 +162,20 @@ const ExpandAndDownloadDropdowns = function (props: {
   };
 
   return (
-    <div
-      className={classNames(Styles.chartExpand, {
-        [Styles.raiseToTitle]: props.raiseToTitle
-      })}
-    >
-      <div className={Styles.chartDropdownButton}>
-        <Dropdown
-          selectOption={props.onExpand}
-          options={props.sourceNames.map((name) => ({ name }))}
-          theme={expandDropdownTheme}
-        >
-          {props.t("chart.expand") + " ▾"}
+    <ExpandAndDownloadContainer raiseToTitle={props.raiseToTitle}>
+      <Dropdown
+        selectOption={props.onExpand}
+        options={props.sourceNames.map((name) => ({ name }))}
+        theme={expandDropdownTheme}
+      >
+        {props.t("chart.expand") + " ▾"}
+      </Dropdown>
+      {props.canDownload && (
+        <Dropdown options={props.downloads} theme={downloadDropdownTheme}>
+          {props.t("chart.download") + " ▾"}
         </Dropdown>
-        {props.canDownload && (
-          <Dropdown options={props.downloads} theme={downloadDropdownTheme}>
-            {props.t("chart.download") + " ▾"}
-          </Dropdown>
-        )}
-      </div>
-    </div>
+      )}
+    </ExpandAndDownloadContainer>
   );
 };
 
@@ -192,26 +184,52 @@ const ExpandAndDownloadButtons = function (props: {
   downloadUrl?: string;
   t: TFunction;
 }) {
+  const theme = useTheme();
   return (
-    <div className={Styles.chartExpand}>
-      <button
-        type="button"
-        className={Styles.btnChartExpand}
-        onClick={props.onExpand}
-      >
+    <ExpandAndDownloadContainer>
+      <ButtonChartExpand type="button" onClick={props.onExpand}>
         {props.t("chart.expand")}
-      </button>
+      </ButtonChartExpand>
       {props.downloadUrl && (
-        <a
-          download
-          className={classNames(Styles.btnSmall, Styles.aDownload)}
-          href={props.downloadUrl}
-        >
-          <Icon glyph={Icon.GLYPHS.download} />
-        </a>
+        <DownloadLink download href={props.downloadUrl}>
+          <StyledIcon
+            fillColor={theme.textLight}
+            glyph={Icon.GLYPHS.download}
+          />
+        </DownloadLink>
       )}
-    </div>
+    </ExpandAndDownloadContainer>
   );
 };
+
+const ExpandAndDownloadContainer = styled.div<{ raiseToTitle?: boolean }>`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+
+  ${(props) => props.raiseToTitle && `margin-top: -21px;`}
+`;
+
+const ButtonChartExpand = styled(Button).attrs({ primary: true })`
+  border-radius: 3px;
+  padding: 1px 8px;
+  min-height: unset;
+  margin-right: 5px;
+`;
+
+const DownloadLink = styled(StyledButton).attrs(() => ({
+  as: "a",
+  primary: true
+}))`
+  text-decoration: none;
+  border-radius: 2px;
+  padding: 1px 8px;
+  min-height: unset;
+
+  svg {
+    height: 20px;
+    width: 20px;
+  }
+`;
 
 export default withTranslation()(ChartExpandAndDownloadButtons);

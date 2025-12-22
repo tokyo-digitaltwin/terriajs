@@ -1,9 +1,6 @@
-"use strict";
-
 import { observer } from "mobx-react";
-import React, { useState } from "react";
-import { useTranslation, withTranslation } from "react-i18next";
-import defined from "terriajs-cesium/Source/Core/defined";
+import { FC, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   applyTranslationIfExists,
   TRANSLATE_KEY_PREFIX
@@ -31,7 +28,7 @@ interface CountDatasetsProps {
   updateResults: (resultsHtml: string) => void;
 }
 
-const CountDatasets: React.FC<CountDatasetsProps> = observer((props) => {
+const CountDatasets: FC<CountDatasetsProps> = observer((props) => {
   const [btnStringOrComponent, setBtnStringOrComponent] = useState<
     string | JSX.Element
   >(`${TRANSLATE_KEY_PREFIX}countDatasets.btnText`);
@@ -123,7 +120,7 @@ const CountDatasets: React.FC<CountDatasetsProps> = observer((props) => {
     }
 
     function reportLoadError(
-      member: GroupAndMember,
+      _member: GroupAndMember,
       stats: CounterStats,
       path: string[]
     ) {

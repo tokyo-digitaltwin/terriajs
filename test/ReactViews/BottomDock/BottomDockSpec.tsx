@@ -1,8 +1,8 @@
-import React from "react";
-import { act, create, ReactTestRenderer } from "react-test-renderer";
+import { act, ReactTestRenderer } from "react-test-renderer";
 import Terria from "../../../lib/Models/Terria";
 import ViewState from "../../../lib/ReactViewModels/ViewState";
 import BottomDock from "../../../lib/ReactViews/BottomDock/BottomDock";
+import { createWithContexts } from "../withContext";
 
 describe("BottomDock", function () {
   let terria: Terria;
@@ -21,8 +21,8 @@ describe("BottomDock", function () {
 
   it("must create TJS-BottomDockFirstPortal", function () {
     act(() => {
-      testRenderer = create(
-        // @ts-ignore - because measureElement is untyped
+      testRenderer = createWithContexts(
+        viewState,
         <BottomDock terria={terria} viewState={viewState} />
       );
     });
@@ -34,8 +34,8 @@ describe("BottomDock", function () {
 
   it("must create TJS-BottomDockLastPortal", function () {
     act(() => {
-      testRenderer = create(
-        // @ts-ignore - because measureElement is untyped
+      testRenderer = createWithContexts(
+        viewState,
         <BottomDock terria={terria} viewState={viewState} />
       );
     });
