@@ -1,5 +1,4 @@
 import { configure, runInAction } from "mobx";
-import _loadWithXhr from "../../lib/Core/loadWithXhr";
 import Terria from "../../lib/Models/Terria";
 import CommonStrata from "../../lib/Models/Definition/CommonStrata";
 import GeoJsonCatalogItem from "../../lib/Models/Catalog/CatalogItems/GeoJsonCatalogItem";
@@ -14,7 +13,7 @@ describe("UrlTraits", function () {
   let terria: Terria;
   let geoJsonCatalogItem: GeoJsonCatalogItem;
 
-  beforeEach(async function () {
+  beforeEach(function () {
     terria = new Terria({
       baseUrl: "./"
     });

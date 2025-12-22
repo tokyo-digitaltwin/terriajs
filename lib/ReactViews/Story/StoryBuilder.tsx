@@ -1,16 +1,25 @@
-import { action, toJS, makeObservable } from "mobx";
+import { action, makeObservable, toJS } from "mobx";
 import { observer } from "mobx-react";
-import React from "react";
+import {
+  RefObject,
+  ComponentPropsWithoutRef,
+  FC,
+  ReactNode,
+  ReactElement,
+  createRef,
+  Component
+} from "react";
 import Sortable from "react-anything-sortable";
 import {
   Trans,
+  WithTranslation,
   useTranslation,
-  withTranslation,
-  WithTranslation
+  withTranslation
 } from "react-i18next";
 import styled, { DefaultTheme, withTheme } from "styled-components";
 import combine from "terriajs-cesium/Source/Core/combine";
 import createGuid from "terriajs-cesium/Source/Core/createGuid";
+import dataStoriesImg from "../../../wwwroot/images/data-stories-getting-started.jpg";
 import {
   Category,
   StoryAction
@@ -22,20 +31,18 @@ import Button, { RawButton } from "../../Styled/Button";
 import Icon, { StyledIcon } from "../../Styled/Icon";
 import Spacing from "../../Styled/Spacing";
 import Text, { TextSpan } from "../../Styled/Text";
-import BadgeBar from "../BadgeBar";
+import { WithViewState, withViewState } from "../Context";
 import measureElement, { MeasureElementProps } from "../HOCs/measureElement";
 import VideoGuide from "../Map/Panels/HelpPanel/VideoGuide";
 import { getShareData } from "../Map/Panels/SharePanel/BuildShareLink";
 import SharePanel from "../Map/Panels/SharePanel/SharePanel";
-import { WithViewState, withViewState } from "../Context";
 import Story from "./Story";
+import StoryEditor from "./StoryEditor";
 import Styles from "./story-builder.scss";
-import StoryEditor from "./StoryEditor.jsx";
-const dataStoriesImg = require("../../../wwwroot/images/data-stories-getting-started.jpg");
 
 const STORY_VIDEO = "storyVideo";
 
-type StoryData = ViewState["terria"]["stories"][number];
+export type StoryData = ViewState["terria"]["stories"][number];
 
 interface IProps {
   isVisible?: boolean;
@@ -57,11 +64,11 @@ interface IState {
 }
 
 @observer
-class StoryBuilder extends React.Component<
+class StoryBuilder extends Component<
   IProps & MeasureElementProps & WithTranslation & WithViewState,
   IState
 > {
-  storiesWrapperRef = React.createRef<HTMLElement>();
+  storiesWrapperRef = createRef<HTMLElement>();
 
   refToMeasure: any;
 
@@ -85,7 +92,7 @@ class StoryBuilder extends React.Component<
       storyWithOpenMenuId: undefined
     };
   }
-  removeStory = (index: number, story: StoryData) => {
+  removeStory = (index: number, story?: StoryData) => {
     this.setState({
       isSharing: false,
       isRemoving: true,
@@ -260,8 +267,6 @@ class StoryBuilder extends React.Component<
     return (
       <Box column>
         <VideoGuide
-          /*
-          // @ts-ignore */
           viewState={this.props.viewState}
           videoLink={
             this.props.viewState.terria.configParameters.storyVideo?.videoUrl ||
@@ -331,7 +336,7 @@ class StoryBuilder extends React.Component<
     });
   }
 
-  renderStories(editingMode: boolean) {
+  renderStories() {
     const { t, i18n } = this.props;
     const stories = this.props.viewState.terria.stories || [];
     const storyName = this.state.storyToRemove
@@ -341,10 +346,19 @@ class StoryBuilder extends React.Component<
       : "";
     return (
       <>
-        <BadgeBar
-          label={t("story.badgeBarLabel")}
-          badge={this.props.viewState.terria.stories.length}
+        <Box
+          justifySpaceBetween
+          verticalCenter
+          paddedRatio={2}
+          css={`
+            border-top: 1px solid ${this.props.theme.darkLighter};
+            border-bottom: 1px solid ${this.props.theme.darkLighter};
+          `}
         >
+          <TextSpan textLight uppercase overflowHide overflowEllipsis>
+            {t("story.badgeBarLabel")}{" "}
+            {`(${this.props.viewState.terria.stories.length})`}
+          </TextSpan>
           <RawButton
             type="button"
             onClick={this.toggleRemoveDialog}
@@ -353,7 +367,7 @@ class StoryBuilder extends React.Component<
           >
             <Icon glyph={Icon.GLYPHS.remove} /> {t("story.removeAllStories")}
           </RawButton>
-        </BadgeBar>
+        </Box>
         <Spacing bottom={2} />
         <Box column paddedHorizontally={2} flex={1} styledMinHeight="0">
           {this.state.isRemoving && (
@@ -395,8 +409,9 @@ class StoryBuilder extends React.Component<
               scroll
               overflowY={"auto"}
               styledMaxHeight="100%"
-              ref={this.storiesWrapperRef as React.RefObject<HTMLDivElement>}
+              ref={this.storiesWrapperRef as RefObject<HTMLDivElement>}
               css={`
+                min-height: 130px;
                 margin-right: -10px;
               `}
             >
@@ -424,6 +439,7 @@ class StoryBuilder extends React.Component<
                     closeMenu={() => this.openMenu(undefined)}
                     editStory={() => this.editStory(story)}
                     parentRef={this.storiesWrapperRef}
+                    index={index}
                   />
                 ))}
               </Sortable>
@@ -496,7 +512,7 @@ class StoryBuilder extends React.Component<
           {hasStories && this.renderPlayShare()}
         </Box>
         <Spacing bottom={2} />
-        {hasStories && this.renderStories(this.state.editingMode)}
+        {hasStories && this.renderStories()}
         {this.state.editingMode && (
           <StoryEditor
             removeStory={this.removeStory}
@@ -511,7 +527,7 @@ class StoryBuilder extends React.Component<
   }
 }
 
-type PanelProps = React.ComponentPropsWithoutRef<typeof Box> & {
+type PanelProps = ComponentPropsWithoutRef<typeof Box> & {
   isVisible?: boolean;
   isHidden?: boolean;
 };
@@ -541,7 +557,7 @@ interface CaptureSceneProps {
   disabled?: boolean;
 }
 
-const CaptureScene: React.FC<CaptureSceneProps> = (props) => {
+const CaptureScene: FC<CaptureSceneProps> = (props) => {
   const { t } = useTranslation();
   return (
     <StoryButton
@@ -556,12 +572,12 @@ const CaptureScene: React.FC<CaptureSceneProps> = (props) => {
   );
 };
 
-type StoryButtonProps = React.ComponentPropsWithoutRef<typeof Button> & {
+type StoryButtonProps = ComponentPropsWithoutRef<typeof Button> & {
   btnText: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
-export const StoryButton: React.FC<StoryButtonProps> = (props) => {
+export const StoryButton: FC<StoryButtonProps> = (props) => {
   const { btnText, ...rest } = props;
   return (
     <Button
@@ -579,16 +595,16 @@ export const StoryButton: React.FC<StoryButtonProps> = (props) => {
 
 interface RemoveDialogProps {
   theme: DefaultTheme;
-  text: React.ReactElement;
+  text: ReactElement;
   onConfirm: () => void;
   closeDialog: () => void;
 }
 
-const RemoveDialog: React.FC<RemoveDialogProps> = (props) => {
+const RemoveDialog: FC<RemoveDialogProps> = (props) => {
   const { t } = useTranslation();
   return (
     <Box
-      backgroundColor={props.theme.darkWithOverlay}
+      backgroundColor={props.theme.darkLighter}
       position="absolute"
       rounded
       paddedVertically={3}
@@ -603,7 +619,6 @@ const RemoveDialog: React.FC<RemoveDialogProps> = (props) => {
       <Box>
         <Button
           denyButton
-          rounded
           fullWidth
           textProps={{
             large: true,

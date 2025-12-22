@@ -19,7 +19,6 @@ import ImageryLayerFeatureInfo from "terriajs-cesium/Source/Scene/ImageryLayerFe
 import ImageryProvider from "terriajs-cesium/Source/Scene/ImageryProvider";
 import SplitDirection from "terriajs-cesium/Source/Scene/SplitDirection";
 import isDefined from "../../Core/isDefined";
-import pollToPromise from "../../Core/pollToPromise";
 import TerriaError from "../../Core/TerriaError";
 import Leaflet from "../../Models/Leaflet";
 import getUrlForImageryTile from "../ImageryProvider/getUrlForImageryTile";
@@ -153,11 +152,11 @@ export default class ImageryProviderLeafletTileLayer extends L.TileLayer {
     // an error event.  We want to first raise an error event that optionally returns a promise and
     // retries after the promise resolves.
 
-    const doRequest = (waitPromise?: any) => {
+    const _doRequest = (waitPromise?: any) => {
       if (waitPromise) {
         waitPromise
           .then(function () {
-            doRequest();
+            _doRequest();
           })
           .catch((e: unknown) => {
             // The tile has failed irrecoverably, so invoke Leaflet's standard

@@ -165,7 +165,7 @@ function ClippingMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
       });
       clippingPlaneCollection.modelMatrix = this.clippingPlaneModelMatrix
       this._clippingPlaneCollection = clippingPlaneCollection;
-    
+
       return clippingPlaneCollection;
     }
 

@@ -1,4 +1,3 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
 import Terria from "../../../../Models/Terria";
 import Box from "../../../../Styled/Box";
@@ -23,7 +22,7 @@ const LangPanel = (props: Props) => {
   }
 
   return (
-    //@ts-ignore - not yet ready to tackle tsfying MenuPanel
+    //@ts-expect-error - not yet ready to tackle tsfying MenuPanel
     <MenuPanel
       theme={{
         btn: Styles.langBtn,

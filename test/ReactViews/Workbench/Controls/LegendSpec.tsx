@@ -1,6 +1,4 @@
-const findAllWithClass = require("react-shallow-testutils").findAllWithClass;
-
-import React from "react";
+import { findAllWithClass } from "react-shallow-testutils";
 import TestRenderer from "react-test-renderer";
 import CsvCatalogItem from "../../../../lib/Models/Catalog/CatalogItems/CsvCatalogItem";
 import WebMapServiceCatalogItem from "../../../../lib/Models/Catalog/Ows/WebMapServiceCatalogItem";
@@ -30,11 +28,10 @@ describe("Legend", function () {
       );
     });
 
-    it("A legend image can be rendered", async function (done) {
+    it("A legend image can be rendered", function (done) {
       wmsItem
         .loadMapItems()
         .then(() => {
-          // @ts-ignore
           const testRenderer = TestRenderer.create(<Legend item={wmsItem} />);
 
           const legends = testRenderer.root.findAllByType("img");
@@ -43,16 +40,14 @@ describe("Legend", function () {
         .then(done);
     });
 
-    it("A legend image can be hidden", async function (done) {
+    it("A legend image can be hidden", function (done) {
       wmsItem.setTrait("definition", "hideLegendInWorkbench", true);
       wmsItem
         .loadMapItems()
         .then(() => {
-          // @ts-ignore
           const legendSection = <Legend item={wmsItem} />;
           const result = getShallowRenderedOutput(legendSection);
-          // @ts-ignore
-          expect(result).toEqual(null);
+          expect(result).toBeNull();
         })
         .then(done);
     });
@@ -72,7 +67,6 @@ describe("Legend", function () {
     });
 
     it(" - can be generated", function () {
-      // @ts-ignore
       const legendSection = <Legend item={csvItem} />;
       const result = getShallowRenderedOutput(legendSection);
       const memberComponents = findAllWithClass(
@@ -92,7 +86,6 @@ describe("Legend", function () {
         minimumFractionDigits: 0
       });
 
-      // @ts-ignore
       const legendSection = <Legend item={csvItem} />;
       const result = getShallowRenderedOutput(legendSection);
       const memberComponents = findAllWithClass(

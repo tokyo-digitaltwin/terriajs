@@ -1,8 +1,7 @@
-"use strict";
-import React from "react";
+import { FC } from "react";
 import styled from "styled-components";
 import Box from "../../Styled/Box";
-import { SpacingSpan } from "./../../Styled/Spacing";
+import { SpacingSpan } from "../../Styled/Spacing";
 import { TextSpan } from "../../Styled/Text";
 import { RawButton } from "../../Styled/Button";
 
@@ -23,7 +22,7 @@ interface IStyledWorkbenchButton {
 // styles half ripped from nav.scss
 const StyledWorkbenchButton = styled(RawButton)<IStyledWorkbenchButton>`
   border-radius: 3px;
-  background: ${(props) => props.theme.dark};
+  background: ${(props) => props.theme.colorPrimary};
   color: ${(props) => props.theme.textLight};
   flex-grow: 1;
 
@@ -78,7 +77,7 @@ const StyledWorkbenchButton = styled(RawButton)<IStyledWorkbenchButton>`
 `;
 
 interface IProps {
-  children?: any;
+  children?: React.ReactNode;
   primary?: boolean;
   disabled?: boolean;
   inverted?: boolean;
@@ -88,7 +87,7 @@ interface IProps {
   onClick?: (e?: any) => void;
 }
 
-const WorkbenchButton: React.FC<IProps> = (props: IProps) => {
+const WorkbenchButton: FC<IProps> = (props: IProps) => {
   const { children, title, primary, inverted, disabled, iconOnly } = props;
 
   return (

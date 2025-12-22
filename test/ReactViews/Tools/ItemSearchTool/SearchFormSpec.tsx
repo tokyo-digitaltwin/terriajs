@@ -1,10 +1,11 @@
-import React from "react";
 import { act, create, ReactTestRenderer } from "react-test-renderer";
 import timeout from "../../../../lib/Core/timeout";
 import Terria from "../../../../lib/Models/Terria";
 import CreateModel from "../../../../lib/Models/Definition/CreateModel";
 import mixTraits from "../../../../lib/Traits/mixTraits";
-import ItemSearchProvider from "../../../../lib/Models/ItemSearchProviders/ItemSearchProvider";
+import ItemSearchProvider, {
+  ItemSearchResult
+} from "../../../../lib/Models/ItemSearchProviders/ItemSearchProvider";
 import SearchForm, {
   SearchFormProps
 } from "../../../../lib/ReactViews/Tools/ItemSearchTool/SearchForm";
@@ -13,11 +14,11 @@ class TestCatalogItem extends CreateModel(mixTraits()) {}
 
 class TestItemSearchProvider extends ItemSearchProvider {
   async initialize() {}
-  async describeParameters() {
-    return [];
+  describeParameters() {
+    return Promise.resolve([]);
   }
-  async search() {
-    return [
+  search(): Promise<ItemSearchResult[]> {
+    return Promise.resolve([
       {
         id: "1",
         idPropertyName: "building-id",
@@ -28,7 +29,7 @@ class TestItemSearchProvider extends ItemSearchProvider {
         },
         properties: { foo: "bar" }
       }
-    ];
+    ]);
   }
 }
 
@@ -72,6 +73,6 @@ function render(
   act(() => {
     rendered = create(<SearchForm {...props} />);
   });
-  // @ts-ignore
+  // @ts-expect-error assigned in callback
   return rendered;
 }

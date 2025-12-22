@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React, { useState, ChangeEventHandler, useEffect } from "react";
+import { FC, useState, ChangeEventHandler, useEffect } from "react";
 import TerriaError from "../../../Core/TerriaError";
 import { Complete } from "../../../Core/TypeModifiers";
 import DiscretelyTimeVaryingMixin from "../../../ModelMixins/DiscretelyTimeVaryingMixin";
@@ -110,7 +110,7 @@ const getSwitchableUrls = (
 
 const hasUrl = (value: object): value is Model<UrlTraits> => "url" in value;
 
-const WorkbenchItemControls: React.FC<WorkbenchItemControlsProps> = observer(
+const WorkbenchItemControls: FC<WorkbenchItemControlsProps> = observer(
   ({ item, viewState, controls: controlsWithoutDefaults }) => {
     // Apply controls from props on top of defaultControls
     const controls = { ...defaultControls, ...controlsWithoutDefaults };
@@ -209,6 +209,9 @@ const WorkbenchItemControls: React.FC<WorkbenchItemControlsProps> = observer(
                     value={i}
                     onChange={handleSwitchableUrlChange}
                     checked={urlIndex === i}
+                    css={`
+                      accent-color: #0061DF;
+                    `}
                   />
                   {su.name}
                 </label>
@@ -239,7 +242,9 @@ function generateControls(viewState: ViewState, item: BaseModel) {
   viewState.workbenchItemInputGenerators.forEach((generator) => {
     try {
       const control = generator(item);
-      control && generatedControls.push(control);
+      if (control) {
+        generatedControls.push(control);
+      }
     } catch (error) {
       errors.push(TerriaError.from(error));
     }

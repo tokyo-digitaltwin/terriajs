@@ -1,7 +1,6 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import styled from "styled-components";
-import { reaction } from "mobx";
 import { observer } from "mobx-react";
 
 import { getName } from "../../../../../ModelMixins/CatalogMemberMixin";
@@ -61,8 +60,8 @@ export const ShareUrlWarning: FC<IShareUrlWarningProps> = observer(
           </Text>
           <Text>
             The following data sources will NOT be shared because they include
-            data from this local system. To share these data sources, publish
-            their data on a web server and{" "}
+            data from this local system or from an authenticated online service.
+            To share these data sources, publish their data on a web server and{" "}
             <WarningLink onClick={addWebData}>add them using a url</WarningLink>
             .
           </Text>

@@ -5,10 +5,9 @@ import mixTraits from "../../../lib/Traits/mixTraits";
 import JsonValue from "../../../lib/Core/Json";
 import IndexedItemSearchProvider from "../../../lib/Models/ItemSearchProviders/IndexedItemSearchProvider";
 import Csv from "../../../lib/Table/Csv";
-
-const resultsDataCsv = require("raw-loader!../../../wwwroot/test/IndexedItemSearchProvider/resultsData.csv");
-const heightCsv = require("raw-loader!../../../wwwroot/test/IndexedItemSearchProvider/0.csv");
-const areaCsv = require("raw-loader!../../../wwwroot/test/IndexedItemSearchProvider/1.csv");
+import heightCsv from "../../../wwwroot/test/IndexedItemSearchProvider/0.csv";
+import areaCsv from "../../../wwwroot/test/IndexedItemSearchProvider/1.csv";
+import resultsDataCsv from "../../../wwwroot/test/IndexedItemSearchProvider/resultsData.csv";
 
 const validIndexRoot = {
   resultsDataUrl: "resultsData.csv",

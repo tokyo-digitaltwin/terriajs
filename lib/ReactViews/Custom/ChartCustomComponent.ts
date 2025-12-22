@@ -1,5 +1,5 @@
 import { action, runInAction } from "mobx";
-import React, { ReactElement } from "react";
+import { createElement, ReactElement } from "react";
 import createGuid from "terriajs-cesium/Source/Core/createGuid";
 import DeveloperError from "terriajs-cesium/Source/Core/DeveloperError";
 import Ellipsoid from "terriajs-cesium/Source/Core/Ellipsoid";
@@ -92,6 +92,31 @@ export interface ChartCustomComponentAttributes {
 }
 
 /**
+ * Valid attributes of a <chart> component.
+ */
+export const ChartAttributes = [
+  "src",
+  "src-preview",
+  "sources",
+  "source-names",
+  "downloads",
+  "download-names",
+  "preview-x-label",
+  "data",
+  "identifier",
+  "x-column",
+  "y-column",
+  "y-columns",
+  "column-titles",
+  "column-units",
+  "styling",
+  "highlight-x",
+  "title",
+  "can-download",
+  "hide-buttons"
+];
+
+/**
  * A chart custom component. It displays an interactive chart along with
  * "expand" and "download" buttons. The expand button adds a catalog item with
  * the data to the workbench, causing it to be displayed on the Chart Panel.
@@ -122,32 +147,12 @@ export default abstract class ChartCustomComponent<
   protected chartItemId?: string;
 
   get attributes(): Array<string> {
-    return [
-      "src",
-      "src-preview",
-      "sources",
-      "source-names",
-      "downloads",
-      "download-names",
-      "preview-x-label",
-      "data",
-      "identifier",
-      "x-column",
-      "y-column",
-      "y-columns",
-      "column-titles",
-      "column-units",
-      "styling",
-      "highlight-x",
-      "title",
-      "can-download",
-      "hide-buttons"
-    ];
+    return ChartAttributes;
   }
 
   abstract get name(): string;
 
-  shouldProcessNode(context: ProcessNodeContext, node: DomElement): boolean {
+  shouldProcessNode(_context: ProcessNodeContext, node: DomElement): boolean {
     return (
       this.isChart(node) ||
       this.isFirstColumnOfChartRow(node) ||
@@ -219,7 +224,7 @@ export default abstract class ChartCustomComponent<
     context: ProcessNodeContext,
     node: DomElement,
     children: ReactElement[],
-    index: number
+    _index: number
   ): ReactElement | undefined {
     if (
       node.attribs === undefined ||
@@ -275,8 +280,9 @@ export default abstract class ChartCustomComponent<
               if (item) {
                 this.setTraitsFromParent(item, context.catalogItem!);
                 this.setTraitsFromAttrs(item, attrs, i);
-                body && this.setTraitsFromBody?.(item, body);
-
+                if (body) {
+                  this.setTraitsFromBody?.(item, body);
+                }
                 if (
                   featurePosition &&
                   hasTraits(item, ChartPointOnMapTraits, "chartPointOnMap")
@@ -295,7 +301,7 @@ export default abstract class ChartCustomComponent<
       );
 
       chartElements.push(
-        React.createElement(ChartExpandAndDownloadButtons, {
+        createElement(ChartExpandAndDownloadButtons, {
           key: "button",
           terria: context.terria,
           sourceItems: sourceItems,
@@ -319,15 +325,19 @@ export default abstract class ChartCustomComponent<
       runInAction(() => {
         this.setTraitsFromParent(chartItem, context.catalogItem!);
         this.setTraitsFromAttrs(chartItem, attrs, 0);
-        body && this.setTraitsFromBody?.(chartItem, body);
+        if (body) {
+          this.setTraitsFromBody?.(chartItem, body);
+        }
       });
 
       chartElements.push(
-        React.createElement(Chart, {
+        createElement(Chart, {
           key: "chart",
-          terria: context.terria,
           item: chartItem,
           xAxisLabel: attrs.previewXLabel,
+          // Currently implementation supports showing only one column in the
+          // feature info panel chart
+          yColumn: attrs.yColumns?.[0],
           height: 110
           // styling: attrs.styling,
           // highlightX: attrs.highlightX,
@@ -336,7 +346,7 @@ export default abstract class ChartCustomComponent<
       );
     }
 
-    return React.createElement(
+    return createElement(
       "div",
       {
         key: "chart-wrapper",
@@ -408,10 +418,10 @@ export default abstract class ChartCustomComponent<
   }
 
   private processFirstColumn(
-    context: ProcessNodeContext,
-    node: DomElement,
-    children: ReactElement[],
-    index: number
+    _context: ProcessNodeContext,
+    _node: DomElement,
+    _children: ReactElement[],
+    _index: number
   ): ReactElement | undefined {
     // Do not return a node.
     return undefined;
@@ -436,14 +446,14 @@ export default abstract class ChartCustomComponent<
   }
 
   private processSecondColumn(
-    context: ProcessNodeContext,
+    _context: ProcessNodeContext,
     node: DomElement,
     children: ReactElement[],
-    index: number
+    _index: number
   ): ReactElement | undefined {
     const title = node.parent!.children![0].children![0].data;
     const revisedChildren: ReactElement[] = [
-      React.createElement(
+      createElement(
         "div",
         {
           key: "title",
@@ -452,7 +462,7 @@ export default abstract class ChartCustomComponent<
         title
       ) as ReactElement
     ].concat(children);
-    return React.createElement(
+    return createElement(
       "td",
       { key: "chart", colSpan: 2, className: ChartPreviewStyles.chartTd },
       node.data,

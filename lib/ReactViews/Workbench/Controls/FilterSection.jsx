@@ -2,13 +2,13 @@ import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import PropTypes from "prop-types";
 import { Range } from "rc-slider";
-import React from "react";
+import { Component } from "react";
 import CommonStrata from "../../../Models/Definition/CommonStrata";
 import Styles from "./filter-section.scss";
 import { withTranslation } from "react-i18next";
 
 @observer
-class FilterSection extends React.Component {
+class FilterSection extends Component {
   static propTypes = {
     item: PropTypes.object.isRequired,
     t: PropTypes.func.isRequired
@@ -29,7 +29,7 @@ class FilterSection extends React.Component {
     }
     return (
       <div className={Styles.filters}>
-        {item.filters.map(this.renderFilter.bind(this))}
+        {item.filters.map(this.renderFilter, this)}
       </div>
     );
   }
@@ -52,6 +52,13 @@ class FilterSection extends React.Component {
           min={filter.minimumValue}
           max={filter.maximumValue}
           onChange={this.change.bind(this, filter)}
+          handleStyle={[
+            {backgroundColor: "white"},
+            {backgroundColor: "white"}
+          ]}
+          trackStyle={[
+            {backgroundColor: "white"}
+          ]}
         />
       </div>
     );
