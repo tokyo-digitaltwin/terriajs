@@ -239,7 +239,7 @@ export default class WebMapServiceCatalogItemTraits extends mixTraits(
       "date range, when specified in the format time/time/periodicity. E.g. " +
       "`2015-04-27T16:15:00/2015-04-27T18:45:00/PT15M` has 11 times."
   })
-  maxRefreshIntervals: number = 1000;
+  maxRefreshIntervals: number = 10000;
 
   @primitiveTrait({
     type: "boolean",
@@ -346,4 +346,18 @@ export default class WebMapServiceCatalogItemTraits extends mixTraits(
       "Additional parameters to pass WMS `GetFeatureInfo` requests. If `parameters` trait is also defined, this is applied on top. Dimension parameters are stored in `dimensions`."
   })
   getFeatureInfoParameters?: JsonObject;
+
+  @primitiveTrait({
+    type: "string",
+    name: "Time Mode",
+    description: "Choose between single time and time range."
+  })
+  timeMode?: "instant" | "range";
+
+  @primitiveTrait({
+    type: "string",
+    name: "Time Range Template",
+    description: "ISO time range format with (date) substitution"
+  })
+  timeRangeTemplate?: string;
 }

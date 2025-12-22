@@ -206,6 +206,15 @@
     },
     "exploreMapDataButton": {
       "content": "##Jelaja peta\n\nJelajah katalog data yang tersedia dan tambahkan ke peta di sini. Anda dapat menambahkan beberapa kumpulan data sekaligus, dan Anda akan melihatnya tercantum di bawah di meja kerja."
+    },
+    "mapNavigationSplitterIcon": {
+      "content": "## Bandingkan\n\nFitur yang hebat dari Terria adalah kemampuan untuk membandingkan dataset menggunakan tampilan layar terpisah. Untuk dataset dengan komponen deret waktu, seperti citra satelit, Anda dapat membandingkan tanggal mundur dan maju dalam waktu dengan mengeklik pemilih tanggal."
+    },
+    "mapNavigationCompassOuterRing": {
+      "content": "## Melihat kontrol\n\nDi sini Anda dapat mengubah tampilan peta. Anda dapat mengubah orientasi tampilan dengan menggunakan cincin luar, dan Anda dapat memiringkan sudut kamera dengan menggunakan cincin dalam. Klik dua kali untuk mengatur ulang tampilan."
+    },
+    "menuBarStoryButton": {
+      "content": "## Cerita\n\nCerita memungkinkan Anda menambahkan informasi kontekstual ke kumpulan data untuk menghidupkan narasi. Buat cerita data Anda sendiri menggunakan Editor Cerita, dan bagikan melalui panel 'Bagikan' setelah selesai."
     }
   },
   "trainer": {
@@ -283,16 +292,27 @@
     "closeButtonTitle": "Tutup Alat {{toolName}}"
   },
   "AR": {
-    "confirmText": "Mengerti",
+    "confirmText": "Paham",
     "title": "Fitur Eksperimental: Augmented Reality"
   },
   "compass": {
     "guidanceBtnText": "Lihat petunjuk lengkap tentang bagaimana cara menggunakan kompas",
-    "title": "Klik dan seret untuk memutar kamera"
+    "title": "Klik dan seret untuk memutar kamera",
+    "guidance": {
+      "title": "Kontrol Giroskop",
+      "innerCircleDescription1": "Klik di bagian tengah dan seret perlahan ke atas, bawah, kiri atau kanan untuk memiringkan dan memutar peta secara bersamaan.",
+      "innerCircleDescription2": "Klik dua kali di sini untuk mengatur ulang tampilan ke kondisi default.",
+      "ctrlDragDescription": "Anda juga dapat memiringkan dan memutar peta dengan menahan tombol CTRL dan menyeret peta.",
+      "outerRingTitle": "Lingkar luar",
+      "outerRingDescription": "Seret cincin luar dengan gerakan melingkar untuk memutar tampilan peta 360˚.",
+      "innerCircleTitle": "Lingkaran Dalam"
+    },
+    "description": "Seret cincin luar: memutar tampilan. \nSeret giroskop bagian dalam: membebaskan orbit. \nKlik dua kali: mengatur ulang tampilan. \nTIPS: Anda juga dapat membebaskan orbit dengan menahan tombol CTRL dan menyeret peta.",
+    "guidanceBtnTitle": "Panduan Giroskop"
   },
   "zoomCotrol": {
     "zoomOut": "Perkecil",
-    "zoomIn": "Perbesar",
+    "zoomIn": "Memperbesar",
     "zoomReset": "Setel ulang zum"
   },
   "splitterTool": {
@@ -300,19 +320,26 @@
       "copyName": "{{name}} (salinan)",
       "goright": "Kanan",
       "gorightTitle": "Tampilkan di sisi kanan",
-      "both": "Keduanya",
+      "both": "Kedua",
       "bothTitle": "Tampilkan di kedua sisi",
       "goleft": "Kiri",
       "goleftTitle": "Tampilkan di sisi kiri"
     },
-    "toggleSplitterToolTitle": "Bandingkan"
+    "toggleSplitterToolTitle": "Bandingkan",
+    "errorTitle": "Gagal membandingkan item katalog.",
+    "duplicateModelErrorMessage": "Terjadi error saat memisahkan item katalog`\"{{name}}\"`. Item katalog ini mungkin tidak mendukung fungsionalitas \"bandingkan\"",
+    "modelNotFoundErrorMessage": "ID Model `\"{{id}}\"` tidak ditemukan",
+    "toggleSplitterTool": "Aktifkan perbandingan berdampingan antara dua set data yang berbeda",
+    "toggleSplitterToolDisabled": "Harap nonaktifkan fitur perbandingan berdampingan lainnya untuk mengaktifkan perbandingan standar",
+    "title": "Seret ke kiri atau ke kanan untuk menyesuaikan tampilan"
   },
   "location": {
-    "originError": "Browser Anda hanya dapat menyediakan lokasi Anda ketika menggunakan https. Anda mungkin dapat menggunakan {{secureUrl}} saja.",
+    "originError": "Browser Anda hanya dapat memberikan lokasi Anda saat menggunakan HTTPS. Anda mungkin dapat menggunakan {{secureUrl}} sebagai gantinya.",
     "location": "Lokasi",
     "myLocation": "Lokasi Saya",
     "browserCannotProvide": "Browser Anda tidak dapat menyediakan lokasi Anda.",
-    "errorGettingLocation": "Terjadi kesalahan mendapatkan lokasi"
+    "errorGettingLocation": "Terjadi kesalahan mendapatkan lokasi",
+    "centreMap": "Pusatkan peta di lokasi Anda saat ini"
   },
   "itemSearchTool": {
     "backBtnText": "Cari lagi",
@@ -330,7 +357,9 @@
     },
     "resetBtnText": "Hapus input",
     "loading": "Memuat parameter pencarian",
-    "resultsCount": "{{count}} cocok"
+    "resultsCount": "{{count}} cocok",
+    "noParameters": "Tidak ditemukan parameter yang dicari",
+    "loadError": "Gagal memuat parameter yang dicari. Cek konsol untuk detail error."
   },
   "deltaTool": {
     "cancelBtn": "Batal",
@@ -764,7 +793,8 @@
     "controls": {
       "title": "Kontrol"
     },
-    "toolButtonTitle": "Mode pejalan kaki"
+    "toolButtonTitle": "Mode pejalan kaki",
+    "dropPedestrianTooltipMessage": "<b>Klik kiri</b> untuk memilih titik lokasi<br /><b>Klik kanan / Esc</b> untuk batal"
   },
   "indexedItemSearchProvider": {
     "errorParsingIndexRoot": "Kesalahan saat mengurai file indexRoot: {{indexRootUrl}}.",
@@ -772,8 +802,44 @@
   },
   "browsers": {
     "chrome": "Google Chrome",
-    "firefox": "Mozilla Firefox",
+    "firefox": "",
     "edge": "Microsoft Edge",
-    "safari": ""
+    "safari": "Apple Safari"
+  },
+  "compare": {
+    "title": "Bandingkan",
+    "dateLocationFilter": {
+      "filter": "Filter tanggal berdasarkan lokasi"
+    },
+    "entireMapMenu": {
+      "browse": "Jelajahi map data",
+      "hideAll": "Sembunyikan semua",
+      "sendAllToBack": "Kirim semuanya ke belakang",
+      "sendAllToFront": "Kirim semuanya ke depan"
+    },
+    "entireMap": {
+      "title": "Seluruh peta",
+      "emptyText": "Tambah data baru untuk menampilan di seluruh peta melalui titik menu di atas."
+    },
+    "done": "Selesai",
+    "dateButton": {
+      "left": "Kiri",
+      "select": "Pilih tanggal",
+      "right": "Kanan"
+    },
+    "leftPanel": "Panel kiri",
+    "dimensionSelector": {
+      "undefinedLabel": "Tidak ditentukan"
+    },
+    "dataset": {
+      "selectOne": "Pilih satu"
+    },
+    "rightPanel": "Panel kanan"
+  },
+  "printView": {
+    "loading": "Membuat tampilan cetak..."
+  },
+  "selectableDimensions": {
+    "colorAdd": "Tambahkan"
   }
 }

@@ -70,7 +70,7 @@ module.exports = function (config) {
       suppressErrorSummary: false,
       suppressFailed: false,
       suppressPassed: true,
-      suppressSkipped: false
+      suppressSkipped: true
     }
   };
 };

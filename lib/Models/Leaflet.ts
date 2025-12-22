@@ -4,6 +4,7 @@ import {
   action,
   autorun,
   computed,
+  IReactionDisposer,
   makeObservable,
   observable,
   reaction,
@@ -29,7 +30,6 @@ import filterOutUndefined from "../Core/filterOutUndefined";
 import isDefined from "../Core/isDefined";
 import LatLonHeight from "../Core/LatLonHeight";
 import runLater from "../Core/runLater";
-import MapboxVectorTileImageryProvider from "../Map/ImageryProvider/MapboxVectorTileImageryProvider";
 import ProtomapsImageryProvider from "../Map/ImageryProvider/ProtomapsImageryProvider";
 import ImageryProviderLeafletGridLayer, {
   isImageryProviderGridLayer as supportsImageryProviderGridLayer
@@ -60,12 +60,6 @@ import TerriaFeature from "./Feature/Feature";
 import GlobeOrMap from "./GlobeOrMap";
 import { LeafletAttribution } from "./LeafletAttribution";
 import Terria from "./Terria";
-
-// We want TS to look at the type declared in lib/ThirdParty/terriajs-cesium-extra/index.d.ts
-// and import doesn't allows us to do that, so instead we use require + type casting to ensure
-// we still maintain the type checking, without TS screaming with errors
-const FeatureDetection: FeatureDetection =
-  require("terriajs-cesium/Source/Core/FeatureDetection").default;
 
 // This class is an observer. It probably won't contain any observables itself
 
@@ -113,22 +107,22 @@ export default class Leaflet extends GlobeOrMap {
 
   private _createImageryLayer: (
     ip: ImageryProvider,
-    clippingRectangle: Rectangle | undefined,
-  ) => GridLayer | undefined = computedFn(
-    (ip, clippingRectangle) => {
-      const layerOptions = {
-        bounds: clippingRectangle && rectangleToLatLngBounds(clippingRectangle)
-      };
-      // We have two different kinds of ImageryProviderLeaflet layers
-      // - Grid layer will use the ImageryProvider in the more traditional way - calling `requestImage` to draw the image on to a canvas
-      // - Tile layer will pass tile URLs to leaflet objects - which is a bit more "Leaflety" than Grid layer
-      // Tile layer is preferred. Grid layer mainly exists for custom Imagery Providers which aren't just a tile of image URLs
-      if (supportsImageryProviderGridLayer(ip)) {
-        return new ImageryProviderLeafletGridLayer(this, ip, layerOptions);
-      } else {
-        return new ImageryProviderLeafletTileLayer(this, ip, layerOptions);
-      }
-    });
+    clippingRectangle: Rectangle | undefined
+  ) => GridLayer | undefined = computedFn((ip, clippingRectangle) => {
+    const layerOptions = {
+      maxZoom: this.terria.configParameters.leafletMaxZoom,
+      bounds: clippingRectangle && rectangleToLatLngBounds(clippingRectangle)
+    };
+    // We have two different kinds of ImageryProviderLeaflet layers
+    // - Grid layer will use the ImageryProvider in the more traditional way - calling `requestImage` to draw the image on to a canvas
+    // - Tile layer will pass tile URLs to leaflet objects - which is a bit more "Leaflety" than Grid layer
+    // Tile layer is preferred. Grid layer mainly exists for custom Imagery Providers which aren't just a tile of image URLs
+    if (supportsImageryProviderGridLayer(ip)) {
+      return new ImageryProviderLeafletGridLayer(this, ip, layerOptions);
+    } else {
+      return new ImageryProviderLeafletTileLayer(this, ip, layerOptions);
+    }
+  });
 
   private _makeImageryLayerFromParts(
     parts: ImageryParts,
@@ -183,7 +177,7 @@ export default class Leaflet extends GlobeOrMap {
     this.dataSourceDisplay = new LeafletDataSourceDisplay({
       scene: this.scene,
       dataSourceCollection: this.dataSources,
-      visualizersCallback: this._leafletVisualizer.visualizersCallback as any // TODO: fix type error
+      visualizersCallback: this._leafletVisualizer.visualizersCallback
     });
 
     this._eventHelper = new EventHelper();
@@ -234,8 +228,9 @@ export default class Leaflet extends GlobeOrMap {
         interactions.forEach((handler) => handler.disable());
         this.map.off("click", this._pickLocation);
         this.scene.featureClicked.removeEventListener(this.pickFeature);
-        this._disposeSelectedFeatureSubscription &&
+        if (this._disposeSelectedFeatureSubscription) {
           this._disposeSelectedFeatureSubscription();
+        }
       } else {
         interactions.forEach((handler) => handler.enable());
         this.map.on("click", this._pickLocation);
@@ -315,18 +310,18 @@ export default class Leaflet extends GlobeOrMap {
     // this._dragboxcompleted = false;
   }
 
-  getContainer() {
+  getContainer(): HTMLElement {
     return this.map.getContainer();
   }
 
-  pauseMapInteraction() {
+  pauseMapInteraction(): void {
     ++this._pauseMapInteractionCount;
     if (this._pauseMapInteractionCount === 1) {
       this.map.dragging.disable();
     }
   }
 
-  resumeMapInteraction() {
+  resumeMapInteraction(): void {
     --this._pauseMapInteractionCount;
     if (this._pauseMapInteractionCount === 0) {
       setTimeout(() => {
@@ -337,9 +332,10 @@ export default class Leaflet extends GlobeOrMap {
     }
   }
 
-  destroy() {
-    this._disposeSelectedFeatureSubscription &&
+  destroy(): void {
+    if (this._disposeSelectedFeatureSubscription) {
       this._disposeSelectedFeatureSubscription();
+    }
     this._disposeSplitterReaction();
     this._disposeWorkbenchMapItemsSubscription();
     this._eventHelper.removeAll();
@@ -500,7 +496,9 @@ export default class Leaflet extends GlobeOrMap {
         // careful to raiseToTop() only if the DS already exists in the collection.
         // Relevant code:
         //   https://github.com/CesiumGS/cesium/blob/dbd452328a48bfc4e192146862a9f8fa15789dc8/packages/engine/Source/DataSources/DataSourceCollection.js#L298-L299
-        dataSources.contains(ds) && dataSources.raiseToTop(ds);
+        if (dataSources.contains(ds)) {
+          dataSources.raiseToTop(ds);
+        }
       })
     );
   }
@@ -716,7 +714,7 @@ export default class Leaflet extends GlobeOrMap {
     );
   }
 
-  notifyRepaintRequired() {
+  notifyRepaintRequired(): void {
     // No action necessary.
   }
 
@@ -724,7 +722,7 @@ export default class Leaflet extends GlobeOrMap {
     latLngHeight: LatLonHeight,
     providerCoords: ProviderCoordsMap,
     existingFeatures: TerriaFeature[]
-  ) {
+  ): void {
     this._pickFeatures(
       L.latLng({
         lat: latLngHeight.latitude,
@@ -755,7 +753,7 @@ export default class Leaflet extends GlobeOrMap {
    */
 
   @action
-  private _featurePicked(entity: Entity, event: L.LeafletMouseEvent) {
+  private async _featurePicked(entity: Entity, event: L.LeafletMouseEvent) {
     this._pickFeatures(event.latlng);
 
     // Ignore clicks on the feature highlight.
@@ -778,7 +776,9 @@ export default class Leaflet extends GlobeOrMap {
       typeof catalogItem.getFeaturesFromPickResult === "function" &&
       this.terria.allowFeatureInfoRequests
     ) {
-      const result = catalogItem.getFeaturesFromPickResult.bind(catalogItem)(
+      const result = await catalogItem.getFeaturesFromPickResult.bind(
+        catalogItem
+      )(
         undefined,
         entity,
         (this._pickedFeatures?.features.length || 0) < catalogItem.maxRequests
@@ -881,7 +881,7 @@ export default class Leaflet extends GlobeOrMap {
       Ellipsoid.WGS84.cartographicToCartesian(pickedLocation);
 
     const imageryFeaturePromises = imageryLayers.map(async (imageryLayer) => {
-      const imageryLayerUrl = (<any>imageryLayer.imageryProvider).url;
+      const imageryLayerUrl = (imageryLayer.imageryProvider as any).url;
       const longRadians = CesiumMath.toRadians(latlng.lng);
       const latRadians = CesiumMath.toRadians(latlng.lat);
 
@@ -1004,7 +1004,7 @@ export default class Leaflet extends GlobeOrMap {
     });
   }
 
-  _reactToSplitterChanges() {
+  _reactToSplitterChanges(): IReactionDisposer {
     return autorun(() => {
       const items = this.terria.mainViewer.items.get();
       const showSplitter = this.terria.showSplitter;
@@ -1225,7 +1225,7 @@ export default class Leaflet extends GlobeOrMap {
   }
 
   _addVectorTileHighlight(
-    imageryProvider: MapboxVectorTileImageryProvider | ProtomapsImageryProvider,
+    imageryProvider: ProtomapsImageryProvider,
     rectangle: Rectangle
   ): () => void {
     const map = this.map;

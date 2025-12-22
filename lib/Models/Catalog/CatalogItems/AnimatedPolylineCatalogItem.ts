@@ -279,7 +279,7 @@ class AnimatedPolylineCatalogItem extends MappableMixin(
     const attributes = this.getSampleAttributes();
     return Object.entries(attributes)
       .map(([k, v]) => {
-        const type = v.length === 1 ? "float" : `vec${v.length}`;    
+        const type = v.length === 1 ? "float" : `vec${v.length}`;
         if (isVertexShader) {
           return `out ${type} ${PER_INSTANCE_VARIABLE_PREFIX}${k};`;
         }
@@ -365,11 +365,11 @@ class AnimatedPolylineCatalogItem extends MappableMixin(
       }
       return 0.0;
     }
-    
+
     vec4 getColor(float t) {
       return ${colorExpression};
     }
-    
+
     void main()
     {
       fragColor = getColor(getTimeSinceLastPassage());

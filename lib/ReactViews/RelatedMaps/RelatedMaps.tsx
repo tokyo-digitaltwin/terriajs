@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React from "react";
+import { Component } from "react";
 import { WithTranslation, withTranslation } from "react-i18next";
 import { DefaultTheme, withTheme } from "styled-components";
 import { RelatedMap } from "../../Models/RelatedMaps";
@@ -8,9 +8,7 @@ import { ExternalLinkIcon } from "../Custom/ExternalLink";
 import parseCustomMarkdownToReact from "../Custom/parseCustomMarkdownToReact";
 import { withViewState, WithViewState } from "../Context";
 import Styles from "./related-maps.scss";
-
-const MenuPanel =
-  require("../StandardUserInterface/customizable/MenuPanel").default;
+import MenuPanel from "../StandardUserInterface/customizable/MenuPanel";
 
 type PropTypes = WithViewState &
   WithTranslation & {
@@ -19,15 +17,9 @@ type PropTypes = WithViewState &
   };
 
 @observer
-class RelatedMaps extends React.Component<PropTypes> {
-  /**
-   * @param {Props} props
-   */
-  constructor(props: PropTypes) {
-    super(props);
-  }
-
+class RelatedMaps extends Component<PropTypes> {
   render() {
+    const t = this.props.t;
     const dropdownTheme = {
       inner: Styles.dropdownInner,
       icon: "gallery"
@@ -36,18 +28,17 @@ class RelatedMaps extends React.Component<PropTypes> {
     const smallScreen = this.props.viewState.useSmallScreenInterface;
 
     return (
+      //@ts-expect-error - not yet ready to tackle tsfying MenuPanel
       <MenuPanel
         theme={dropdownTheme}
-        btnText="Related Maps"
+        btnText={t("relatedMaps.buttonText")}
         smallScreen={smallScreen}
         viewState={this.props.viewState}
-        btnTitle="See related maps"
+        btnTitle={t("relatedMaps.buttonTitle")}
         showDropdownInCenter
       >
-        <h2>Related Maps</h2>
-
-        <p>Clicking on a map below will open it in a separate window or tab.</p>
-
+        <h2>{t("relatedMaps.panelHeading")}</h2>
+        <p>{t("relatedMaps.panelText")}</p>
         {this.props.relatedMaps.map((map, i) => (
           <Box flex key={i}>
             <Box>

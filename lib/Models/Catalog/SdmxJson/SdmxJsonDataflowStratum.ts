@@ -289,8 +289,6 @@ export class SdmxJsonDataflowStratum extends LoadableStratum(
               }, new Set())
             : new Set();
 
-          let options: StratumFromTraits<DimensionOptionTraits>[] = [];
-
           // Get codes by merging allowedOptionIds with codelist
           const filteredCodesList =
             (allowedOptionIds.size > 0
@@ -304,7 +302,7 @@ export class SdmxJsonDataflowStratum extends LoadableStratum(
           // If modelOverride `options` has been defined -> use it
           // Other wise use filteredCodesList
           const overrideOptions = modelOverride?.options;
-          options =
+          const options: StratumFromTraits<DimensionOptionTraits>[] =
             isDefined(overrideOptions) && overrideOptions.length > 0
               ? overrideOptions.map((option) => {
                   return {
@@ -804,7 +802,7 @@ export class SdmxJsonDataflowStratum extends LoadableStratum(
       this.catalogItem.discreteTimes.length > 1
     ) {
       const chartName = `${this.catalogItem.name}: {{${regionType.nameProp}}}`;
-      template += `</table>{{#terria.timeSeries.data}}<chart title="${chartName}" x-column="{{terria.timeSeries.xName}}" y-column="${this.unitMeasure}" >{{terria.timeSeries.data}}</chart>{{/terria.timeSeries.data}}`;
+      template += `</table>{{#terria.timeSeries.data}}<chart title="${chartName}" x-column="{{terria.timeSeries.xName}}" y-column="${this.primaryMeasureColumn?.title}" >{{terria.timeSeries.data}}</chart>{{/terria.timeSeries.data}}`;
     }
 
     return createStratumInstance(FeatureInfoTemplateTraits, { template });

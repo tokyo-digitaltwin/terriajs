@@ -115,9 +115,7 @@ function DiscretelyTimeVaryingMixin<
               tag: dt.tag !== undefined ? dt.tag : dt.time
             });
           }
-        } catch {
-          /* eslint-disable-line no-empty */
-        }
+        } catch {}
       }
       asJulian.sort((a, b) => JulianDate.compare(a.time, b.time));
       return asJulian;
@@ -202,6 +200,14 @@ function DiscretelyTimeVaryingMixin<
     @computed({ equals: JulianDate.equals })
     get currentDiscreteJulianDate() {
       const index = this.currentDiscreteTimeIndex;
+      return index === undefined
+        ? undefined
+        : this.discreteTimesAsSortedJulianDates![index].time;
+    }
+
+    @computed({ equals: JulianDate.equals })
+    get nextDiscreteJulianDate() {
+      const index = this.nextDiscreteTimeIndex;
       return index === undefined
         ? undefined
         : this.discreteTimesAsSortedJulianDates![index].time;
@@ -352,12 +358,13 @@ function DiscretelyTimeVaryingMixin<
       const colorId = `color-${this.name}`;
       return {
         item: this,
+        id: this.name || "",
         name: this.name || "",
         categoryName: this.name,
         key: `key${this.uniqueId}-${this.name}`,
         type: this.chartType || "momentLines",
         glyphStyle: this.chartGlyphStyle,
-        xAxis: { scale: "time" },
+        xAxis: { name: "Time", scale: "time" },
         points,
         domain: { ...calculateDomain(points), y: [0, 1] },
         showInChartPanel: this.show && this.showInChartPanel,
@@ -437,7 +444,7 @@ export type ObjectifiedHours = DatesObject<Date[]>;
  * @return {Object} Returns an object whose keys are years, whose values are objects whose keys are months (0=Jan),
  *   whose values are objects whose keys are days, whose values are arrays of all the datetimes on that day.
  */
-function objectifyDates(dates: Date[]): ObjectifiedDates {
+export function objectifyDates(dates: Date[]): ObjectifiedDates {
   const result: ObjectifiedDates = { index: [], dates };
 
   for (let i = 0; i < dates.length; i++) {
