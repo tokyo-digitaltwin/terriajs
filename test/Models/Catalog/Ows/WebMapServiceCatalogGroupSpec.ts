@@ -1,6 +1,5 @@
 import i18next from "i18next";
 import { runInAction } from "mobx";
-import CatalogMemberMixin from "../../../../lib/ModelMixins/CatalogMemberMixin";
 import GroupMixin from "../../../../lib/ModelMixins/GroupMixin";
 import WebMapServiceCatalogGroup from "../../../../lib/Models/Catalog/Ows/WebMapServiceCatalogGroup";
 import WebMapServiceCatalogItem from "../../../../lib/Models/Catalog/Ows/WebMapServiceCatalogItem";
@@ -34,7 +33,7 @@ describe("WebMapServiceCatalogGroup", function () {
   });
 
   describe("after loading capabilities", function () {
-    beforeEach(async function () {
+    beforeEach(function () {
       runInAction(() => {
         wms.setTrait("definition", "url", "test/WMS/single_metadata_url.xml");
       });
@@ -89,12 +88,12 @@ describe("WebMapServiceCatalogGroup", function () {
       await wms.loadMembers();
     });
 
-    it("loads", async function () {
+    it("loads", function () {
       expect(wms.members.length).toEqual(1);
       expect(wms.memberModels.length).toEqual(1);
     });
 
-    it("item properties are passed down", async function () {
+    it("item properties are passed down", function () {
       const member: any = wms.memberModels[0];
       expect(member.parameters.foo).toEqual("baa");
     });
@@ -109,7 +108,7 @@ describe("WebMapServiceCatalogGroup", function () {
       await wms.loadMembers();
     });
 
-    it("addsShareKeys", async function () {
+    it("addsShareKeys", function () {
       expect(wms.members.length).toEqual(1);
       expect(wms.memberModels.length).toEqual(1);
       const wmsItem = wms.memberModels[0] as WebMapServiceCatalogItem;
@@ -132,7 +131,7 @@ describe("WebMapServiceCatalogGroup", function () {
       await wms.loadMembers();
     });
 
-    it("loads", async function () {
+    it("loads", function () {
       expect(wms.members.length).toEqual(2);
       expect(wms.memberModels.length).toEqual(2);
 
@@ -202,7 +201,7 @@ describe("WebMapServiceCatalogGroup", function () {
       await wms.loadMembers();
     });
 
-    it("sets traits correctly", async function () {
+    it("sets traits correctly", function () {
       const wmsItem = (
         (wms.memberModels[0] as WebMapServiceCatalogGroup)
           .memberModels[0] as WebMapServiceCatalogGroup

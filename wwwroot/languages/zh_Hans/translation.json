@@ -1,8 +1,8 @@
 {
   "general": {
     "prev": "上一个",
-    "next": "下一个",
-    "skip": "跳过",
+    "next": "继续",
+    "skip": "略过",
     "back": "返回",
     "delete": "删除",
     "cancel": "取消",
@@ -74,7 +74,9 @@
     },
     "toggleSplitterTool": "在两组不同的数据之间进行并排比较",
     "toggleSplitterToolDisabled": "请禁用其他并排比较功能以启用标准比较",
-    "title": "按下并拖动左键或者右键调整视角"
+    "title": "按下并拖动左键或者右键调整视角",
+    "errorTitle": "未能比较catalog项目.",
+    "modelNotFoundErrorMessage": "模型字段 ID `\"{{id}}\"`没有被定义"
   },
   "concept": {
     "inactive": {
@@ -122,7 +124,8 @@
     "download": "下载",
     "sectionLabel": "图表",
     "loading": "加载图表数据...",
-    "noData": "无数据可用于图表显示。"
+    "noData": "无数据可用于图表显示。",
+    "showItemInChart": "在图表中显示 {{value}}"
   },
   "viewModels": {
     "searchCatalogueItem": "目录项",
@@ -134,7 +137,8 @@
     "inMultipleLocations": "在多个地点，包括： ",
     "searchErrorOccurred": "搜索时出错。 请检查您的互联网连接或稍后重试。",
     "searchNoCatalogueItem": "抱歉，没有与您的搜索查询匹配的目录项。",
-    "inDataCatalogue": "在数据目录中"
+    "inDataCatalogue": "在数据目录中",
+    "searchMinCharacters_0": "您需要输入至少 {{count}} 个字符"
   },
   "zoomCotrol": {
     "zoomIn": "放大",
@@ -296,7 +300,7 @@
     "downloadMap": "下载地图(png图片)",
     "creatingPrintView": "正在创建打印视图...",
     "btnAdvanced": "高级选项",
-    "embedTitle": "要嵌入，请复制此代码以将此地图嵌入 HTML 页面：",
+    "embedTitle": "嵌入地图",
     "shortenUsingService": "使用 Web 服务缩短共享 URL地址",
     "btnCatalogShareText": "分享",
     "convertNotificationTitle": "注意：分享链接已更新",
@@ -304,7 +308,9 @@
     "convertNotificationFeedback": "如有问题或反馈，请单击此处。",
     "convertNotificationWarningsTitle": "技术细节",
     "convertErrorTitle": "无法将共享链接升级到 V8版本",
-    "convertErrorMessage": "此共享链接基于旧版本的 TerriaJS - 支持此网络地图的软件。 尝试升级共享数据时发生错误。"
+    "convertErrorMessage": "此共享链接基于旧版本的 TerriaJS - 支持此网络地图的软件。 尝试升级共享数据时发生错误。",
+    "embedDescription": "要嵌入，请复制此代码以将此地图嵌入 HTML 页面：",
+    "getShareSaveHelpMessage": "如何收藏分享链接"
   },
   "feedback": {
     "close": "关闭反馈",
@@ -348,7 +354,7 @@
     "baseMap": "底图",
     "imageOptimisation": "图像优化",
     "nativeResolutionHeader": "使用本机设备分辨率",
-    "mapQuality": "栅格地图质量：",
+    "mapQuality": "地图质量：",
     "qualityLabel": "质量",
     "performanceLabel": "性能",
     "timeline": {
@@ -452,7 +458,12 @@
     "removeAllStories": "移除全部",
     "removeStoryDialog": "您确定要删除“<1>{{storyName}}</1>”吗？",
     "preview": "预览地图故事",
-    "play": "播放"
+    "play": "播放",
+    "expand": "展开",
+    "collapse": "折叠",
+    "prev": "上一步",
+    "next": "下一步",
+    "restart": "重置"
   },
   "sui": {
     "notifications": {
@@ -594,15 +605,23 @@
       "geojson": "GeoJSON格式",
       "geoRss": "GeoRSS格式",
       "gpx": "GPX格式",
-      "carto": "Carto格式",
-      "shp": "Shapefile 文件(zip)",
+      "carto": "Carto V1 格式",
+      "shp": "Shapefile 文件",
       "other": "其它格式(使用转换服务)",
       "sdmx-group": "SDMX-JSON数据组",
-      "json": "JSON格式",
+      "json": "Terria目录",
       "czml": "CZML格式",
-      "gltf": "GLTF格式",
+      "gltf": "glTF格式",
       "kml": "KML或者KMZ",
-      "csv": "CSV格式"
+      "csv": "CSV格式",
+      "assimp-remote": "3D文件转换器(实验性功能)",
+      "assimp-local": "3D文件转换器(zip格式)(实验性功能)",
+      "assimp-local-description": "**Warning:** 3D文件转换器功能目前处于实验阶段。  \n请参阅[支持的格式列表](https://github.com/assimp/assimp/blob/master/doc/Fileformats.md).  \n文件必须压缩为zip格式。",
+      "socrata-group": "Socrata服务器",
+      "ifc": "IFC",
+      "carto-v3": "Carto V3 格式",
+      "esri-imageServer": "Esri ArcGIS ImageServer (单图层)",
+      "assimp-remote-description": "**Warning:** 3D文件转换器功能目前处于实验阶段。\n请参阅[支持的格式列表](https://github.com/assimp/assimp/blob/master/doc/Fileformats.md)。\n文件必须压缩为zip格式。"
     },
     "printWindow": {
       "onafterprint": "打印之后",
@@ -622,6 +641,12 @@
     },
     "serverConfig": {
       "failedToGet": "无法从 {{serverConfigUrl}} 获取服务器配置。这意味着代理、转换和 URL 缩短等服务可能无法正常工作。"
+    },
+    "unverifiedExternalLink": {
+      "confirmText": "在新标签页中打开",
+      "denyText": "取消",
+      "title": "警告：未经验证的链接",
+      "message": "您即将打开：\n\n`{{url}}`\n\n该链接未经验证可能不安全。"
     }
   },
   "terriaViewer": {
@@ -641,7 +666,11 @@
       "failedToObtain": "未能获取图像块 X:{{x}} Y:{{y}} Level: {{level}}",
       "devError": "cesium组件是必需的。",
       "notWebMercatorTilingScheme": "此数据集无法在 2D 地图上显示，因为它不支持 Web Mercator (EPSG:3857) 投影。",
-      "unusalTilingScheme": "此数据集无法在 2D 地图上显示，因为它使用了不受支持的切片方案。"
+      "unusalTilingScheme": "此数据集无法在 2D 地图上显示，因为它使用了不受支持的切片方案。",
+      "stoppedRenderingMessage": "这可能是由于刚添加到工作台的数据集所引起的，请尝试移除它。如果这不能解决问题，您可能需要重新加载 {{appName}}。",
+      "stoppedRenderingTitle": "3D地图渲染失败",
+      "terrainServerErrorTitle": "地形服务器无响应",
+      "terrainServerErrorMessage": " 当前地形服务器没有响应。您仍可以正常使用 {{appName}} 的所有功能，但在3D模式下将不会显示地形细节。对此带来的不便我们深感歉意。请稍后再试，届时地形服务器应能恢复正常。如果问题依旧存在，请通过电子邮件{{supportEmail}}联系我们。"
     },
     "addressGeocoder": {
       "devError": "bulkConvertAddresses 必须在派生类中实现。"
@@ -680,7 +709,8 @@
     "extraCreditLinks": {
       "basemap": "底图",
       "disclaimer": "免责声明",
-      "dataAttribution": "数据归属"
+      "dataAttribution": "数据归属",
+      "dataProvider": "数据提供者:"
     },
     "computeRingWindingOrder": {
       "devError": "类型为 {x:number, y:number} 的预期点"
@@ -736,7 +766,14 @@
     },
     "arcGisMapServerCatalogGroup": {
       "dataDescription": "数据描述",
-      "name": "ArcGIS 地图服务器组"
+      "name": "ArcGIS 地图服务器组",
+      "copyrightText": "版权声明",
+      "invalidServiceTitle": "无效的ArcGIS地图服务",
+      "invalidServiceMessage": "调用ArcGIS地图服务时发生错误。服务器的响应似乎不是有效的地图服务文档。",
+      "serviceDescription": "服务描述",
+      "groupNotAvailableTitle": "图层组不可用",
+      "groupNotAvailableMessage": "调用ArcGIS地图服务时发生错误。",
+      "singleFusedMapCacheLayerName": "所有图层"
     },
     "arcGisService": {
       "name": "ArcGIS服务组",
@@ -752,6 +789,30 @@
       "invalidServiceTitle": "ArcGIS 要素服务无效",
       "invalidServiceMessage": "调用 ArcGIS 要素服务时出错。 服务器的响应似乎不是有效的要素服务文档。",
       "groupNotAvailableMessage": "调用 ArcGIS 要素服务时出错。"
+    },
+    "arcGisMapServerCatalogItem": {
+      "name": "Esri ArcGIS地图服务器",
+      "dataDescription": "数据描述",
+      "noLayersFoundMessage": "Esri ArcGIS MapServer '{{name}}' 没有图层可供显示。",
+      "serviceDescription": "服务描述",
+      "invalidUrlTitle": "无法加载MapServer",
+      "noLayersFoundTitle": "无法加载ArcGIS MapServer。",
+      "copyrightText": "版权声明",
+      "invalidUrlMessage": "无法加载ArcGIS MapServer端点，因为目录项没有提供`url`。"
+    },
+    "bing": {
+      "name": "必应地图"
+    },
+    "wcs": {
+      "asyncResultLoadingMetadata": "WCS 加载中:\n服务 {{name}} 在 {{timestamp}}.\n\n*正在加载元数据 (`DescribeCoverage`)*",
+      "asyncResultDescription": "这是根据以下输入参数从 {{name}} 服务导出数据的结果，操作时间为 {{timestamp}}。",
+      "asyncPendingDescription": "WCS 加载中:\n来自 {{name}} 服务的数据，时间戳为 {{timestamp}}.\n\n*正在下载覆盖图层*",
+      "exportFailedTitle": "数据导出失败"
+    },
+    "arcGisImageServerCatalogItem": {
+      "name": "Esri ArcGIS ImageServer",
+      "invalidServiceTitle": "无效的 ArcGIS Image Service",
+      "invalidUrlTitle": "不能加载ImageServer服务"
     }
   },
   "addData": {
@@ -765,7 +826,7 @@
     "searchPlaceholderWhole": "搜索整个目录",
     "searchPlaceholder": "搜索目录",
     "localAdd": "添加本地文件",
-    "localFileType": "<0>步骤 1：</0> 选择文件类型（可选）",
+    "localFileType": "<0>步骤 1：</0> 选择文件类型",
     "localFile": "<0>步骤 2：</0> 选择文件",
     "webAdd": "添加网络数据",
     "browse": "浏览...",
@@ -777,7 +838,7 @@
     "webTitle": "添加网络数据",
     "done": "完成",
     "infoText": "<0>将文件拖放到此处以在地图上本地查看</0><1>（不会保存或上传到互联网）</1>",
-    "webFileType": "<0>步骤 1：</0> 选择文件类型（可选）"
+    "webFileType": "<0>步骤 1：</0> 选择文件类型或web服务类型"
   },
   "description": {
     "dataLocal": "该文件仅存在于您的浏览器中。 要共享它，您必须将其加载到公共 Web 服务器上。",
@@ -827,7 +888,8 @@
     "preview": "{{appName}} 预览",
     "datasetDescription": "数据集描述",
     "modified": "修改",
-    "author": "作者"
+    "author": "作者",
+    "selectMultipleDatasets": "按下<strong>Shift</strong>键并点击</0><1 /><2>以添加多个数据集</2>"
   },
   "workbench": {
     "splitItem": "比较",
@@ -866,7 +928,8 @@
     "removeFromMap": "移除",
     "diffImage": "不同之处",
     "addItemErrorTitle": "无法将目录子项添加到工作台。",
-    "searchItem": "搜索"
+    "searchItem": "搜索",
+    "splitScreenMode": "分屏模式"
   },
   "dataCatalog": {
     "groupRemove": "移除此群组",
@@ -880,7 +943,7 @@
     "searchCatalogue": "搜索目录",
     "resultsLabel": "搜索结果",
     "viewLess": "查看较少的 {{name}} 个结果",
-    "searchInDataCatalog": "在数据目录中搜索 <1>'{{locationSearchText}}'</1>",
+    "searchInDataCatalog": "在数据目录中搜索'{{locationSearchText}}'",
     "done": "完成"
   },
   "mobile": {
@@ -895,12 +958,13 @@
   "loader": {
     "loadingMessage": "加载中"
   },
-  "emptyWorkbench": {
-    "emptyArea": "你的工作台是空的",
-    "helpfulHints": "有帮助的提示",
-    "helpfulHintsOne": "通过选择“探索地图数据”浏览可用数据或单击“上传”将您自己的数据添加到地图中。",
-    "helpfulHintsThree": "在工作台中，如果数据支持此功能，您可以打开和关闭数据集、更改其不透明度、激活分屏比较、更改样式以及浏览日期和时间。",
-    "helpfulHintsTwo": "将数据添加到地图后，您的活动数据集将在工作台中列出。 工作台将帮助您与数据进行交互。"
+  "browsers": {
+    "chrome": "谷歌Chrome浏览器",
+    "safari": "苹果Safari浏览器",
+    "firefox": "FireFox浏览器",
+    "edge": "微软Edge浏览器"
   },
-  "emptyWorkbenchMessage": "<0><0>你的工作台是空的</0><1><strong>点击上面的'$t(addData.addDataBtnText)' </strong></1><2><0>浏览数据目录 </0><1>将您自己的数据加载到地图上</1></2><3><0></0><strong>提示</strong><2>您所有的活动数据集都会 在此处列出</2></3></0>"
+  "includeStory": {
+    "message": "分享时包含故事"
+  }
 }

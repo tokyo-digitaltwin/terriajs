@@ -178,7 +178,7 @@ export default class TableAutomaticStylesStratum extends LoadableStratum(
         column.type !== TableColumnType.enum
     );
 
-    const columnStyles = this.catalogItem.tableColumns.map((column, i) =>
+    const columnStyles = this.catalogItem.tableColumns.map((column, _i) =>
       createStratumInstance(TableStyleTraits, {
         id: column.name,
         color: createStratumInstance(TableColorStyleTraits, {
@@ -231,7 +231,7 @@ export default class TableAutomaticStylesStratum extends LoadableStratum(
       i < this.catalogItem.activeTableStyle.rowGroups.length;
       i++
     ) {
-      const [rowGroupId, rowIds] =
+      const [_rowGroupId, rowIds] =
         this.catalogItem.activeTableStyle.rowGroups[i];
       // Check if there is only 1 unique date in this rowGroup
       const dates = rowIds

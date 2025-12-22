@@ -1,8 +1,7 @@
-import "!!style-loader!css-loader?sourceMap!./sortable.css";
+import "!!style-loader!css-loader!./sortable.css";
 import { action, makeObservable } from "mobx";
 import { observer } from "mobx-react";
-import React from "react";
-//@ts-ignore
+import { Component } from "react";
 import Sortable from "react-anything-sortable";
 import styled from "styled-components";
 import Terria from "../../Models/Terria";
@@ -12,7 +11,9 @@ import WorkbenchItem from "./WorkbenchItem";
 import WorkbenchSplitScreen from "./WorkbenchSplitScreen";
 
 const StyledUl = styled(Ul)`
-  margin: 5px 0;
+  gap: 5px;
+  margin: 15px 0;
+  padding: 0 15px;
   li {
     &:first-child {
       margin-top: 0;
@@ -26,7 +27,7 @@ interface IProps {
 }
 
 @observer
-class WorkbenchList extends React.Component<IProps> {
+class WorkbenchList extends Component<IProps> {
   constructor(props: IProps) {
     super(props);
     makeObservable(this);
@@ -34,7 +35,7 @@ class WorkbenchList extends React.Component<IProps> {
 
   @action.bound
   onSort(
-    sortedArray: any,
+    _sortedArray: any,
     currentDraggingSortData: any,
     currentDraggingIndex: any
   ) {
@@ -50,10 +51,9 @@ class WorkbenchList extends React.Component<IProps> {
         overflowY="auto"
         overflowX="hidden"
         scroll
-        paddedHorizontally
         fullWidth
-        fullHeight
         column
+        flex="1"
       >
         {this.props.terria.showSplitter && (
           <WorkbenchSplitScreen terria={this.props.terria} />

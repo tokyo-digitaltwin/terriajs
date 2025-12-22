@@ -1,4 +1,3 @@
-import React from "react";
 import PropTypes from "prop-types";
 import createReactClass from "create-react-class";
 import classNames from "classnames";
@@ -112,7 +111,7 @@ const InnerPanel = createReactClass({
           { [Styles.showDropdownInCenter]: this.props.showDropdownInCenter }
         )}
         css={`
-          background: ${(p) => p.theme.dark};
+          background: ${(p) => p.theme.colorPrimary};
         `}
         ref={this.props.innerRef}
         onClick={(e) => e.stopPropagation()}
@@ -139,6 +138,7 @@ const InnerPanel = createReactClass({
           onClick={this.forceClose}
           title={t("general.close")}
           aria-label={t("general.close")}
+          // eslint-disable-next-line react/no-unknown-property
           showDropdownAsModal={this.props.showDropdownAsModal}
           css={`
             svg {
@@ -166,7 +166,7 @@ const InnerPanel = createReactClass({
             className={classNames(Styles.caret, "tjs-sc-InnerPanel__caret")}
             style={{ left: this.props.caretOffset }}
             css={`
-              background: ${(p) => p.theme.dark};
+              background: ${(p) => p.theme.colorPrimary};
             `}
           />
         )}

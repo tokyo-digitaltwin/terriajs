@@ -6,6 +6,7 @@ import _loadWithXhr from "../../../../lib/Core/loadWithXhr";
 import ArcGisMapServerCatalogItem from "../../../../lib/Models/Catalog/Esri/ArcGisMapServerCatalogItem";
 import Terria from "../../../../lib/Models/Terria";
 import CommonStrata from "./../../../../lib/Models/Definition/CommonStrata";
+import mapServerJson from "../../../../wwwroot/test/ArcGisMapServer/Dynamic_National_Map_Hydrography_and_Marine/mapserver.json";
 
 configure({
   enforceActions: "observed",
@@ -59,6 +60,12 @@ describe("ArcGisMapServerCatalogItem", function () {
         return realLoadWithXhr(...args);
       } else if (url.match("/cadastre_history/MapServer")) {
         args[0] = "test/ArcGisMapServer/time-enabled.json";
+      } else if (url.match("/LayerWithTiles/MapServer")) {
+        url = url.replace(/^.*\/MapServer/, "MapServer");
+        url = url.replace(/MapServer\/?\?.*/i, "mapserver.json");
+        url = url.replace(/MapServer\/Legend\/?\?.*/i, "legend.json");
+        url = url.replace(/MapServer\/Layers\/?\?.*/i, "layers.json");
+        args[0] = "test/ArcGisMapServer/LayerWithTiles/" + url;
       }
 
       return realLoadWithXhr(...args);
@@ -268,22 +275,12 @@ describe("ArcGisMapServerCatalogItem", function () {
         it("usePreCachedTilesIfAvailable = false if requesting specific layers", async function () {
           runInAction(() => {
             item = new ArcGisMapServerCatalogItem("test", new Terria());
-            item.setTrait(CommonStrata.definition, "url", mapServerUrl);
-            item.setTrait(CommonStrata.definition, "layers", "31,32");
-          });
-          await item.loadMapItems();
-
-          expect(item.layersArray.length).toBe(2);
-
-          imageryProvider = item.mapItems[0]
-            .imageryProvider as ArcGisMapServerImageryProvider;
-          expect(imageryProvider.usingPrecachedTiles).toBe(false);
-        });
-
-        it("usePreCachedTilesIfAvailable = false if requesting layer ID in url path", async function () {
-          runInAction(() => {
-            item = new ArcGisMapServerCatalogItem("test", new Terria());
-            item.setTrait(CommonStrata.definition, "url", singleLayerUrl);
+            item.setTrait(
+              CommonStrata.definition,
+              "url",
+              "http://www.example.com/LayerWithTiles/MapServer"
+            );
+            item.setTrait(CommonStrata.definition, "layers", "0");
           });
           await item.loadMapItems();
 
@@ -292,41 +289,87 @@ describe("ArcGisMapServerCatalogItem", function () {
           imageryProvider = item.mapItems[0]
             .imageryProvider as ArcGisMapServerImageryProvider;
           expect(imageryProvider.usingPrecachedTiles).toBe(false);
+          expect(item.usePreCachedTilesIfAvailable).toBe(false);
+        });
+
+        it("usePreCachedTilesIfAvailable = false if requesting layer ID in url path", async function () {
+          runInAction(() => {
+            item = new ArcGisMapServerCatalogItem("test", new Terria());
+            item.setTrait(
+              CommonStrata.definition,
+              "url",
+              "http://www.example.com/LayerWithTiles/MapServer/1"
+            );
+          });
+          await item.loadMapItems();
+
+          expect(item.layersArray.length).toBe(1);
+
+          imageryProvider = item.mapItems[0]
+            .imageryProvider as ArcGisMapServerImageryProvider;
+          expect(imageryProvider.usingPrecachedTiles).toBe(false);
+          expect(item.usePreCachedTilesIfAvailable).toBe(false);
+        });
+
+        it("usePreCachedTilesIfAvailable = false if parameters have been specified", async function () {
+          runInAction(() => {
+            item = new ArcGisMapServerCatalogItem("test", new Terria());
+            item.setTrait(
+              CommonStrata.definition,
+              "url",
+              "http://www.example.com/LayerWithTiles/MapServer"
+            );
+            item.setTrait(CommonStrata.definition, "layers", undefined);
+            item.setTrait(CommonStrata.definition, "parameters", {
+              test: "something"
+            });
+          });
+          await item.loadMapItems();
+
+          expect(item.parameters).toEqual({ test: "something" });
+
+          imageryProvider = item.mapItems[0]
+            .imageryProvider as ArcGisMapServerImageryProvider;
+          expect(imageryProvider.usingPrecachedTiles).toBe(false);
+          expect(item.usePreCachedTilesIfAvailable).toBe(false);
         });
 
         it("usePreCachedTilesIfAvailable = true if not requesting specific layers", async function () {
           runInAction(() => {
             item = new ArcGisMapServerCatalogItem("test", new Terria());
-            item.setTrait(CommonStrata.definition, "url", mapServerUrl);
+            item.setTrait(
+              CommonStrata.definition,
+              "url",
+              "http://www.example.com/LayerWithTiles/MapServer"
+            );
             item.setTrait(CommonStrata.definition, "layers", undefined);
           });
           await item.loadMapItems();
-          expect(item.layersArray.length).toBe(74);
+          expect(item.layersArray.length).toBe(2);
 
           imageryProvider = item.mapItems[0]
             .imageryProvider as ArcGisMapServerImageryProvider;
           expect(imageryProvider.usingPrecachedTiles).toBe(true);
+          expect(item.usePreCachedTilesIfAvailable).toBe(true);
         });
 
         it("usePreCachedTilesIfAvailable = true if requesting all layers", async function () {
           runInAction(() => {
             item = new ArcGisMapServerCatalogItem("test", new Terria());
-            item.setTrait(CommonStrata.definition, "url", mapServerUrl);
             item.setTrait(
               CommonStrata.definition,
-              "layers",
-              new Array(74)
-                .fill(0)
-                .map((_, i) => i)
-                .join(",")
+              "url",
+              "http://www.example.com/LayerWithTiles/MapServer"
             );
+            item.setTrait(CommonStrata.definition, "layers", "0,1");
           });
           await item.loadMapItems();
-          expect(item.layersArray.length).toBe(74);
+          expect(item.layersArray.length).toBe(2);
 
           imageryProvider = item.mapItems[0]
             .imageryProvider as ArcGisMapServerImageryProvider;
           expect(imageryProvider.usingPrecachedTiles).toBe(true);
+          expect(item.usePreCachedTilesIfAvailable).toBe(true);
         });
       });
     });
@@ -473,7 +516,7 @@ describe("ArcGisMapServerCatalogItem", function () {
       );
     });
 
-    it("defines legends - with single layer specified - with duplicate legends", async function () {
+    it("defines legends - with single layer specified - with duplicate legends", function () {
       item.setTrait(CommonStrata.definition, "layers", "61");
 
       expect(item.legends).toBeDefined();
@@ -488,7 +531,7 @@ describe("ArcGisMapServerCatalogItem", function () {
       );
     });
 
-    it("defines legends - with single layer specified - with unique legends", async function () {
+    it("defines legends - with single layer specified - with unique legends", function () {
       item.setTrait(CommonStrata.definition, "layers", "67");
 
       expect(item.legends).toBeDefined();
@@ -503,7 +546,7 @@ describe("ArcGisMapServerCatalogItem", function () {
       );
     });
 
-    it("defines legends - with multiple layers specified", async function () {
+    it("defines legends - with multiple layers specified", function () {
       item.setTrait(
         CommonStrata.definition,
         "layers",
@@ -689,17 +732,17 @@ describe("ArcGisMapServerCatalogItem", function () {
       (await item.loadMapItems()).throwIfError();
     });
 
-    it("doesn't request specific layers", async function () {
+    it("doesn't request specific layers", function () {
       expect(item.layers).toBeUndefined();
       expect(item.layersArray.length).toBe(0);
     });
 
-    it("defines legends", async function () {
+    it("defines legends", function () {
       expect(item.legends.length).toBe(1);
       expect(item.legends[0].items.length).toBe(3);
     });
 
-    it("defines name", async function () {
+    it("defines name", function () {
       expect(item.name).toBe("Layers");
     });
 
@@ -740,11 +783,10 @@ describe("ArcGisMapServerCatalogItem", function () {
     });
 
     it("can generate rectangle from an extent in CRS EPSG:7844", async function () {
-      const mapServerJson = require("../../../../wwwroot/test/ArcGisMapServer/Dynamic_National_Map_Hydrography_and_Marine/mapserver.json");
       mapServerJson.fullExtent.spatialReference.wkid = 7844;
 
       jasmine.Ajax.stubRequest(/.*?\/foo\/MapServer.*/).andReturn({
-        responseText: JSON.stringify(mapServerJson)
+        responseJSON: mapServerJson
       });
 
       runInAction(() => {

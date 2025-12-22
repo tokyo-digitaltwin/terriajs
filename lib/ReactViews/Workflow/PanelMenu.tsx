@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { MouseEventHandler, FC, MouseEvent, useEffect, useState } from "react";
 import styled from "styled-components";
 import { GLYPHS, StyledIcon } from "../../Styled/Icon";
 import Text from "../../Styled/Text";
@@ -6,14 +6,14 @@ import Text from "../../Styled/Text";
 export type PanelMenuProps = {
   options: {
     text: string;
-    onSelect: React.MouseEventHandler<HTMLButtonElement>;
+    onSelect: MouseEventHandler<HTMLButtonElement>;
     disabled?: boolean;
   }[];
 };
 /**
  * A popup overflow menu for the panel
  */
-export const PanelMenu: React.FC<PanelMenuProps> = ({ options }) => {
+export const PanelMenu: FC<PanelMenuProps> = ({ options }) => {
   const [isOpen, setIsOpen] = useState(false);
   const hideMenu = () => setIsOpen(false);
 
@@ -28,8 +28,8 @@ export const PanelMenu: React.FC<PanelMenuProps> = ({ options }) => {
   );
 
   const handleClick = (
-    onSelect: React.MouseEventHandler<HTMLButtonElement>,
-    event: React.MouseEvent<HTMLButtonElement>
+    onSelect: MouseEventHandler<HTMLButtonElement>,
+    event: MouseEvent<HTMLButtonElement>
   ) => {
     // If onSelect decides to stop event propagation,
     // clickAnywhereToCloseMenu() will not work. So we close the menu before
@@ -94,7 +94,7 @@ const PanelMenuItem = styled.button`
   padding: 8px 10px;
   border: 0;
   border-radius: 2px;
-  background-color: ${(p) => p.theme.dark};
+  background-color: ${(p) => p.theme.colorPrimary};
 
   :disabled > ${Text} {
     color: ${(p) => p.theme.textLightDimmed};
@@ -120,7 +120,7 @@ const PanelMenuButton = styled.button<{ isOpen: boolean }>`
     height: 16px;
   }
 
-  ${(p) => p.isOpen && `background-color: ${p.theme.dark}`};
+  ${(p) => p.isOpen && `background-color: ${p.theme.colorPrimary}`};
 
   :hover {
     cursor: pointer;

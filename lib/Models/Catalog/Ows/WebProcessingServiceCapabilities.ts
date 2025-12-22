@@ -2,7 +2,7 @@ import i18next from "i18next";
 import filterOutUndefined from "../../../Core/filterOutUndefined";
 import { isJsonObject, isJsonString } from "../../../Core/Json";
 import loadXML from "../../../Core/loadXML";
-import TerriaError, { networkRequestError } from "../../../Core/TerriaError";
+import { networkRequestError } from "../../../Core/TerriaError";
 import xml2json from "../../../ThirdParty/xml2json";
 import {
   OnlineResource,
@@ -54,7 +54,7 @@ export interface ServiceProvider {
 
 export default class WebProcessingServiceCapabilities {
   constructor(
-    readonly capabilitiesXml: string,
+    readonly capabilitiesXml: XMLDocument,
     readonly capabilities: Capabilities
   ) {}
 
@@ -62,7 +62,7 @@ export default class WebProcessingServiceCapabilities {
     return Promise.resolve(loadXML(url)).then(function (capabilitiesXml) {
       const capabilities = parseCapabilities(xml2json(capabilitiesXml));
 
-      if (capabilities === undefined) {
+      if (capabilitiesXml === undefined || capabilities === undefined) {
         throw networkRequestError({
           title: i18next.t(
             "models.webProcessingServiceCatalogGroup.invalidCapabilitiesTitle"

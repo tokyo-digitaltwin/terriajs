@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import { TFunction } from "i18next";
 import { isEmpty, merge } from "lodash-es";
 import {
   action,
@@ -12,8 +11,8 @@ import {
 import { observer } from "mobx-react";
 import { IDisposer } from "mobx-utils";
 import Mustache from "mustache";
-import React, { Ref } from "react";
-import { withTranslation } from "react-i18next";
+import { Component } from "react";
+import { TFunction, withTranslation } from "react-i18next";
 import styled from "styled-components";
 import Cartesian3 from "terriajs-cesium/Source/Core/Cartesian3";
 import Ellipsoid from "terriajs-cesium/Source/Core/Ellipsoid";
@@ -25,6 +24,7 @@ import isDefined from "../../Core/isDefined";
 import { getName } from "../../ModelMixins/CatalogMemberMixin";
 import DiscretelyTimeVaryingMixin from "../../ModelMixins/DiscretelyTimeVaryingMixin";
 import MappableMixin from "../../ModelMixins/MappableMixin";
+import TableMixin from "../../ModelMixins/TableMixin";
 import TimeVarying from "../../ModelMixins/TimeVarying";
 import TerriaFeature from "../../Models/Feature/Feature";
 import FeatureInfoContext from "../../Models/Feature/FeatureInfoContext";
@@ -63,7 +63,7 @@ interface FeatureInfoProps extends WithViewState {
 }
 
 @observer
-export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
+export class FeatureInfoSection extends Component<FeatureInfoProps> {
   private templateReactionDisposer: IDisposer | undefined;
   private removeFeatureChangedSubscription: (() => void) | undefined;
 
@@ -143,7 +143,7 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
     this.removeFeatureChangedSubscription?.();
     this.removeFeatureChangedSubscription =
       feature.definitionChanged.addEventListener(
-        ((changedFeature: TerriaFeature) => {
+        ((_changedFeature: TerriaFeature) => {
           runInAction(() => {
             this.featureChangedCounter++;
           });
@@ -159,6 +159,7 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
 
   @computed get featureProperties() {
     // Force computed to re-calculate when cesium feature properties change
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     this.featureChangedCounter;
 
     return getFeatureProperties(
@@ -216,6 +217,7 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
       currentTime?: Date;
       timeSeries?: TimeSeriesContext;
       rawDataTable?: string;
+      activeStyle?: { id: string | undefined } | undefined;
     } = {
       partialByName: mustacheRenderPartialByName(
         this.props.catalogItem.featureInfoTemplate?.partials ?? {},
@@ -255,6 +257,11 @@ export class FeatureInfoSection extends React.Component<FeatureInfoProps> {
       terria.currentTime = JulianDate.toDate(
         this.props.catalogItem.currentTimeAsJulianDate
       );
+    }
+
+    // Add activeStyle property
+    if (TableMixin.isMixedInto(this.props.catalogItem)) {
+      terria.activeStyle = { id: this.props.catalogItem.activeStyle };
     }
 
     // If catalog item has featureInfoContext function
