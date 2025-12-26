@@ -3,6 +3,8 @@ import classNames from "classnames";
 
 import Styles from "./dropdown.scss";
 import { OutsideClickHandler } from "./OutsideClickHandler";
+import Box from "../../Styled/Box";
+import Icon, { StyledIcon } from "../../Styled/Icon";
 
 interface Theme {
   isOpen?: string;
@@ -35,6 +37,7 @@ interface DropdownProps<
   children?: React.ReactNode;
   disabled?: boolean;
   align?: "left" | "right";
+  useArrowIcon?: boolean;
 }
 
 const Dropdown = <P extends string = "name", T extends Option<P> = Option<P>>({
@@ -44,7 +47,8 @@ const Dropdown = <P extends string = "name", T extends Option<P> = Option<P>>({
   selectOption,
   textProperty = "name" as P,
   disabled = false,
-  children
+  children,
+  useArrowIcon,
 }: DropdownProps<P, T>) => {
   const [isOpen, setIsOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -114,6 +118,21 @@ const Dropdown = <P extends string = "name", T extends Option<P> = Option<P>>({
         >
           {selectedText || children}
           {theme.icon}
+
+          {useArrowIcon && (
+            <span style={{
+              width: "0",
+              height: "0",
+              borderLeft: "6px solid transparent",
+              borderRight: "6px solid transparent",
+              borderTop: "6px solid #64748b",
+              position: "absolute",
+              right: "12px",
+              top: "44%",
+              transform: isOpen ? "rotate(180deg)" : "rotate(0deg)"
+            }}/>
+          )}
+
         </button>
         <ul
           className={classNames(Styles.list, theme.list, {

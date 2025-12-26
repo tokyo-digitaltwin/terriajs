@@ -23,6 +23,7 @@ export function loadAndSearchCatalogRecursively(
   searchTextLowercase: string,
   searchResults: SearchProviderResults,
   resultMap: ResultMap,
+  prefecture: string,
   iteration: number = 0
 ): Promise<void> {
   // checkTerriaAgainstResults(terria, searchResults)
@@ -43,8 +44,9 @@ export function loadAndSearchCatalogRecursively(
       autorun((reaction) => {
         const searchString = `${modelToSave.name} ${modelToSave.uniqueId} ${modelToSave.description}`;
         const matchesString =
-          searchString.toLowerCase().indexOf(searchTextLowercase) !== -1;
+          searchString.toLowerCase().indexOf(searchTextLowercase) !== -1 && modelToSave.uniqueId?.startsWith(`//${prefecture}`);
         resultMap.set(model.uniqueId, matchesString);
+        
         if (matchesString) {
           runInAction(() => {
             searchResults.results.push(
@@ -94,6 +96,7 @@ export function loadAndSearchCatalogRecursively(
               searchTextLowercase,
               searchResults,
               resultMap,
+              prefecture,
               iteration + 1
             )
           );
@@ -174,7 +177,8 @@ export default class CatalogSearchProvider extends CatalogSearchProviderMixin(
           this.terria.modelValues,
           searchText.toLowerCase(),
           searchResults,
-          resultMap
+          resultMap,
+          this.terria.selectedPrefectureOption
         );
       }
 
