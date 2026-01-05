@@ -30,11 +30,15 @@ class DataCatalog extends Component {
         ? searchState.catalogSearchResults.results.map(
             (result) => result.catalogItem
           )
-        : this.props.items;
-    const items = (unfilteredItems || []).filter(defined);
+        : this.props.terria.selectedPrefectureOption ? 
+            this.props.items.filter((item) => item.uniqueId === `//${this.props.terria.selectedPrefectureOption}`) :
+            this.props.items;
+   
+    const items = (unfilteredItems || []).filter(defined)
     const { t } = this.props;
+
     return (
-      <ul className={Styles.dataCatalog}>
+      <ul className={Styles.dataCatalog}> 
         {isSearching && catalogSearchProvider && (
           <>
             <label className={Styles.label}>{t("search.resultsLabel")}</label>

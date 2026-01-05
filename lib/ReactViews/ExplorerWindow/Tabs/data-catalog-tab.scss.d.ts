@@ -6,6 +6,9 @@ declare namespace DataCatalogTabScssNamespace {
     dataCatalog: string;
     dataCatalogGroup: string;
     dataExplorer: string;
+    dropdown: string;
+    "dropdown-children": string;
+    dropdownChildren: string;
     label: string;
     root: string;
   }

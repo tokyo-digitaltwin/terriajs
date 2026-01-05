@@ -36,3 +36,18 @@
 .label {
   composes: label from "../../../Sass/common/_labels.scss";
 }
+
+.dropdown {
+  margin-top: 10px;
+}
+
+.dropdown-children {
+  svg {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    top: 0;
+    right: 0;
+    fill: variables.$charcoal-grey !important;
+  }
+}

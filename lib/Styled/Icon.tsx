@@ -7,6 +7,7 @@ import calendar from "../../wwwroot/images/icons/calendar.svg";
 import calendar2 from "../../wwwroot/images/icons/calendar2.svg";
 import about from "../../wwwroot/images/icons/about.svg";
 import add from "../../wwwroot/images/icons/add.svg";
+import address from "../../wwwroot/images/icons/address.svg"
 import arHover0 from "../../wwwroot/images/icons/ar-hover0.svg";
 import arHover1 from "../../wwwroot/images/icons/ar-hover1.svg";
 import arHover2 from "../../wwwroot/images/icons/ar-hover2.svg";
@@ -156,6 +157,7 @@ export const GLYPHS = {
   calendar2,
   about,
   add,
+  address,
   arHover0,
   arHover1,
   arHover2,
