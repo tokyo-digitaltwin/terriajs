@@ -20,6 +20,8 @@ interface DataCatalogTabProps {
   onActionButtonClicked?: (item: CatalogMemberMixin.Instance) => void;
 }
 
+const prefectureNotSelected = "地域を検索する";
+
 const DataCatalogTab = observer(function DataCatalogTab(
   props: DataCatalogTabProps
 ) {
@@ -33,7 +35,7 @@ const DataCatalogTab = observer(function DataCatalogTab(
     terria
   } = viewState;
 
-  const [selectedOption, setSelectedOption] = useState({name: terria.selectedPrefectureOption === "" ? "選択なし" : terria.selectedPrefectureOption });
+  const [selectedOption, setSelectedOption] = useState({name: terria.selectedPrefectureOption === "" ? prefectureNotSelected : terria.selectedPrefectureOption });
 
   const searchPlaceholder =
     props.searchPlaceholder || t("addData.searchPlaceholder");
@@ -49,7 +51,7 @@ const DataCatalogTab = observer(function DataCatalogTab(
   };
 
   const options = () => {
-    let options = [ {name: "選択なし"} ];
+    let options = [ {name: prefectureNotSelected} ];
     if (terria.configParameters.prefectureOptions.length === 0) {
       return options;
     } else {
@@ -82,7 +84,7 @@ const DataCatalogTab = observer(function DataCatalogTab(
               selectOption={(option, index) => {
                 setSelectedOption(option);
                 terria.selectedPrefectureOption = 
-                  option.name !== "選択なし" ? option.name : "";
+                  option.name !== prefectureNotSelected ? option.name : "";
 
                 searchState.isWaitingToStartCatalogSearch = true;
                 search();
