@@ -53,12 +53,12 @@
     }
   },
   "measure": {
-    "measureTool": "Measure Tool",
-    "measureToolTitle": "Line Measure",
+    "measureTool": "Measuring Tool",
+    "measureToolTitle": "Line Measurement",
     "measureDistance": "Measure distance between locations",
     "measureArea": "Measure the area",
-    "areaMeasureToolTitle": "Area Measure",
-    "areaMeasureTool": "Area measure Tool",
+    "areaMeasureToolTitle": "Area Measurement",
+    "areaMeasureTool": "Area Measuring Tool",
     "areaMeasureLineLabel": "Length ",
     "areaMeasureAreaLabel": "  Area ",
     "areaMeasureHelp": "Click <a href='/area_measurement_tool.html'>here</a> for usage notes",
@@ -67,10 +67,10 @@
     "areaMeasureNotify": "*To cancel a point that has already been selected, click on that point."
   },
   "sdkHeight": {
-    "sdkHeightPlugin": "Height measurement",
+    "sdkHeightPlugin": "Height Measurement",
     "sdkHeightPluginName": "Height measure",
     "sdkHeightPluginTooltip": "Measure height above ground",
-    "sdkHeightPluginNoteTitle": "Height Measurement Tool",
+    "sdkHeightPluginNoteTitle": "Height Measuring Tool",
     "sdkHeightPluginNoteMessage": "Click to specify the point from which to measure the height above the ground",
     "sdkHeightPluginDone": "Done",
     "sdkHeightPluginCancel": "Cancel",
