@@ -66,7 +66,7 @@
     "sdkHeightPluginName": "高さを計測する",
     "sdkHeightPluginTooltip": "地表からの高さを計測します",
     "sdkHeightPluginNoteTitle": "高さ計測ツール",
-    "sdkHeightPluginNoteMessage": "削除クリックして地表からの高さを計測する地点を指定",
+    "sdkHeightPluginNoteMessage": "クリックして地表からの高さを計測する地点を指定",
     "sdkHeightPluginDone": "終了",
     "sdkHeightPluginCancel": "キャンセル",
     "sdkHeightPluginHeight": "高さ: "
