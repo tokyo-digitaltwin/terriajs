@@ -12,6 +12,7 @@ import PedestrianMode, {
   PEDESTRIAN_MODE_ID
 } from "../../Tools/PedestrianMode/PedestrianMode";
 import { ToolButtonController } from "../../Tools/Tool";
+import { closeTool } from "../../../ViewModels/MapNavigation/MapToolbar";
 import {
   AR_TOOL_ID,
   AugmentedVirtualityController,
@@ -31,6 +32,8 @@ import AreaMeasureTool from "./Items/AreaMeasureTool";
 export const registerMapNavigations = (viewState: ViewState) => {
   const terria = viewState.terria;
   const mapNavigationModel = terria.mapNavigationModel;
+
+  let sdkHeightController = terria.mapNavigationModel.findItem("heightsdk")?.controller;
 
   const compassController = new GenericMapNavigationItemController({
     viewerMode: ViewerMode.Cesium,
@@ -93,8 +96,13 @@ export const registerMapNavigations = (viewState: ViewState) => {
     handleClick: () => {
       if (measureTool.active) {
         measureTool.deactivate();
+        if (sdkHeightController) {
+          sdkHeightController?.deactivate();
+          closeTool(viewState, sdkHeightController.id);
+        }
       } else {
         if (areaMeasureTool.active) areaMeasureTool.deactivate();
+        if (sdkHeightController && sdkHeightController?.active) sdkHeightController?.deactivate();
         measureTool.activate();
       }
     },
@@ -119,8 +127,13 @@ export const registerMapNavigations = (viewState: ViewState) => {
     handleClick: () => {
       if (areaMeasureTool.active) {
         areaMeasureTool.deactivate();
+        if (sdkHeightController) {
+          sdkHeightController?.deactivate();
+          closeTool(viewState, sdkHeightController.id);
+        }
       } else {
         if (measureTool.active) measureTool.deactivate();
+        if (sdkHeightController && sdkHeightController?.active) sdkHeightController?.deactivate();
         areaMeasureTool.activate();
       }
     },
@@ -139,6 +152,20 @@ export const registerMapNavigations = (viewState: ViewState) => {
     screenSize: undefined,
     order: 9
   });
+
+  // sdk plugin for all the other measures and buttons
+  if (sdkHeightController) {
+    sdkHeightController.handleClick = () => {
+    if (sdkHeightController.active) {
+      sdkHeightController.deactivate();
+    }
+    else {
+      if (measureTool.active) measureTool.deactivate();
+      if (areaMeasureTool.active) areaMeasureTool.deactivate();
+      sdkHeightController.activate();
+      
+    }
+  }};
 
   const pedestrianModeToolController = new ToolButtonController({
     toolName: PEDESTRIAN_MODE_ID,
