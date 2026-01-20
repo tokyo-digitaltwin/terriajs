@@ -74,7 +74,8 @@
     "sdkHeightPluginNoteMessage": "Click to specify the point from which to measure the height above the ground",
     "sdkHeightPluginDone": "Done",
     "sdkHeightPluginCancel": "Cancel",
-    "sdkHeightPluginHeight": "Height: "
+    "sdkHeightPluginHeight": "Height: ",
+    "3donlymessage": "The height measurement feature is available only in 3D mode and cannot be used in 2D mode."
   },
   "location": {
     "errorGettingLocation": "Error getting location",
