@@ -21,6 +21,7 @@ import MapNavigationModel, {
 } from "../../../ViewModels/MapNavigation/MapNavigationModel";
 import withControlledVisibility from "../../HOCs/withControlledVisibility";
 import MapIconButton from "../../MapIconButton/MapIconButton";
+import { closeTool } from "../../../ViewModels/MapNavigation/MapToolbar";
 import { filterViewerAndScreenSize } from "./filterViewerAndScreenSize";
 import { Control, MapNavigationItem } from "./Items";
 import { registerMapNavigations } from "./registerMapNavigations";
@@ -274,6 +275,23 @@ class MapNavigationBase extends Component<PropTypes> {
       bottomItems = items.filter((item) => item.location === "BOTTOM");
       items = items.filter((item) => item.location === "TOP");
     }
+    if (terria.currentViewer?.type != "Cesium") {
+      
+      closeTool(viewState, "heightsdk")
+      document.getElementById("center-note")?.remove();
+
+    }
+
+    let sdkHeightController = terria.mapNavigationModel.findItem("heightsdk")?.controller;
+    
+    if (terria.mapNavigationModel.findItem("pedestrian-mode")?.controller.active ) {
+      if (sdkHeightController) sdkHeightController.disabled = true;
+    } else {
+      if (sdkHeightController) sdkHeightController.disabled = false;
+    }
+
+
+
     return (
       <StyledMapNavigation trainerBarVisible={viewState.trainerBarVisible}>
         <Box
