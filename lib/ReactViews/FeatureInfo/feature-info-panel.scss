@@ -8,16 +8,15 @@
 
   overflow-y: auto;
   overflow-x: auto;
+  text-wrap: nowrap;
   resize: both;
   display: none;
   text-align: left;
 
-  min-width: 150px; 
-  min-height: 200px;
+  max-width: 90vw;
 
-  position: fixed;
-  width: 320px;         
-  height: 100px;
+  position: fixed;   
+  height: auto;
   right: 12px;
   left: auto !important;    
 
@@ -27,6 +26,20 @@
 
   a {
     @include mixins.link(variables.$feature-info-bg);
+  }
+}
+
+@media (max-width: 900px) {
+  .panel .body td,
+  .panel .body th {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .panel,
+  .panel .body {
+    overflow-x: hidden;
   }
 }
 
