@@ -298,6 +298,13 @@ class MapNavigationBase extends Component<PropTypes> {
       if (sdkHeightController) sdkHeightController.disabled = false;
     }
 
+    const navModel = terria.mapNavigationModel;
+    const navItem = navModel.findItem("heightsdk");
+
+    if (isMobileDevice()) {
+      if (navItem) navModel.remove("heightsdk");
+    }
+
 
 
     return (
@@ -426,6 +433,10 @@ function showCenterNote(
         return null;
     });
 
+}
+
+function isMobileDevice(): boolean {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
 export const MapNavigation = withTranslation()(
