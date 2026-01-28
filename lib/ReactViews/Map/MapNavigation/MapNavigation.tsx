@@ -306,6 +306,13 @@ class MapNavigationBase extends Component<PropTypes> {
     }
 
 
+    if (viewState.useSmallScreenInterface ) {
+      this.model.setCollapsed("heightsdk", true);
+    } else {
+      this.model.setCollapsed("heightsdk", false);
+    }
+
+
 
     return (
       <StyledMapNavigation trainerBarVisible={viewState.trainerBarVisible}>
