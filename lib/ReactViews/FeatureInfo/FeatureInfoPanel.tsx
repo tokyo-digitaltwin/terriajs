@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { action, reaction, runInAction, makeObservable } from "mobx";
 import { disposeOnUnmount, observer } from "mobx-react";
-import { Component } from "react";
+import { Component, createRef } from "react";
 import { withTranslation, TFunction } from "react-i18next";
 import Cartesian3 from "terriajs-cesium/Source/Core/Cartesian3";
 import Ellipsoid from "terriajs-cesium/Source/Core/Ellipsoid";
@@ -37,6 +37,7 @@ interface Props {
   t: TFunction;
 }
 
+
 @observer
 class FeatureInfoPanel extends Component<Props> {
   constructor(props: Props) {
@@ -44,9 +45,27 @@ class FeatureInfoPanel extends Component<Props> {
     makeObservable(this);
   }
 
+  private panelRef = createRef<HTMLDivElement>();
+  private bodyRef = createRef<HTMLUListElement>();
+
+  private ro?: ResizeObserver;
+
   componentDidMount() {
     const { t } = this.props;
     const terria = this.props.viewState.terria;
+
+    this.updateResizeCornerVisibility();
+
+    const panel = this.panelRef.current;
+    if (panel && "ResizeObserver" in window) {
+      this.ro = new ResizeObserver(() => {
+        this.updateResizeCornerVisibility();
+      });
+      this.ro.observe(panel);
+    }
+
+    window.addEventListener("resize", this.updateResizeCornerVisibility);
+    
 
     disposeOnUnmount(
       this,
@@ -107,6 +126,26 @@ class FeatureInfoPanel extends Component<Props> {
     );
   }
 
+  componentDidUpdate() {
+    this.updateResizeCornerVisibility();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateResizeCornerVisibility);
+    this.ro?.disconnect();
+    this.ro = undefined;
+  }
+
+
+  private updateResizeCornerVisibility = () => {
+    const panel = this.panelRef.current;
+    if (!panel) return;
+
+    const hasVerticalScrollbar = panel.scrollHeight > panel.clientHeight;
+
+    panel.classList.toggle("no-resize-corner", hasVerticalScrollbar);
+  };
+
   renderFeatureInfoCatalogItems(
     catalogItems: MappableMixin.Instance[],
     featureMap: Map<string, TerriaFeature[]>
@@ -150,6 +189,8 @@ class FeatureInfoPanel extends Component<Props> {
       !this.props.viewState.featureInfoPanelIsCollapsed;
   }
 
+  
+
   @action.bound
   toggleOpenFeature(feature: TerriaFeature) {
     const terria = this.props.viewState.terria;
@@ -159,6 +200,7 @@ class FeatureInfoPanel extends Component<Props> {
       terria.selectedFeature = feature;
     }
   }
+  
 
   getMessageForNoResults() {
     const { t } = this.props;
@@ -327,9 +369,11 @@ class FeatureInfoPanel extends Component<Props> {
     return (
       <DragWrapper handleSelector=".drag-handle">
         <div
+          ref={this.panelRef}
           className={panelClassName}
           aria-hidden={!viewState.featureInfoPanelIsVisible}
         >
+          <div className="resizeHandle" />
           {!this.props.printView && (
             <div className={Styles.header}>
               <div
@@ -358,7 +402,7 @@ class FeatureInfoPanel extends Component<Props> {
               </button>
             </div>
           )}
-          <ul className={Styles.body}>
+          <ul className={Styles.body} ref={this.bodyRef}>
             {this.props.printView && locationElements}
 
             {
@@ -411,6 +455,8 @@ class FeatureInfoPanel extends Component<Props> {
     );
   }
 }
+
+
 
 function getFeatureMapByCatalogItems(terria: Terria) {
   const featureMap = new Map<string, TerriaFeature[]>();

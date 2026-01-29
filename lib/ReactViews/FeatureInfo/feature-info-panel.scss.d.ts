@@ -22,6 +22,7 @@ declare namespace FeatureInfoPanelScssNamespace {
     "no-results": string;
     noResults: string;
     panel: string;
+    resizeHandle: string;
     satelliteSuggestionBtn: string;
   }
 }
