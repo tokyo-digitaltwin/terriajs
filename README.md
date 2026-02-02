@@ -19,7 +19,8 @@ TerriaJS
 - [TerriaJsの公式ドキュメント](https://docs.terria.io/guide/)にはない東京都デジタルツイン3Dビューア独自の設定項目については、[こちら](./CUSTOM_FEATURES.md)を参照ください。
 
 
-## 【 3Dビューア構築時の留意事項】
+### 【 3Dビューア構築時の留意事項】
+
 - 東京都デジタルツイン3Dビューアでは「高さ計測機能」をご利用いただけますが、本リポジトリをクローンして3Dビューアを構築し、　高さ計測機能を使用する場合は、Cesium ion SDKのライセンスが必要となります。
 　Cesium ion SDK
 　  https://cesium.com/platform/cesiumjs/ion-sdk/
