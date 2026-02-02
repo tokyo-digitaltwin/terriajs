@@ -61,6 +61,17 @@
     "btnRealign": "手動による並びに固定",
     "btnHover": "ホバーする高さを固定"
   },
+  "sdkHeight": {
+    "sdkHeightPlugin": "高さの計測",
+    "sdkHeightPluginName": "高さを計測する",
+    "sdkHeightPluginTooltip": "地表からの高さを計測します",
+    "sdkHeightPluginNoteTitle": "高さ計測ツール",
+    "sdkHeightPluginNoteMessage": "クリックして地表からの高さを計測する地点を指定",
+    "sdkHeightPluginDone": "終了",
+    "sdkHeightPluginCancel": "キャンセル",
+    "sdkHeightPluginHeight": "高さ: ",
+    "3donlymessage": "高さ計測機能は3Dモードでのみ使用できます。2Dモードでは使用できません。"
+  },
   "compass": {
     "title": "クリック＋ドラッグでカメラを回転",
     "guidanceBtnText": "コンパスの詳しい使い方を見る",

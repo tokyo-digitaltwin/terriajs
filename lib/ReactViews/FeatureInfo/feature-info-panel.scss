@@ -5,13 +5,81 @@
   background: variables.$feature-info-bg;
   color: variables.$feature-info-color;
   border-radius: variables.$radius-xlarge;
-  overflow: hidden;
+
+  overflow-y: auto;
+  overflow-x: auto;
+  text-wrap: nowrap;
+  resize: none;
   display: none;
+  text-align: left;
+
+  max-width: 90vw;
+
+  position: fixed;   
+  height: auto;
+  right: 12px;
+  left: auto !important;    
+
+  box-sizing: border-box;
+
+
 
   a {
     @include mixins.link(variables.$feature-info-bg);
   }
 }
+
+@media (max-width: 900px) {
+  .panel .body td,
+  .panel .body th {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .panel,
+  .panel .body {
+    overflow-x: hidden;
+  }
+}
+
+
+.panel::after {
+  content: none;
+}
+
+.panel::-webkit-scrollbar-corner {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, transparent 0%, #4b8cf5 50%);
+  pointer-events: none;
+
+  z-index: 10000;
+}
+
+
+.panel::-webkit-scrollbar {
+  width: 10px;        
+  height: 10px;       
+}
+
+.panel::-webkit-scrollbar-track {
+  background: #1a1a1a;    
+  border-radius: 8px;
+}
+
+.panel::-webkit-scrollbar-thumb {
+  background: #4b8cf5;    
+  border-radius: 8px;
+}
+
+.panel::-webkit-scrollbar-thumb:hover {
+  background: #76a8ff;    
+}
+
 
 .is-collapsed {
   .body {
