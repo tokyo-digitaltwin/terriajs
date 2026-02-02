@@ -385,6 +385,8 @@ export interface ConfigParameters {
    * Keep catalog open when adding / removing items
    */
   keepCatalogOpen: boolean;
+
+  prefectureOptions: string[];
 }
 
 interface StartOptions {
@@ -613,7 +615,8 @@ export default class Terria {
     plugins: undefined,
     policyUrl: undefined,
     searchBarConfig: undefined,
-    searchProviders: []
+    searchProviders: [],
+    prefectureOptions: [],
   };
 
   @observable
@@ -734,6 +737,8 @@ export default class Terria {
    * @experimental
    */
   catalogProvider?: CatalogProvider;
+
+  @observable selectedPrefectureOption: string = "";
 
   constructor(options: TerriaOptions = {}) {
     makeObservable(this);
