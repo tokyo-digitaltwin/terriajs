@@ -18,15 +18,12 @@ import MapNavigationItemController from "../../../../ViewModels/MapNavigation/Ma
 import PrimitiveCollection from "terriajs-cesium/Source/Scene/PrimitiveCollection";
 import LabelCollection from "terriajs-cesium/Source/Scene/LabelCollection";
 import PointPrimitiveCollection from "terriajs-cesium/Source/Scene/PointPrimitiveCollection";
-import {
-  HeightMeasurement,
-  MeasureUnits,
-  MeasurementMouseHandler,
-  DistanceUnits,
-} from "@cesiumgs/ion-sdk-measurements";
+
 import ScreenSpaceEventHandler from "terriajs-cesium/Source/Core/ScreenSpaceEventHandler";
 import Color from "terriajs-cesium/Source/Core/Color";
 import ScreenSpaceEventType from "terriajs-cesium/Source/Core/ScreenSpaceEventType";
+import { getIonMeasurementsModule } from "./SdkAvailability";
+
 
 interface MeasureToolOptions {
   terria: Terria;
@@ -87,7 +84,7 @@ export class SdkHeightMeasureTool extends MapNavigationItemController {
     super.deactivate();
   }
 
-  showCenterNote(
+  async showCenterNote(
       message: string,
       labelMessage: string,
       primitives: any,
@@ -164,6 +161,12 @@ export class SdkHeightMeasureTool extends MapNavigationItemController {
       note.appendChild(this.heightText);
       note.appendChild(this.closeBtn);
 
+      const ion = await getIonMeasurementsModule();
+      if (!ion) return;
+      const { HeightMeasurement, MeasureUnits, DistanceUnits } = ion;
+      
+
+
       const scene =
       (this.terria?.currentViewer as any)?.scene ||
       (this.terria as any)?.viewer?.cesiumWidget?.scene;
@@ -224,7 +227,7 @@ export class SdkHeightMeasureTool extends MapNavigationItemController {
     
 
       this.closeBtn?.addEventListener("click", () => {
-          this.eventHandler.destroy(); // always clean up
+          if (this.eventHandler) this.eventHandler.destroy(); // always clean up
           document.getElementById("center-note")?.remove();
           primitives.removeAll();
           labels.removeAll();

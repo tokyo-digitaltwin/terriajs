@@ -29,6 +29,9 @@ import {
   ZOOM_CONTROL_ID
 } from "./Items";
 import AreaMeasureTool from "./Items/AreaMeasureTool";
+import { hasIonMeasurements } from "./Items/SdkAvailability";
+
+const enabled = await hasIonMeasurements();
 
 export const registerMapNavigations = (viewState: ViewState) => {
   const terria = viewState.terria;
@@ -117,32 +120,38 @@ export const registerMapNavigations = (viewState: ViewState) => {
     order: 6
   });
 
-  const measuresdkTool = new SdkHeightMeasureTool({
-    terria,
-    handleClick: () => {
-      if (measuresdkTool?.active) {
-        measuresdkTool.deactivate();
-      } else {
-        if (areaMeasureTool.active) areaMeasureTool.deactivate();
-        if (measureTool.active) measureTool.deactivate();
-        measuresdkTool.activate();
+  console.log("sdk is loaded?? " + enabled);
+  let measuresdkTool: SdkHeightMeasureTool;
+
+  if (enabled) {
+
+    measuresdkTool = new SdkHeightMeasureTool({
+      terria,
+      handleClick: () => {
+        if (measuresdkTool?.active) {
+          measuresdkTool.deactivate();
+        } else {
+          if (areaMeasureTool.active) areaMeasureTool.deactivate();
+          if (measureTool.active) measureTool.deactivate();
+          measuresdkTool.activate();
+        }
+      },
+      onClose: () => {
+        runInAction(() => {
+          viewState.panel = undefined;
+        });
       }
-    },
-    onClose: () => {
-      runInAction(() => {
-        viewState.panel = undefined;
-      });
-    }
-  });
-  mapNavigationModel.addItem({
-    id: "heightsdk",
-    name: "translate#sdkHeight.sdkHeightPlugin",
-    title: "translate#sdkHeight.sdkHeightPluginTooltip",
-    location: "TOP",
-    controller: measuresdkTool,
-    screenSize: undefined,
-    order: 13
-  });
+    });
+    mapNavigationModel.addItem({
+      id: "heightsdk",
+      name: "translate#sdkHeight.sdkHeightPlugin",
+      title: "translate#sdkHeight.sdkHeightPluginTooltip",
+      location: "TOP",
+      controller: measuresdkTool,
+      screenSize: undefined,
+      order: 13
+    });
+  }
 
   const areaMeasureTool = new AreaMeasureTool({
     terria,
