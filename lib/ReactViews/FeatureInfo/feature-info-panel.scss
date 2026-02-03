@@ -9,7 +9,7 @@
   overflow-y: auto;
   overflow-x: auto;
   text-wrap: nowrap;
-  resize: none;
+  resize: both;
   display: none;
   text-align: left;
 
@@ -17,8 +17,9 @@
 
   position: fixed;   
   height: auto;
-  right: 12px;
-  left: auto !important;    
+  
+  left: 12px;
+  right: auto; 
 
   box-sizing: border-box;
 
@@ -39,12 +40,52 @@
 
   .panel,
   .panel .body {
+    max-height: 40vh;
     overflow-x: hidden;
+  }
+
+  .panel .resizeHandle {
+    display: block;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+
+    width: 44px;   
+    height: 44px;
+
+    cursor: se-resize;
+    touch-action: none; 
+    background: transparent;
+    z-index: 10;
+  }
+
+  .panel .resizeHandle::after {
+    content: "";
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.25));
+    border-radius: 2px;
+    pointer-events: none;
   }
 }
 
 
 .panel::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, transparent 0%, transparent 50%, #4b8cf5 50%, #4b8cf5 100%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.panel:global(.no-resize-corner)::after {
   content: none;
 }
 
