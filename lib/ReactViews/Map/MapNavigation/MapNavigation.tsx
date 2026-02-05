@@ -46,11 +46,6 @@ const StyledMapNavigation = styled.div<StyledMapNavigationProps>`
   z-index: 1;
   top: 25px;
 
-  @supports (-webkit-touch-callout: none) {
-    // Shift map navigation on iOS browsers so it won't get hidden by the browser UI.
-    bottom: 120px;
-  }
-
   @media (min-width: ${(props) => props.theme.sm}px) {
     top: 80px;
     bottom: 50px;
