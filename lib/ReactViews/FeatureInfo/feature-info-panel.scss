@@ -38,9 +38,14 @@
     word-break: normal;
   }
 
-  .panel,
+  .panel {
+    height: 30vh;
+    max-height: 90vh;
+    overflow-x: hidden;
+  }
+
   .panel .body {
-    max-height: 40vh;
+    max-height: 90vh;
     overflow-x: hidden;
   }
 
