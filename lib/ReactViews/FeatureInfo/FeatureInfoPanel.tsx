@@ -46,26 +46,11 @@ class FeatureInfoPanel extends Component<Props> {
   }
 
   private panelRef = createRef<HTMLDivElement>();
-  private bodyRef = createRef<HTMLUListElement>();
-
-  private ro?: ResizeObserver;
+  private resizeHandleRef = createRef<HTMLDivElement>();
 
   componentDidMount() {
     const { t } = this.props;
     const terria = this.props.viewState.terria;
-
-    this.updateResizeCornerVisibility();
-
-    const panel = this.panelRef.current;
-    if (panel && "ResizeObserver" in window) {
-      this.ro = new ResizeObserver(() => {
-        this.updateResizeCornerVisibility();
-      });
-      this.ro.observe(panel);
-    }
-
-    window.addEventListener("resize", this.updateResizeCornerVisibility);
-    
 
     disposeOnUnmount(
       this,
@@ -127,24 +112,49 @@ class FeatureInfoPanel extends Component<Props> {
   }
 
   componentDidUpdate() {
-    this.updateResizeCornerVisibility();
+    if (this.resizeHandleRef.current) {
+      this.resizeHandleRef.current.addEventListener("mousedown", this.startResize);
+      this.resizeHandleRef.current.addEventListener("touchstart", this.startResize, {passive: true});  
+    }
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.updateResizeCornerVisibility);
-    this.ro?.disconnect();
-    this.ro = undefined;
   }
 
+  private startResize = (e: MouseEvent | TouchEvent) => {
+    if (!this.panelRef.current) return; 
+    e.preventDefault();
+    const startX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const startY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    const startWidth = this.panelRef.current.offsetWidth;
+    const startHeight = this.panelRef.current.offsetHeight;
 
-  private updateResizeCornerVisibility = () => {
-    const panel = this.panelRef.current;
-    if (!panel) return;
+    const onMove = (event: MouseEvent | TouchEvent) => {
+      if (!this.panelRef.current) return; 
+      if (event.cancelable) event.preventDefault();
 
-    const hasVerticalScrollbar = panel.scrollHeight > panel.clientHeight;
+      const moveClientX = "touches" in event ? event.touches[0].clientX : event.clientX;
+      const moveClientY = "touches" in event ? event.touches[0].clientY : event.clientY;
+      
+      const dx = moveClientX - startX;
+      const dy = moveClientY - startY;
 
-    panel.classList.toggle("no-resize-corner", hasVerticalScrollbar);
-  };
+      this.panelRef.current.style.width = `${startWidth + dx}px`;
+      this.panelRef.current.style.height = `${startHeight + dy}px`;
+    } 
+
+    const onEnd = () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onEnd);
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend", onEnd);
+    }
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onEnd);
+    document.addEventListener("touchmove", onMove, { passive: false });
+    document.addEventListener("touchend", onEnd);
+  }
 
   renderFeatureInfoCatalogItems(
     catalogItems: MappableMixin.Instance[],
@@ -373,7 +383,7 @@ class FeatureInfoPanel extends Component<Props> {
           className={panelClassName}
           aria-hidden={!viewState.featureInfoPanelIsVisible}
         >
-          <div className="resizeHandle" />
+          <div ref={this.resizeHandleRef} className={Styles.resizeHandle} />
           {!this.props.printView && (
             <div className={Styles.header}>
               <div
@@ -402,7 +412,8 @@ class FeatureInfoPanel extends Component<Props> {
               </button>
             </div>
           )}
-          <ul className={Styles.body} ref={this.bodyRef}>
+
+          <ul className={Styles.body}>
             {this.props.printView && locationElements}
 
             {
