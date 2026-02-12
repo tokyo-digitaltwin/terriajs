@@ -299,7 +299,9 @@ class MapNavigationBase extends Component<PropTypes> {
     }
     
     if (terria.mapNavigationModel.findItem("pedestrian-mode")?.controller.active ) {
-      if (sdkHeightController) sdkHeightController.disabled = true;
+      if (sdkHeightController) {
+        sdkHeightController.disabled = true;
+        sdkHeightController.deactivate(); }
       document.getElementById("center-note")?.remove();
     } else {
       if (sdkHeightController) sdkHeightController.disabled = false;

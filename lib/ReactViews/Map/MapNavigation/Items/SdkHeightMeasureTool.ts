@@ -36,35 +36,20 @@ export class SdkHeightMeasureTool extends MapNavigationItemController {
   static displayName = i18next.t("sdkHeight.sdkHeightPluginName");
 
   private readonly terria: Terria;
-  private userDrawing: UserDrawing;
   private measure: any;
   private closeBtn: any = null;
   private heightText: any = null;
   private eventHandler: any;
-  private primitives: PrimitiveCollection;
-  private points: PointPrimitiveCollection;
-  private labels: LabelCollection;
-
   onClose: () => void;
   handleClick: () => void;
+
   itemRef: RefObject<HTMLDivElement> = createRef();
 
   constructor(props: MeasureToolOptions) {
     super();
     this.terria = props.terria;
-    this.userDrawing = new UserDrawing({
-      terria: props.terria,
-      invisible: true,
-      messageHeader: () => i18next.t("sdkHeight.sdkHeightPluginHeight"),
-      allowPolygon: false,
-      onCleanUp: this.onCleanUp.bind(this),
-      onMakeDialogMessage: this.onMakeDialogMessage.bind(this)
-    });
     this.onClose = props.onClose;
     this.handleClick = props.handleClick;
-    this.primitives = new PrimitiveCollection();
-    this.points = new PointPrimitiveCollection();
-    this.labels = new LabelCollection();
   }
 
   get glyph(): any {
@@ -75,25 +60,12 @@ export class SdkHeightMeasureTool extends MapNavigationItemController {
     return undefined;
   }
 
-  onCleanUp() {
-    document.getElementById("center-note")?.remove();
-    this.eventHandler.destroy(); 
-    this.primitives.removeAll();
-    this.points.removeAll();
-    this.labels.removeAll();
-    super.deactivate();
-  }
-
-  async showCenterNote(
+  async measureHeight(
       message: string,
-      labelMessage: string,
-      primitives: any,
-      points: any,
-      labels: any
+      labelMessage: string
     ) {
 
       document.getElementById("center-note")?.remove();
-
 
       const note = document.createElement("div");
       note.id = "center-note";
@@ -165,29 +137,35 @@ export class SdkHeightMeasureTool extends MapNavigationItemController {
       if (!ion) return;
       const { HeightMeasurement, MeasureUnits, DistanceUnits } = ion;
       
-
-
       const scene =
-      (this.terria?.currentViewer as any)?.scene ||
-      (this.terria as any)?.viewer?.cesiumWidget?.scene;
+        (this.terria?.currentViewer as any)?.scene ||
+        (this.terria as any)?.viewer?.cesiumWidget?.scene;
 
 
       if (!scene) return;
       this.eventHandler = new ScreenSpaceEventHandler(scene.canvas);
 
-      primitives =
+      const primitives =
       (scene.__heightPrimColl ||= scene.primitives.add(new PrimitiveCollection()));
-    labels =
+    const labels =
       (scene.__heightLabelColl ||= scene.primitives.add(new LabelCollection()));
-    points =
+    const points =
       (scene.__heightPointColl ||= scene.primitives.add(new PointPrimitiveCollection()));
 
+      const units = new MeasureUnits({ distanceUnits: DistanceUnits.METERS });
+
+    this.measure = new HeightMeasurement({
+      scene,
+      units,
+      primitives,
+      labels,
+      points
+    });
+
     this.eventHandler.setInputAction((movement: any) => {
-      this.userDrawing.pointEntities  = new CustomDataSource();
-      this.userDrawing.otherEntities  = new CustomDataSource();
+      
         this.measure.handleClick(movement.position);
         const value = (this.measure as any).distance; 
-        //this.terria?.userProperties && (this.terria.userProperties.lastHeightMeters = value);
         this.closeBtn.textContent = i18next.t("sdkHeight.sdkHeightPluginDone");
         this.heightText.style.display = true;
         this.heightText.textContent = i18next.t("sdkHeight.sdkHeightPluginHeight") + value.toFixed(2) + " m";
@@ -198,66 +176,43 @@ export class SdkHeightMeasureTool extends MapNavigationItemController {
           point.outlineWidth = 2;
         });
 
-
         primitives._primitives.forEach((line: any) => {
           line.color = Color.WHITE;
           line.depthFailColor = Color.WHITE;
         });
 
-        this.primitives = primitives;
-        this.points = points;
-        this.labels = labels;
-
-        
-
     }, ScreenSpaceEventType.LEFT_CLICK);
     
 
-    const units = new MeasureUnits({ distanceUnits: DistanceUnits.METERS });
-
-    this.measure = new HeightMeasurement({
-      scene,
-      units,
-      primitives,
-      labels,
-      points
-    });
-    
-
-    
-
       this.closeBtn?.addEventListener("click", () => {
-          if (this.eventHandler) this.eventHandler.destroy(); // always clean up
+          if (this.eventHandler) this.eventHandler.destroy(); 
           document.getElementById("center-note")?.remove();
           primitives.removeAll();
           labels.removeAll();
           points.removeAll();
-          this.userDrawing.endDrawing();
+          super.deactivate();
           return null;
       });
 
   }
 
-  onMakeDialogMessage() {
-    this.showCenterNote(i18next.t("sdkHeight.sdkHeightPluginNoteTitle"), i18next.t("sdkHeight.sdkHeightPluginNoteMessage"), this.primitives, this.points, this.labels);
-
-   
-    return "";
-  };
-
   /**
    * @overrides
    */
   deactivate() {
-    this.userDrawing.endDrawing();
     super.deactivate();
+    document.getElementById("center-note")?.remove();
+    this.eventHandler?.destroy(); 
+    this.measure?.destroy();
+    
   }
 
   /**
    * @overrides
    */
   activate() {
-    this.userDrawing.enterDrawMode();
     super.activate();
+    this.measureHeight(i18next.t("sdkHeight.sdkHeightPluginNoteTitle"), i18next.t("sdkHeight.sdkHeightPluginNoteMessage"));
+    
   }
 }
