@@ -274,11 +274,17 @@ class MapNavigationBase extends Component<PropTypes> {
 
     let sdkHeightController = terria.mapNavigationModel.findItem("heightsdk")?.controller;
 
+
     if (terria.currentViewer?.type != "Cesium") {
 
       if (sdkHeightController?.active) {
         showCenterNote(i18next.t("sdkHeight.3donlymessage"));
-        closeTool(viewState, "heightsdk");
+        sdkHeightController.deactivate();
+        sdkHeightController.collapsed = true;
+      }
+
+      else if (sdkHeightController) {
+        sdkHeightController.collapsed = true;
       }
       
       
@@ -288,23 +294,12 @@ class MapNavigationBase extends Component<PropTypes> {
     }
     
     if (terria.mapNavigationModel.findItem("pedestrian-mode")?.controller.active ) {
-      if (sdkHeightController) sdkHeightController.disabled = true;
+      if (sdkHeightController) {
+        sdkHeightController.disabled = true;
+        sdkHeightController.deactivate(); }
+      document.getElementById("center-note")?.remove();
     } else {
       if (sdkHeightController) sdkHeightController.disabled = false;
-    }
-
-    const navModel = terria.mapNavigationModel;
-    const navItem = navModel.findItem("heightsdk");
-
-    if (isMobileDevice()) {
-      if (navItem) navModel.remove("heightsdk");
-    }
-
-
-    if (viewState.useSmallScreenInterface ) {
-      this.model.setCollapsed("heightsdk", true);
-    } else {
-      this.model.setCollapsed("heightsdk", false);
     }
 
 
@@ -435,10 +430,6 @@ function showCenterNote(
         return null;
     });
 
-}
-
-function isMobileDevice(): boolean {
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
 export const MapNavigation = withTranslation()(
