@@ -3,7 +3,6 @@ import { observer } from "mobx-react";
 import { useTranslation } from "react-i18next";
 import type CatalogMemberMixin from "../../../ModelMixins/CatalogMemberMixin";
 import Box from "../../../Styled/Box";
-import Icon, { StyledIcon } from "../../../Styled/Icon";
 import { useViewState } from "../../Context";
 import DataCatalog from "../../DataCatalog/DataCatalog";
 import DataPreview from "../../Preview/DataPreview";
@@ -11,8 +10,8 @@ import Breadcrumbs from "../../Search/Breadcrumbs";
 import SearchBox, { DEBOUNCE_INTERVAL } from "../../Search/SearchBox.jsx";
 import Styles from "./data-catalog-tab.scss";
 import CatalogSearchProvider from "../../../Models/SearchProviders/CatalogSearchProvider";
-import Dropdown from "../../Generic/Dropdown";
 import { useState } from "react";
+import PrefecturesDropDown from "../../Search/PrefecturesDropDown";
 
 interface DataCatalogTabProps {
   items?: unknown[];
@@ -67,35 +66,7 @@ const DataCatalogTab = observer(function DataCatalogTab(
       <Box fullHeight column>
         <Box fullHeight overflow="hidden">
           <Box className={Styles.dataExplorer} styledWidth="40%">
-            <Dropdown 
-              children={
-                <Box className={Styles.dropdownChildren}>
-                  <StyledIcon
-                    glyph={Icon.GLYPHS.address}
-                    opacity={0.5}
-                  />
-
-                  <Box paddedHorizontally={2}>
-                    {selectedOption.name}
-                  </Box>
-                </Box>
-              }
-              options={options()} 
-              selectOption={(option, index) => {
-                setSelectedOption(option);
-                terria.selectedPrefectureOption = 
-                  option.name !== prefectureNotSelected ? option.name : "";
-
-                searchState.isWaitingToStartCatalogSearch = true;
-                search();
-              }}
-              theme={
-                {dropdown: Styles.dropdown}
-              }
-              useArrowIcon
-              >
-            </Dropdown>
-
+            <PrefecturesDropDown />
 
             {searchState.catalogSearchProvider && (
               <SearchBox
