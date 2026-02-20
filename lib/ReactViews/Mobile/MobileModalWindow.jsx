@@ -70,6 +70,7 @@ class MobileModalWindow extends Component {
   }
 
   renderPrefectureDropDown() {
+    const viewState = this.props.viewState;
     switch (viewState.mobileView) {
       case viewState.mobileViewOptions.data:
         return (
