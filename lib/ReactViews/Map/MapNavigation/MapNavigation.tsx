@@ -319,7 +319,7 @@ class MapNavigationBase extends Component<PropTypes> {
             css={`
               ${this.orientation === Orientation.HORIZONTAL &&
               `margin-bottom: 5px;
-                flex-wrap: wrap;`}
+                flex-wrap: nowrap;`}
             `}
           >
             {items.map((item) => {

@@ -70,21 +70,20 @@ export class SdkHeightMeasureTool extends MapNavigationItemController {
       const note = document.createElement("div");
       note.id = "center-note";
       note.setAttribute("aria-hidden", "true");
+      const isMobile = window.matchMedia("(max-width: 900px)").matches;
       note.style.cssText = `
         position: fixed;
-        top: 10%;
+        top: ${isMobile ? "5.5%" : "10%"};
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: ${isMobile ? "translateX(-50%)" : "translate(-50%, -50%)"} ;
         z-index: 100000;
         background: #ffffffff;
         color: #000000ff;
         padding: 12px 12px;
-        border-radius: 1px;
         text-align: left;
         font-size: 16px;
         font-family: Inter, sans-serif;
         font-weight: 900;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.35);
         max-width: 400px;
         pointer-events: auto;
         display: flex;
