@@ -11,6 +11,7 @@ import DataPreview from "../Preview/DataPreview";
 import WorkbenchList from "../Workbench/WorkbenchList";
 import Styles from "./mobile-modal-window.scss";
 import MobileSearch from "./MobileSearch";
+import PrefecturesDropDown from "../Search/PrefecturesDropDown";
 
 @observer
 class MobileModalWindow extends Component {
@@ -62,6 +63,17 @@ class MobileModalWindow extends Component {
             viewState={this.props.viewState}
             terria={this.props.terria}
           />
+        );
+      default:
+        return null;
+    }
+  }
+
+  renderPrefectureDropDown() {
+    switch (viewState.mobileView) {
+      case viewState.mobileViewOptions.data:
+        return (
+          <PrefecturesDropDown/>
         );
       default:
         return null;
@@ -135,6 +147,7 @@ class MobileModalWindow extends Component {
             </button>
           </div>
 
+          {this.renderPrefectureDropDown()}
           {this.renderModalContent()}
         </Box>
       </div>
