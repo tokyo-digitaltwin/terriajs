@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { action, reaction, runInAction, makeObservable } from "mobx";
 import { disposeOnUnmount, observer } from "mobx-react";
-import { Component } from "react";
+import { Component, createRef } from "react";
 import { withTranslation, TFunction } from "react-i18next";
 import Cartesian3 from "terriajs-cesium/Source/Core/Cartesian3";
 import Ellipsoid from "terriajs-cesium/Source/Core/Ellipsoid";
@@ -37,12 +37,16 @@ interface Props {
   t: TFunction;
 }
 
+
 @observer
 class FeatureInfoPanel extends Component<Props> {
   constructor(props: Props) {
     super(props);
     makeObservable(this);
   }
+
+  private panelRef = createRef<HTMLDivElement>();
+  private resizeHandleRef = createRef<HTMLDivElement>();
 
   componentDidMount() {
     const { t } = this.props;
@@ -107,6 +111,51 @@ class FeatureInfoPanel extends Component<Props> {
     );
   }
 
+  componentDidUpdate() {
+    if (this.resizeHandleRef.current) {
+      this.resizeHandleRef.current.addEventListener("mousedown", this.startResize);
+      this.resizeHandleRef.current.addEventListener("touchstart", this.startResize, {passive: true});  
+    }
+  }
+
+  componentWillUnmount() {
+  }
+
+  private startResize = (e: MouseEvent | TouchEvent) => {
+    if (!this.panelRef.current) return; 
+    e.preventDefault();
+    const startX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const startY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    const startWidth = this.panelRef.current.offsetWidth;
+    const startHeight = this.panelRef.current.offsetHeight;
+
+    const onMove = (event: MouseEvent | TouchEvent) => {
+      if (!this.panelRef.current) return; 
+      if (event.cancelable) event.preventDefault();
+
+      const moveClientX = "touches" in event ? event.touches[0].clientX : event.clientX;
+      const moveClientY = "touches" in event ? event.touches[0].clientY : event.clientY;
+      
+      const dx = moveClientX - startX;
+      const dy = moveClientY - startY;
+
+      this.panelRef.current.style.width = `${startWidth + dx}px`;
+      this.panelRef.current.style.height = `${startHeight + dy}px`;
+    } 
+
+    const onEnd = () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onEnd);
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend", onEnd);
+    }
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onEnd);
+    document.addEventListener("touchmove", onMove, { passive: false });
+    document.addEventListener("touchend", onEnd);
+  }
+
   renderFeatureInfoCatalogItems(
     catalogItems: MappableMixin.Instance[],
     featureMap: Map<string, TerriaFeature[]>
@@ -150,6 +199,8 @@ class FeatureInfoPanel extends Component<Props> {
       !this.props.viewState.featureInfoPanelIsCollapsed;
   }
 
+  
+
   @action.bound
   toggleOpenFeature(feature: TerriaFeature) {
     const terria = this.props.viewState.terria;
@@ -159,6 +210,7 @@ class FeatureInfoPanel extends Component<Props> {
       terria.selectedFeature = feature;
     }
   }
+  
 
   getMessageForNoResults() {
     const { t } = this.props;
@@ -327,9 +379,11 @@ class FeatureInfoPanel extends Component<Props> {
     return (
       <DragWrapper handleSelector=".drag-handle">
         <div
+          ref={this.panelRef}
           className={panelClassName}
           aria-hidden={!viewState.featureInfoPanelIsVisible}
         >
+          <div ref={this.resizeHandleRef} className={Styles.resizeHandle} />
           {!this.props.printView && (
             <div className={Styles.header}>
               <div
@@ -358,6 +412,7 @@ class FeatureInfoPanel extends Component<Props> {
               </button>
             </div>
           )}
+
           <ul className={Styles.body}>
             {this.props.printView && locationElements}
 
@@ -411,6 +466,8 @@ class FeatureInfoPanel extends Component<Props> {
     );
   }
 }
+
+
 
 function getFeatureMapByCatalogItems(terria: Terria) {
   const featureMap = new Map<string, TerriaFeature[]>();

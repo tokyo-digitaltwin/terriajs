@@ -22,18 +22,20 @@ import {
   Compass,
   COMPASS_TOOL_ID,
   MeasureTool,
+  SdkHeightMeasureTool,
   MyLocation,
   ToggleSplitterController,
   ZoomControl,
   ZOOM_CONTROL_ID
 } from "./Items";
 import AreaMeasureTool from "./Items/AreaMeasureTool";
+import { hasIonMeasurements } from "./Items/SdkAvailability";
+
+const enabled = await hasIonMeasurements();
 
 export const registerMapNavigations = (viewState: ViewState) => {
   const terria = viewState.terria;
   const mapNavigationModel = terria.mapNavigationModel;
-
-  let sdkHeightController = terria.mapNavigationModel.findItem("heightsdk")?.controller;
 
   const compassController = new GenericMapNavigationItemController({
     viewerMode: ViewerMode.Cesium,
@@ -96,13 +98,9 @@ export const registerMapNavigations = (viewState: ViewState) => {
     handleClick: () => {
       if (measureTool.active) {
         measureTool.deactivate();
-        if (sdkHeightController) {
-          sdkHeightController?.deactivate();
-          closeTool(viewState, sdkHeightController.id);
-        }
       } else {
         if (areaMeasureTool.active) areaMeasureTool.deactivate();
-        if (sdkHeightController && sdkHeightController?.active) sdkHeightController?.deactivate();
+        if (measuresdkTool && measuresdkTool?.active) measuresdkTool?.deactivate();
         measureTool.activate();
       }
     },
@@ -122,18 +120,47 @@ export const registerMapNavigations = (viewState: ViewState) => {
     order: 6
   });
 
+  console.log("sdk is loaded?? " + enabled);
+  let measuresdkTool: SdkHeightMeasureTool;
+
+  if (enabled) {
+
+    measuresdkTool = new SdkHeightMeasureTool({
+      terria,
+      handleClick: () => {
+        if (measuresdkTool?.active) {
+          measuresdkTool.deactivate();
+        } else {
+          if (areaMeasureTool.active) areaMeasureTool.deactivate();
+          if (measureTool.active) measureTool.deactivate();
+          measuresdkTool.activate();
+        }
+      },
+      onClose: () => {
+        runInAction(() => {
+          viewState.panel = undefined;
+        });
+      }
+    });
+    mapNavigationModel.addItem({
+      id: "heightsdk",
+      name: "translate#sdkHeight.sdkHeightPlugin",
+      title: "translate#sdkHeight.sdkHeightPluginTooltip",
+      location: "TOP",
+      controller: measuresdkTool,
+      screenSize: undefined,
+      order: 13
+    });
+  }
+
   const areaMeasureTool = new AreaMeasureTool({
     terria,
     handleClick: () => {
       if (areaMeasureTool.active) {
         areaMeasureTool.deactivate();
-        if (sdkHeightController) {
-          sdkHeightController?.deactivate();
-          closeTool(viewState, sdkHeightController.id);
-        }
       } else {
         if (measureTool.active) measureTool.deactivate();
-        if (sdkHeightController && sdkHeightController?.active) sdkHeightController?.deactivate();
+        if (measuresdkTool && measuresdkTool?.active) measuresdkTool?.deactivate();
         areaMeasureTool.activate();
       }
     },
@@ -153,19 +180,6 @@ export const registerMapNavigations = (viewState: ViewState) => {
     order: 9
   });
 
-  // sdk plugin for all the other measures and buttons
-  if (sdkHeightController) {
-    sdkHeightController.handleClick = () => {
-    if (sdkHeightController.active) {
-      sdkHeightController.deactivate();
-    }
-    else {
-      if (measureTool.active) measureTool.deactivate();
-      if (areaMeasureTool.active) areaMeasureTool.deactivate();
-      sdkHeightController.activate();
-      
-    }
-  }};
 
   const pedestrianModeToolController = new ToolButtonController({
     toolName: PEDESTRIAN_MODE_ID,

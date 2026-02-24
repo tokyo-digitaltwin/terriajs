@@ -69,6 +69,7 @@ import right from "../../wwwroot/images/icons/right.svg";
 import right2 from "../../wwwroot/images/icons/right2.svg";
 import revert from "../../wwwroot/images/icons/revert.svg";
 import search from "../../wwwroot/images/icons/search.svg";
+import sdkHeight from "../../wwwroot/images/icons/heightIconFinal.svg";
 import selected from "../../wwwroot/images/icons/selected.svg";
 import settings from "../../wwwroot/images/icons/settings.svg";
 import share from "../../wwwroot/images/icons/share.svg";
@@ -219,6 +220,7 @@ export const GLYPHS = {
   right2,
   revert,
   search,
+  sdkHeight,
   selected,
   settings,
   share,
