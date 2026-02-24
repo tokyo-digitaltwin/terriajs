@@ -46,11 +46,6 @@ const StyledMapNavigation = styled.div<StyledMapNavigationProps>`
   z-index: 1;
   top: 25px;
 
-  @supports (-webkit-touch-callout: none) {
-    // Shift map navigation on iOS browsers so it won't get hidden by the browser UI.
-    bottom: 120px;
-  }
-
   @media (min-width: ${(props) => props.theme.sm}px) {
     top: 80px;
     bottom: 50px;
@@ -279,11 +274,17 @@ class MapNavigationBase extends Component<PropTypes> {
 
     let sdkHeightController = terria.mapNavigationModel.findItem("heightsdk")?.controller;
 
+
     if (terria.currentViewer?.type != "Cesium") {
 
       if (sdkHeightController?.active) {
         showCenterNote(i18next.t("sdkHeight.3donlymessage"));
-        closeTool(viewState, "heightsdk");
+        sdkHeightController.deactivate();
+        sdkHeightController.collapsed = true;
+      }
+
+      else if (sdkHeightController) {
+        sdkHeightController.collapsed = true;
       }
       
       
@@ -293,23 +294,12 @@ class MapNavigationBase extends Component<PropTypes> {
     }
     
     if (terria.mapNavigationModel.findItem("pedestrian-mode")?.controller.active ) {
-      if (sdkHeightController) sdkHeightController.disabled = true;
+      if (sdkHeightController) {
+        sdkHeightController.disabled = true;
+        sdkHeightController.deactivate(); }
+      document.getElementById("center-note")?.remove();
     } else {
       if (sdkHeightController) sdkHeightController.disabled = false;
-    }
-
-    const navModel = terria.mapNavigationModel;
-    const navItem = navModel.findItem("heightsdk");
-
-    if (isMobileDevice()) {
-      if (navItem) navModel.remove("heightsdk");
-    }
-
-
-    if (viewState.useSmallScreenInterface ) {
-      this.model.setCollapsed("heightsdk", true);
-    } else {
-      this.model.setCollapsed("heightsdk", false);
     }
 
 
@@ -329,7 +319,7 @@ class MapNavigationBase extends Component<PropTypes> {
             css={`
               ${this.orientation === Orientation.HORIZONTAL &&
               `margin-bottom: 5px;
-                flex-wrap: wrap;`}
+                flex-wrap: nowrap;`}
             `}
           >
             {items.map((item) => {
@@ -440,10 +430,6 @@ function showCenterNote(
         return null;
     });
 
-}
-
-function isMobileDevice(): boolean {
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
 export const MapNavigation = withTranslation()(

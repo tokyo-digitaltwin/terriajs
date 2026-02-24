@@ -4,6 +4,15 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const ForkTsCheckerNotifierWebpackPlugin = require("fork-ts-checker-notifier-webpack-plugin");
 const webpack = require("webpack");
 
+function hasIonMeasurements() {
+  try {
+    require.resolve("@cesiumgs/ion-sdk-measurements");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Supplements the given webpack config with options required to build TerriaJS
  *
@@ -51,6 +60,13 @@ function configureWebpack({
     ),
     ...config.resolve.alias
   };
+  if (!hasIonMeasurements()) {
+    config.resolve.alias["@cesiumgs/ion-sdk-measurements"] = path.resolve(
+      __dirname,
+      "stubs",
+      "ion-sdk-measurements-stub.js"
+    );
+  }
   config.resolve.modules = config.resolve.modules || [];
   config.resolve.modules.push(path.resolve(terriaJSBasePath, "wwwroot"));
 

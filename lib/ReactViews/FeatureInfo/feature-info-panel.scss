@@ -6,23 +6,24 @@
   color: variables.$feature-info-color;
   border-radius: variables.$radius-xlarge;
 
-  overflow-y: auto;
-  overflow-x: auto;
+  overflow: hidden;
   text-wrap: nowrap;
-  resize: none;
   display: none;
   text-align: left;
 
+  min-height: 18px;
+  min-width: 18px;
   max-width: 90vw;
 
   position: fixed;   
   height: auto;
-  right: 12px;
-  left: auto !important;    
+  
+  left: 12px;
+  right: auto; 
 
   box-sizing: border-box;
 
-
+  flex-direction: column;
 
   a {
     @include mixins.link(variables.$feature-info-bg);
@@ -37,49 +38,31 @@
     word-break: normal;
   }
 
-  .panel,
+  .panel {
+    height: 30vh;
+    max-height: 90vh;
+    overflow-x: hidden;
+  }
+
   .panel .body {
+    max-height: 90vh;
     overflow-x: hidden;
   }
 }
 
-
-.panel::after {
-  content: none;
-}
-
-.panel::-webkit-scrollbar-corner {
+.resizeHandle {
   position: absolute;
   right: 0;
   bottom: 0;
-  width: 20px;
-  height: 20px;
-  background: linear-gradient(135deg, transparent 0%, #4b8cf5 50%);
-  pointer-events: none;
 
-  z-index: 10000;
+  width: 18px;   
+  height: 18px;
+
+  cursor: se-resize;
+  touch-action: none; 
+  background: linear-gradient(135deg, transparent 50%, #4b8cf5 50%);
+  z-index: 10;
 }
-
-
-.panel::-webkit-scrollbar {
-  width: 10px;        
-  height: 10px;       
-}
-
-.panel::-webkit-scrollbar-track {
-  background: #1a1a1a;    
-  border-radius: 8px;
-}
-
-.panel::-webkit-scrollbar-thumb {
-  background: #4b8cf5;    
-  border-radius: 8px;
-}
-
-.panel::-webkit-scrollbar-thumb:hover {
-  background: #76a8ff;    
-}
-
 
 .is-collapsed {
   .body {
@@ -88,7 +71,7 @@
 }
 
 .is-visible {
-  display: block;
+  display: flex;
 }
 
 .is-translucent {
@@ -99,6 +82,7 @@
   background: variables.$feature-info-header-bg;
   padding-right: variables.$input-height;
   line-height: variables.$modal-header-height;
+  flex: 0;
 }
 
 .btnPanelHeading {
@@ -163,6 +147,8 @@
     80vh - #{variables.$padding * 2 + variables.$btn-default-line-height}
   );
   font-size: variables.$font-size-feature-info;
+  flex: 1;
+  width: 100%;
 }
 
 .location {
