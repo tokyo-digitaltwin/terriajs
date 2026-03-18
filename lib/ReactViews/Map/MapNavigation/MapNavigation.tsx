@@ -21,9 +21,11 @@ import MapNavigationModel, {
 } from "../../../ViewModels/MapNavigation/MapNavigationModel";
 import withControlledVisibility from "../../HOCs/withControlledVisibility";
 import MapIconButton from "../../MapIconButton/MapIconButton";
+import { closeTool } from "../../../ViewModels/MapNavigation/MapToolbar";
 import { filterViewerAndScreenSize } from "./filterViewerAndScreenSize";
 import { Control, MapNavigationItem } from "./Items";
 import { registerMapNavigations } from "./registerMapNavigations";
+import i18next from "i18next";
 
 const OVERFLOW_ACTION_SIZE = 42;
 
@@ -43,11 +45,6 @@ const StyledMapNavigation = styled.div<StyledMapNavigationProps>`
   right: 5px;
   z-index: 1;
   top: 25px;
-
-  @supports (-webkit-touch-callout: none) {
-    // Shift map navigation on iOS browsers so it won't get hidden by the browser UI.
-    bottom: 120px;
-  }
 
   @media (min-width: ${(props) => props.theme.sm}px) {
     top: 80px;
@@ -274,6 +271,39 @@ class MapNavigationBase extends Component<PropTypes> {
       bottomItems = items.filter((item) => item.location === "BOTTOM");
       items = items.filter((item) => item.location === "TOP");
     }
+
+    let sdkHeightController = terria.mapNavigationModel.findItem("heightsdk")?.controller;
+
+
+    if (terria.currentViewer?.type != "Cesium") {
+
+      if (sdkHeightController?.active) {
+        showCenterNote(i18next.t("sdkHeight.3donlymessage"));
+        sdkHeightController.deactivate();
+        sdkHeightController.collapsed = true;
+      }
+
+      else if (sdkHeightController) {
+        sdkHeightController.collapsed = true;
+      }
+      
+      
+      document.getElementById("center-note")?.remove();
+
+
+    }
+    
+    if (terria.mapNavigationModel.findItem("pedestrian-mode")?.controller.active ) {
+      if (sdkHeightController) {
+        sdkHeightController.disabled = true;
+        sdkHeightController.deactivate(); }
+      document.getElementById("center-note")?.remove();
+    } else {
+      if (sdkHeightController) sdkHeightController.disabled = false;
+    }
+
+
+
     return (
       <StyledMapNavigation trainerBarVisible={viewState.trainerBarVisible}>
         <Box
@@ -289,7 +319,7 @@ class MapNavigationBase extends Component<PropTypes> {
             css={`
               ${this.orientation === Orientation.HORIZONTAL &&
               `margin-bottom: 5px;
-                flex-wrap: wrap;`}
+                flex-wrap: nowrap;`}
             `}
           >
             {items.map((item) => {
@@ -330,6 +360,76 @@ class MapNavigationBase extends Component<PropTypes> {
       </StyledMapNavigation>
     );
   }
+}
+
+var closeBtn: any = null;
+
+function showCenterNote(
+  message: string
+) {
+
+  const note = document.createElement("div");
+  note.id = "3donly";
+  note.setAttribute("aria-hidden", "true");
+  note.style.cssText = `
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100000;
+    background: #ffffffff;
+    color: #000000ff;
+    padding: 12px 12px;
+    border-radius: 1px;
+    text-align: left;
+    font-size: 16px;
+    font-family: Inter, sans-serif;
+    font-weight: 400;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    max-width: 400px;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column; 
+    align-items: left;
+    gap: 10px; 
+  `;
+  note.textContent = message;
+
+  const normalBg = "#09315D";
+  const hoverBg = "#3A587A";
+
+  closeBtn = document.createElement("button");
+      closeBtn.textContent = "OK";
+      closeBtn.style.cssText = `
+        border: none;
+        background: ${normalBg};
+        color: white;
+        padding: 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: .9375rem;
+        font-weight: 400;
+        border-radius: 0px;
+        box-shadow: none;
+        height: 42px;
+      `;
+
+  closeBtn.addEventListener("mouseenter", () => {
+    closeBtn.style.background = hoverBg;
+  });
+
+  closeBtn.addEventListener("mouseleave", () => {
+    closeBtn.style.background = normalBg;
+  });
+
+  document.body.appendChild(note);
+  note.appendChild(closeBtn);
+
+  closeBtn?.addEventListener("click", () => {
+        document.getElementById("3donly")?.remove();
+        return null;
+    });
+
 }
 
 export const MapNavigation = withTranslation()(

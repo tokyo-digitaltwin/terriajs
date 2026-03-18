@@ -121,7 +121,10 @@
     pointer-events: auto;
     position: absolute;
     top: variables.$mobile-header-height + 10px;
-    right: 10px;
+    
+    left: 10px;     
+    right: auto;
+    
     max-width: 95%;
     min-width: 150px;
     max-height: 80vh;

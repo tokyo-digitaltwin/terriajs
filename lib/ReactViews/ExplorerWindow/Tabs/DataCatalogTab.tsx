@@ -10,12 +10,16 @@ import Breadcrumbs from "../../Search/Breadcrumbs";
 import SearchBox, { DEBOUNCE_INTERVAL } from "../../Search/SearchBox.jsx";
 import Styles from "./data-catalog-tab.scss";
 import CatalogSearchProvider from "../../../Models/SearchProviders/CatalogSearchProvider";
+import { useState } from "react";
+import PrefecturesDropDown from "../../Search/PrefecturesDropDown";
 
 interface DataCatalogTabProps {
   items?: unknown[];
   searchPlaceholder?: string;
   onActionButtonClicked?: (item: CatalogMemberMixin.Instance) => void;
 }
+
+const prefectureNotSelected = "地域を検索する";
 
 const DataCatalogTab = observer(function DataCatalogTab(
   props: DataCatalogTabProps
@@ -30,6 +34,8 @@ const DataCatalogTab = observer(function DataCatalogTab(
     terria
   } = viewState;
 
+  const [selectedOption, setSelectedOption] = useState({name: terria.selectedPrefectureOption === "" ? prefectureNotSelected : terria.selectedPrefectureOption });
+
   const searchPlaceholder =
     props.searchPlaceholder || t("addData.searchPlaceholder");
 
@@ -43,11 +49,25 @@ const DataCatalogTab = observer(function DataCatalogTab(
     viewState.searchState.searchCatalog();
   };
 
+  const options = () => {
+    let options = [ {name: prefectureNotSelected} ];
+    if (terria.configParameters.prefectureOptions.length === 0) {
+      return options;
+    } else {
+      return options.concat(
+        terria.configParameters.prefectureOptions.map(pref => ({name: pref}))
+      );
+    }
+  }
+
+
   return (
     <div className={Styles.root}>
       <Box fullHeight column>
         <Box fullHeight overflow="hidden">
           <Box className={Styles.dataExplorer} styledWidth="40%">
+            <PrefecturesDropDown />
+
             {searchState.catalogSearchProvider && (
               <SearchBox
                 searchText={searchState.catalogSearchText}

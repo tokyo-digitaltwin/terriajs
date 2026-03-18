@@ -12,6 +12,7 @@ import PedestrianMode, {
   PEDESTRIAN_MODE_ID
 } from "../../Tools/PedestrianMode/PedestrianMode";
 import { ToolButtonController } from "../../Tools/Tool";
+import { closeTool } from "../../../ViewModels/MapNavigation/MapToolbar";
 import {
   AR_TOOL_ID,
   AugmentedVirtualityController,
@@ -21,12 +22,16 @@ import {
   Compass,
   COMPASS_TOOL_ID,
   MeasureTool,
+  SdkHeightMeasureTool,
   MyLocation,
   ToggleSplitterController,
   ZoomControl,
   ZOOM_CONTROL_ID
 } from "./Items";
 import AreaMeasureTool from "./Items/AreaMeasureTool";
+import { hasIonMeasurements } from "./Items/SdkAvailability";
+
+const enabled = await hasIonMeasurements();
 
 export const registerMapNavigations = (viewState: ViewState) => {
   const terria = viewState.terria;
@@ -95,6 +100,7 @@ export const registerMapNavigations = (viewState: ViewState) => {
         measureTool.deactivate();
       } else {
         if (areaMeasureTool.active) areaMeasureTool.deactivate();
+        if (measuresdkTool && measuresdkTool?.active) measuresdkTool?.deactivate();
         measureTool.activate();
       }
     },
@@ -114,6 +120,39 @@ export const registerMapNavigations = (viewState: ViewState) => {
     order: 6
   });
 
+  console.log("sdk is loaded?? " + enabled);
+  let measuresdkTool: SdkHeightMeasureTool;
+
+  if (enabled) {
+
+    measuresdkTool = new SdkHeightMeasureTool({
+      terria,
+      handleClick: () => {
+        if (measuresdkTool?.active) {
+          measuresdkTool.deactivate();
+        } else {
+          if (areaMeasureTool.active) areaMeasureTool.deactivate();
+          if (measureTool.active) measureTool.deactivate();
+          measuresdkTool.activate();
+        }
+      },
+      onClose: () => {
+        runInAction(() => {
+          viewState.panel = undefined;
+        });
+      }
+    });
+    mapNavigationModel.addItem({
+      id: "heightsdk",
+      name: "translate#sdkHeight.sdkHeightPlugin",
+      title: "translate#sdkHeight.sdkHeightPluginTooltip",
+      location: "TOP",
+      controller: measuresdkTool,
+      screenSize: undefined,
+      order: 13
+    });
+  }
+
   const areaMeasureTool = new AreaMeasureTool({
     terria,
     handleClick: () => {
@@ -121,6 +160,7 @@ export const registerMapNavigations = (viewState: ViewState) => {
         areaMeasureTool.deactivate();
       } else {
         if (measureTool.active) measureTool.deactivate();
+        if (measuresdkTool && measuresdkTool?.active) measuresdkTool?.deactivate();
         areaMeasureTool.activate();
       }
     },
@@ -139,6 +179,7 @@ export const registerMapNavigations = (viewState: ViewState) => {
     screenSize: undefined,
     order: 9
   });
+
 
   const pedestrianModeToolController = new ToolButtonController({
     toolName: PEDESTRIAN_MODE_ID,

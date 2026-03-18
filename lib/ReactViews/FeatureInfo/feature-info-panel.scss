@@ -5,12 +5,63 @@
   background: variables.$feature-info-bg;
   color: variables.$feature-info-color;
   border-radius: variables.$radius-xlarge;
+
   overflow: hidden;
+  text-wrap: nowrap;
   display: none;
+  text-align: left;
+
+  min-height: 18px;
+  min-width: 18px;
+  max-width: 90vw;
+
+  position: fixed;   
+  height: auto;
+  
+  left: 12px;
+  right: auto; 
+
+  box-sizing: border-box;
+
+  flex-direction: column;
 
   a {
     @include mixins.link(variables.$feature-info-bg);
   }
+}
+
+@media (max-width: 900px) {
+  .panel .body td,
+  .panel .body th {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .panel {
+    height: 30vh;
+    max-height: 90vh;
+    overflow-x: hidden;
+  }
+
+  .panel .body {
+    max-height: 90vh;
+    overflow-x: hidden;
+  }
+}
+
+.resizeHandle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+
+  width: 18px;   
+  height: 18px;
+
+  cursor: se-resize;
+  touch-action: none; 
+  background: linear-gradient(135deg, transparent 50%, #4b8cf5 50%);
+  z-index: 10;
 }
 
 .is-collapsed {
@@ -20,7 +71,7 @@
 }
 
 .is-visible {
-  display: block;
+  display: flex;
 }
 
 .is-translucent {
@@ -31,6 +82,7 @@
   background: variables.$feature-info-header-bg;
   padding-right: variables.$input-height;
   line-height: variables.$modal-header-height;
+  flex: 0;
 }
 
 .btnPanelHeading {
@@ -95,6 +147,8 @@
     80vh - #{variables.$padding * 2 + variables.$btn-default-line-height}
   );
   font-size: variables.$font-size-feature-info;
+  flex: 1;
+  width: 100%;
 }
 
 .location {

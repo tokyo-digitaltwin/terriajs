@@ -8,6 +8,7 @@ export {
 export * from "./Compass";
 export { Control, MapNavigationItem } from "./MapNavigationItem";
 export { MeasureTool } from "./MeasureTool";
+export { SdkHeightMeasureTool } from "./SdkHeightMeasureTool";
 export { MyLocation } from "./MyLocation";
 export { ToggleSplitterController } from "./ToggleSplitterTool";
 export { ZoomControl, ZOOM_CONTROL_ID } from "./ZoomControl";

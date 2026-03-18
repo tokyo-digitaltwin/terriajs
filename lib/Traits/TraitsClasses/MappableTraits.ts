@@ -4,7 +4,6 @@ import mixTraits from "../mixTraits";
 import ModelTraits from "../ModelTraits";
 import AttributionTraits from "./AttributionTraits";
 import { FeatureInfoTemplateTraits } from "./FeatureInfoTraits";
-import SearchableItemTraits from "./SearchableItemTraits";
 
 export class RectangleTraits extends ModelTraits {
   @primitiveTrait({
@@ -201,10 +200,7 @@ export class InitialMessageTraits extends ModelTraits {
 }
 
 /* eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging */
-class MappableTraits extends mixTraits(
-  AttributionTraits,
-  SearchableItemTraits
-) {
+class MappableTraits extends mixTraits(AttributionTraits) {
   @objectTrait({
     type: RectangleTraits,
     name: "Rectangle",

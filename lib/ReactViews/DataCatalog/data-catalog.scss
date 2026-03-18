@@ -14,7 +14,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  top: variables.$modal-header-height;
+  top: variables.$modal-header-height + 50px;
 
   @media (min-width: variables.$sm) {
     padding-right: variables.$padding-small;

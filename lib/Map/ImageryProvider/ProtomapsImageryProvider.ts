@@ -364,7 +364,7 @@ export default class ProtomapsImageryProvider
           CesiumMath.toDegrees(longitude),
           CesiumMath.toDegrees(latitude),
           level,
-          1
+          16
         )
         .forEach((f) => {
           // Only create FeatureInfo for visible features with properties

@@ -385,6 +385,8 @@ export interface ConfigParameters {
    * Keep catalog open when adding / removing items
    */
   keepCatalogOpen: boolean;
+
+  prefectureOptions: string[];
 }
 
 interface StartOptions {
@@ -613,7 +615,8 @@ export default class Terria {
     plugins: undefined,
     policyUrl: undefined,
     searchBarConfig: undefined,
-    searchProviders: []
+    searchProviders: [],
+    prefectureOptions: [],
   };
 
   @observable
@@ -735,6 +738,8 @@ export default class Terria {
    */
   catalogProvider?: CatalogProvider;
 
+  @observable selectedPrefectureOption: string = "";
+
   constructor(options: TerriaOptions = {}) {
     makeObservable(this);
     if (options.appBaseHref) {
@@ -766,7 +771,7 @@ export default class Terria {
 
     this.analytics = options.analytics;
     if (!defined(this.analytics)) {
-      if (typeof window !== "undefined" && defined((window as any).gtag)) {
+      if (typeof window !== "undefined" && defined((window as any).ga)) {
         this.analytics = new GoogleAnalytics();
       } else {
         this.analytics = new ConsoleAnalytics();
@@ -1025,6 +1030,13 @@ export default class Terria {
       if (
         isDefined(hashProperties["configUrl"]) &&
         hashProperties["configUrl"] !== ""
+      )
+        options.configUrl = hashProperties["configUrl"];
+    }else{
+      if (
+        isDefined(hashProperties["configUrl"]) &&
+        hashProperties["configUrl"] !== "" &&
+        ! isValidURL(hashProperties["configUrl"])
       )
         options.configUrl = hashProperties["configUrl"];
     }
@@ -2395,5 +2407,14 @@ function setCustomRequestSchedulerDomainLimits(
     Object.entries(customDomainLimits).forEach(([domain, limit]) => {
       RequestScheduler.requestsByServer[domain] = limit;
     });
+  }
+}
+
+function isValidURL(url:string ) {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
   }
 }
