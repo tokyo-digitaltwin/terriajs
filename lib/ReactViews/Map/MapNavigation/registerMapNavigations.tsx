@@ -203,15 +203,15 @@ export const registerMapNavigations = (viewState: ViewState) => {
     viewState: viewState,
     augmentedVirtuality: augmentedVirtuality
   });
-  mapNavigationModel.addItem({
-    id: AR_TOOL_ID,
-    name: "translate#AR.arTool",
-    location: "TOP",
-    screenSize: "small",
-    controller: arController,
-    order: 0,
-    noExpand: true
-  });
+  // mapNavigationModel.addItem({
+  //   id: AR_TOOL_ID,
+  //   name: "translate#AR.arTool",
+  //   location: "TOP",
+  //   screenSize: "small",
+  //   controller: arController,
+  //   order: 0,
+  //   noExpand: true
+  // });
 
   const arControllerHover = new AugmentedVirtualityHoverController({
     augmentedVirtuality: augmentedVirtuality
