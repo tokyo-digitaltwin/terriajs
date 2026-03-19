@@ -1,0 +1,21 @@
+@use "../../Sass/common/_variables";
+@use "../../Sass/common/mixins";
+
+.dropdown {
+  margin-top: 10px;
+
+  @media (max-width: variables.$mobile) { 
+    margin: 5px;
+  }
+}
+
+.dropdown-children {
+  svg {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    top: 0;
+    right: 0;
+    fill: variables.$charcoal-grey !important;
+  }
+}

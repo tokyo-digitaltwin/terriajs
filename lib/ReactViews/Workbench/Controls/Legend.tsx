@@ -237,7 +237,7 @@ export default class Legend extends Component<{
       }
     }
     const rowStyle = {
-      height: `${legendItem.imageHeight + 2}px`
+      height: `${legendItem.imageHeight + 8}px`
     };
     return (
       <Fragment key={i}>

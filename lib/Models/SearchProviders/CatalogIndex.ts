@@ -176,7 +176,7 @@ export default class CatalogIndex {
     matches.forEach((fieldResult: any) => {
       fieldResult.result.forEach((id: string) => {
         const indexReference = this.models?.get(id);
-        if (indexReference && !matchedIds.has(id)) {
+        if (indexReference && !matchedIds.has(id) && id.startsWith(`//${this.terria.selectedPrefectureOption}`)) {
           matchedIds.add(id);
           results.push(
             runInAction(

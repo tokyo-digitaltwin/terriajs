@@ -53,18 +53,29 @@
     }
   },
   "measure": {
-    "measureTool": "Measure Tool",
-    "measureToolTitle": "Line Measure",
+    "measureTool": "Measuring Tool",
+    "measureToolTitle": "Line Measurement",
     "measureDistance": "Measure distance between locations",
     "measureArea": "Measure the area",
-    "areaMeasureToolTitle": "Area Measure",
-    "areaMeasureTool": "Area measure Tool",
+    "areaMeasureToolTitle": "Area Measurement",
+    "areaMeasureTool": "Area Measuring Tool",
     "areaMeasureLineLabel": "Length ",
     "areaMeasureAreaLabel": "  Area ",
     "areaMeasureHelp": "Click <a href='/area_measurement_tool.html'>here</a> for usage notes",
     "areaMeasureInvalidError": "There is an error in the polygon. Draw the correct polygons.",
     "areaMeasureAttention": "*Caution: Area measurement is not possible when polygons intersect.",
     "areaMeasureNotify": "*To cancel a point that has already been selected, click on that point."
+  },
+  "sdkHeight": {
+    "sdkHeightPlugin": "Height Measurement",
+    "sdkHeightPluginName": "Height measure",
+    "sdkHeightPluginTooltip": "Measure height above ground",
+    "sdkHeightPluginNoteTitle": "Height Measuring Tool",
+    "sdkHeightPluginNoteMessage": "Click to specify the point from which to measure the height above the ground",
+    "sdkHeightPluginDone": "Done",
+    "sdkHeightPluginCancel": "Cancel",
+    "sdkHeightPluginHeight": "Height: ",
+    "3donlymessage": "The height measurement feature is available only in 3D mode and cannot be used in 2D mode."
   },
   "location": {
     "errorGettingLocation": "Error getting location",
@@ -2135,11 +2146,6 @@
   "indexedItemSearchProvider": {
     "missingOptionIndexRootUrl": "Option `indexRootUrl` is missing in the item's search configuration.",
     "errorParsingIndexRoot": "Error parsing indexRoot file: {{indexRootUrl}}."
-  },
-  "dataSourceItemSearchProvider": {
-    "all": "Query",
-    "entityName": "Name",
-    "entityDescription": "Description"
   },
   "pedestrianMode": {
     "toolButtonTitle": "Pedestrian Mode",

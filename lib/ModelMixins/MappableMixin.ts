@@ -1,9 +1,6 @@
 import i18next from "i18next";
 import { computed, makeObservable, observable, runInAction } from "mobx";
-import BoundingSphere from "terriajs-cesium/Source/Core/BoundingSphere";
-import Cartographic from "terriajs-cesium/Source/Core/Cartographic";
 import Rectangle from "terriajs-cesium/Source/Core/Rectangle";
-import sampleTerrainMostDetailed from "terriajs-cesium/Source/Core/sampleTerrainMostDetailed";
 import TerrainProvider from "terriajs-cesium/Source/Core/TerrainProvider";
 import DataSource from "terriajs-cesium/Source/DataSources/DataSource";
 import Cesium3DTileset from "terriajs-cesium/Source/Scene/Cesium3DTileset";
@@ -12,10 +9,8 @@ import AbstractConstructor from "../Core/AbstractConstructor";
 import AsyncLoader from "../Core/AsyncLoader";
 import Result from "../Core/Result";
 import Model from "../Models/Definition/Model";
-import { ItemSearchResult } from "../Models/ItemSearchProviders/ItemSearchProvider";
 import MappableTraits from "../Traits/TraitsClasses/MappableTraits";
 import CatalogMemberMixin, { getName } from "./CatalogMemberMixin";
-import SearchableItemMixin from "./SearchableItemMixin";
 
 // Unfortunately Cesium does not declare a single interface that represents a primitive,
 // but here is what primitives have in common:
@@ -102,7 +97,7 @@ export function isDataSource(object: MapItem): object is DataSource {
 type BaseType = Model<MappableTraits>;
 
 function MappableMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
-  abstract class MappableMixin extends SearchableItemMixin(Base) {
+  abstract class MappableMixin extends Base {
     initialMessageShown: boolean = false;
 
     constructor(...args: any[]) {
@@ -238,28 +233,6 @@ function MappableMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
     dispose() {
       super.dispose();
       this._mapItemsLoader.dispose();
-    }
-
-    async zoomToItemSearchResult(result: ItemSearchResult) {
-      const cesium = this.terria.cesium;
-      if (cesium === undefined) return;
-      const scene = cesium.scene;
-      const camera = scene.camera;
-
-      const { latitudeDegrees, longitudeDegrees, featureHeight } =
-        result.featureCoordinate;
-      const cartographic = Cartographic.fromDegrees(
-        longitudeDegrees,
-        latitudeDegrees
-      );
-      const [terrainCartographic] = await sampleTerrainMostDetailed(
-        scene.terrainProvider,
-        [cartographic]
-      ).catch(() => [cartographic]);
-      const center = Cartographic.toCartesian(terrainCartographic);
-      const bs = new BoundingSphere(center, featureHeight * 2);
-      camera.flyToBoundingSphere(bs);
-      cesium.notifyRepaintRequired();
     }
   }
 
