@@ -48,6 +48,26 @@
     max-height: 90vh;
     overflow-x: hidden;
   }
+
+  /* === ADDED RULES === */
+
+  /* Make iframe behave like a responsive video */
+  .panel .body iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;   /* keeps proper proportions */
+    height: auto;
+  }
+
+  /* Optional: give more vertical space visually */
+  .panel .body td:has(iframe) {
+    padding: 0;
+  }
+
+  /* Allow panel to grow if iframe needs space */
+  .panel:has(iframe) {
+    height: auto;
+  }
 }
 
 .resizeHandle {
