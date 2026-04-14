@@ -49,23 +49,33 @@
     overflow-x: hidden;
   }
 
-  /* === ADDED RULES === */
-
-  /* Make iframe behave like a responsive video */
   .panel .body iframe {
     display: block;
-    width: 100%;
-    aspect-ratio: 16 / 9;   /* keeps proper proportions */
+    width: 100vw;
+    aspect-ratio: 16 / 9;  
     height: auto;
   }
 
-  /* Optional: give more vertical space visually */
   .panel .body td:has(iframe) {
     padding: 0;
   }
 
-  /* Allow panel to grow if iframe needs space */
   .panel:has(iframe) {
+    height: auto;
+  }
+
+  .panel .body img {
+    display: block;
+    width: 100vw;
+    aspect-ratio: 16 / 9;   
+    height: auto;
+  }
+
+  .panel .body td:has(img) {
+    padding: 0;
+  }
+
+  .panel:has(img) {
     height: auto;
   }
 }
