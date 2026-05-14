@@ -10,10 +10,12 @@
   text-wrap: nowrap;
   display: none;
   text-align: left;
+  
 
+  width: max-content;
   min-height: 18px;
-  min-width: 18px;
-  max-width: 90vw;
+  min-width: 10vw;
+  max-width: 60vw;
 
   position: fixed;   
   height: auto;
@@ -41,12 +43,45 @@
   .panel {
     height: 30vh;
     max-height: 90vh;
-    overflow-x: hidden;
+    max-width: 90vw;
   }
 
   .panel .body {
     max-height: 90vh;
-    overflow-x: hidden;
+  }
+
+  .panel .body iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .panel .body td:has(iframe) {
+    padding: 0;
+  }
+
+  .panel:has(iframe) {
+    height: auto;
+  }
+
+  .panel .body img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .panel .body td:has(img) {
+    padding: 0;
+  }
+
+  .panel:has(img) {
+    height: auto;
   }
 }
 
